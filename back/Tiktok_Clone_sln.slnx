@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Tiktok_Clone.BLL/Tiktok_Clone.BLL.csproj" />
+  <Project Path="Tiktok_Clone.DAL/Tiktok_Clone.DAL.csproj" />
+  <Project Path="Tiktok_Clone/Tiktok_Clone.csproj" />
+</Solution>
