@@ -26,9 +26,9 @@ fix/login-redirect
 Якщо в `develop` з'явились нові коміти — **не чекай**, оновлюй свою гілку:
 
 ```bash
-git checkout develop
+git switch develop
 git pull origin develop
-git checkout твоя-гілка
+git switch твоя-гілка
 git merge develop
 ```
 
