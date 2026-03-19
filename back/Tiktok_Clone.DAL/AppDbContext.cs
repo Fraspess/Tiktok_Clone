@@ -1,20 +1,119 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Tiktok_Clone.DAL.Entities.Comment;
+using Tiktok_Clone.DAL.Entities.HashTags;
+using Tiktok_Clone.DAL.Entities.Message;
+using Tiktok_Clone.DAL.Entities.Report;
+using Tiktok_Clone.DAL.Entities.User;
+using Tiktok_Clone.DAL.Entities.Video;
 
 namespace Tiktok_Clone.DAL;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<UserEntity>
 {
-    public AppDbContext(DbContextOptions options)
-        :base(options)
-    {
-        
-    }
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public DbSet<VideoEntity> Videos { get; set; }
+    public DbSet<CommentEntity> Comments { get; set; }
+    public DbSet<MessageEntity> Messages { get; set; }
+    public DbSet<ReportEntity> Reports { get; set; }
+    public DbSet<UserFollowEntity> UserFollows { get; set; }
+    public DbSet<VideoHashTagEntity> VideoHashTags { get; set; }
+    public DbSet<HashTagEntity> HashTags { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(builder);
+
+        // ── User ────────────────────────────────────────────
+        builder.Entity<UserEntity>()
+            .HasIndex(u => u.UserName).IsUnique();
+
+        builder.Entity<UserEntity>()
+            .HasIndex(u => u.Email).IsUnique();
+
+        // ── User Follows (self-referencing many-to-many) ────
+        builder.Entity<UserFollowEntity>()
+            .HasKey(uf => new { uf.FollowerId, uf.FollowingId });
+
+        builder.Entity<UserFollowEntity>()
+            .HasOne(uf => uf.Follower)
+            .WithMany(u => u.Following)
+            .HasForeignKey(uf => uf.FollowerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<UserFollowEntity>()
+            .HasOne(uf => uf.Following)
+            .WithMany(u => u.Followers)
+            .HasForeignKey(uf => uf.FollowingId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // ── Video ───────────────────────────────────────────
+        builder.Entity<VideoEntity>()
+            .HasOne(v => v.Author)
+            .WithMany(u => u.Videos)
+            .HasForeignKey(v => v.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ── Comments ────────────────────────────────────────
+        builder.Entity<CommentEntity>()
+            .HasOne(c => c.Author)
+            .WithMany(u => u.Comments)
+            .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<CommentEntity>()
+            .HasOne(c => c.Video)
+            .WithMany(v => v.Comments)
+            .HasForeignKey(c => c.VideoId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        // ── Messages ────────────────────────────────────────
+        builder.Entity<MessageEntity>()
+            .HasOne(m => m.Sender)
+            .WithMany(u => u.SentMessages)
+            .HasForeignKey(m => m.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<MessageEntity>()
+            .HasOne(m => m.Receiver)
+            .WithMany(u => u.ReceivedMessages)
+            .HasForeignKey(m => m.ReceiverId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // ── Reports ─────────────────────────────────────────
+        builder.Entity<ReportEntity>()
+            .HasOne(r => r.Sender)
+            .WithMany()
+            .HasForeignKey(r => r.SenderId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<ReportEntity>()
+            .HasOne(r => r.Video)
+            .WithMany()
+            .HasForeignKey(r => r.VideoId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<ReportEntity>()
+            .HasOne(r => r.ReportedUser)
+            .WithMany()
+            .HasForeignKey(r => r.ReportedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        // ── HashTags (many-to-many) ──────────────────────────
+        builder.Entity<VideoHashTagEntity>()
+            .HasKey(vh => new { vh.VideoId, vh.HashTagId });
+
+        builder.Entity<VideoHashTagEntity>()
+            .HasOne(vh => vh.Video)
+            .WithMany(v => v.HashTags)
+            .HasForeignKey(vh => vh.VideoId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<VideoHashTagEntity>()
+            .HasOne(vh => vh.HashTag)
+            .WithMany(h => h.VideoHashTags)
+            .HasForeignKey(vh => vh.HashTagId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
-    
-    
-    
 }
