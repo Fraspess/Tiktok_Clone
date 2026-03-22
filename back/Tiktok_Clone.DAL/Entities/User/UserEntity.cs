@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Tiktok_Clone.DAL.Entities.Comment;
+using Tiktok_Clone.DAL.Entities.Like;
 using Tiktok_Clone.DAL.Entities.Message;
 using Tiktok_Clone.DAL.Entities.Video;
 
@@ -20,4 +21,6 @@ public class UserEntity : IdentityUser
 
 
     public ICollection<CommentEntity> Comments { get; set; } = new List<CommentEntity>();
+
+    public ICollection<LikeEntity> Likes { get; set; } = new List<LikeEntity>();
 }   
