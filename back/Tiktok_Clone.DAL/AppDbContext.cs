@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tiktok_Clone.DAL.Entities.Comment;
 using Tiktok_Clone.DAL.Entities.HashTags;
+using Tiktok_Clone.DAL.Entities.Like;
 using Tiktok_Clone.DAL.Entities.Message;
 using Tiktok_Clone.DAL.Entities.Report;
 using Tiktok_Clone.DAL.Entities.User;
@@ -20,6 +21,8 @@ public class AppDbContext : IdentityDbContext<UserEntity>
     public DbSet<UserFollowEntity> UserFollows { get; set; }
     public DbSet<VideoHashTagEntity> VideoHashTags { get; set; }
     public DbSet<HashTagEntity> HashTags { get; set; }
+
+    public DbSet<LikeEntity> Likes { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -115,5 +118,23 @@ public class AppDbContext : IdentityDbContext<UserEntity>
             .WithMany(h => h.VideoHashTags)
             .HasForeignKey(vh => vh.HashTagId)
             .OnDelete(DeleteBehavior.Cascade);
+
+
+        // ── Likes (many-to-many) ─────────────────────────────
+        builder.Entity<LikeEntity>()
+            .HasOne(l => l.User)
+            .WithMany(u => u.Likes)
+            .HasForeignKey(l => l.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<LikeEntity>()
+            .HasOne(l => l.Video)
+            .WithMany(v => v.Likes)
+            .HasForeignKey(l => l.VideoId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<LikeEntity>()
+            .HasIndex(l => new { l.UserId, l.VideoId })
+            .IsUnique();
     }
 }
