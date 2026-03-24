@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Text;
 using Tiktok_Clone.DAL.Entities.Comment;
 using Tiktok_Clone.DAL.Entities.HashTags;
+using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Like;
-using Tiktok_Clone.DAL.Entities.User;
 
 namespace Tiktok_Clone.DAL.Entities.Video
 {
-    public class VideoEntity : BaseEntity<String>
+    public class VideoEntity : BaseEntity<Guid>
     {
-        public override String Id { get; set; } = Guid.NewGuid().ToString();
+        public override Guid Id { get; set; } = Guid.NewGuid();
 
         public required String Name { get; set; }
 
         public required String Description { get; set; }
 
-        public required String UserId { get; set; }
+        public required Guid UserId { get; set; }
 
         public UserEntity? Author { get; set; }
 
