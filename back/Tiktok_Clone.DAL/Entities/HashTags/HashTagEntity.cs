@@ -5,9 +5,9 @@ using Tiktok_Clone.DAL.Entities.Video;
 
 namespace Tiktok_Clone.DAL.Entities.HashTags
 {
-    public class HashTagEntity : BaseEntity<Guid>
+    public class HashTagEntity : BaseEntity<String>
     {
-        public override Guid Id { get; set; } = Guid.NewGuid();
+        public override String Id { get; set; } = Guid.NewGuid().ToString();
         public required String Tag { get; set; }
         public ICollection<VideoHashTagEntity> VideoHashTags { get; set; } = new List<VideoHashTagEntity>();
 

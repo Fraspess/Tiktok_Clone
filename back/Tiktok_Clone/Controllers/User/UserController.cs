@@ -5,12 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Dtos.User;
 using Tiktok_Clone.BLL.Services.User;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Tiktok_Clone.DAL.Entities.Identity;
-using Tiktok_Clone.DAL.Entities.Video;
+using Tiktok_Clone.DAL.Entities.User;
 
+namespace Tiktok_Clone.Controllers.User;
 [ApiController]
 [Route("api/[controller]")]
 public class UserController : ControllerBase

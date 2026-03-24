@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tiktok_Clone.DAL.Entities.Identity;
+using Tiktok_Clone.DAL.Entities.User;
 
 namespace Tiktok_Clone.DAL.Entities.Message
 {
-    public class MessageEntity : BaseEntity<Guid>
+    public class MessageEntity : BaseEntity<String>
     {
-        public override Guid Id { get; set; } = Guid.NewGuid();
+        public override String Id { get; set; } = Guid.NewGuid().ToString();
 
-        public required Guid SenderId { get; set; }
+        public required String SenderId { get; set; }
         public UserEntity Sender { get; set; } = null!;
 
-        public required Guid ReceiverId { get; set; }
+        public required String ReceiverId { get; set; }
         public UserEntity Receiver { get; set; } = null!;
 
         public required String Text { get; set; }

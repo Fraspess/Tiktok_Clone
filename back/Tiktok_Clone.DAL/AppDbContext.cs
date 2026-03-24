@@ -1,27 +1,16 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 using Tiktok_Clone.DAL.Entities.Comment;
 using Tiktok_Clone.DAL.Entities.HashTags;
-using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Like;
 using Tiktok_Clone.DAL.Entities.Message;
 using Tiktok_Clone.DAL.Entities.Report;
+using Tiktok_Clone.DAL.Entities.User;
 using Tiktok_Clone.DAL.Entities.Video;
 
 namespace Tiktok_Clone.DAL;
 
-public class AppDbContext : IdentityDbContext<
-    UserEntity,
-    RoleEntity,
-    Guid,
-    IdentityUserClaim<Guid>,
-    UserRoleEntity,
-    IdentityUserLogin<Guid>,
-    IdentityRoleClaim<Guid>,
-    IdentityUserToken<Guid>
-    >
+public class AppDbContext : IdentityDbContext<UserEntity>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -147,19 +136,5 @@ public class AppDbContext : IdentityDbContext<
         builder.Entity<LikeEntity>()
             .HasIndex(l => new { l.UserId, l.VideoId })
             .IsUnique();
-
-
-        // user to roles
-        builder.Entity<UserRoleEntity>(ur =>
-        {
-            ur.HasOne(ur => ur.Role)
-                .WithMany(r => r.UserRoles)
-                .HasForeignKey(r => r.RoleId)
-                .IsRequired();
-            ur.HasOne(ur => ur.User)
-                .WithMany(r => r.UserRoles)
-                .HasForeignKey(u => u.UserId)
-                .IsRequired();
-        });
     }
 }

@@ -4,23 +4,15 @@ using Tiktok_Clone.DAL.Entities.Like;
 using Tiktok_Clone.DAL.Entities.Message;
 using Tiktok_Clone.DAL.Entities.Video;
 
-namespace Tiktok_Clone.DAL.Entities.Identity;
+namespace Tiktok_Clone.DAL.Entities.User;
 
-public class UserEntity : IdentityUser<Guid>
+public class UserEntity : IdentityUser
 {
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public String? LastName { get; set; }
-
-    public String? FirstName { get; set; }
-
-    public String? Description { get; set; }
-
-    public String? Avatar { get; set; }
-
     public ICollection<VideoEntity> Videos { get; set; } = new List<VideoEntity>();
 
-    public ICollection<UserFollowEntity> Following { get; set; } = new List<UserFollowEntity>();
+    public ICollection <UserFollowEntity> Following { get; set; } = new List<UserFollowEntity>();
 
     public ICollection<UserFollowEntity> Followers { get; set; } = new List<UserFollowEntity>();
 
@@ -31,6 +23,4 @@ public class UserEntity : IdentityUser<Guid>
     public ICollection<CommentEntity> Comments { get; set; } = new List<CommentEntity>();
 
     public ICollection<LikeEntity> Likes { get; set; } = new List<LikeEntity>();
-
-    public virtual ICollection<UserRoleEntity>? UserRoles { get; set; }
-}
+}   
