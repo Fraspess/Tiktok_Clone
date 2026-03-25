@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Tiktok_Clone.BLL.Dtos.User;
-using Tiktok_Clone.DAL.Entities.User;
+using Tiktok_Clone.DAL.Entities.Identity;
 
 namespace Tiktok_Clone.BLL.MapperProfiles.User;
 
