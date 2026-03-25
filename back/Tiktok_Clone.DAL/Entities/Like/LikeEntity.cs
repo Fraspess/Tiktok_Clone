@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Tiktok_Clone.DAL.Entities.Identity;
+using Tiktok_Clone.DAL.Entities.User;
 using Tiktok_Clone.DAL.Entities.Video;
 
 namespace Tiktok_Clone.DAL.Entities.Like
 {
-    public class LikeEntity : BaseEntity<Guid>
+    public class LikeEntity : BaseEntity<String>
     {
-        public override Guid Id { get; set; } = Guid.NewGuid();
-        public required Guid UserId { get; set; }
-        public required Guid VideoId { get; set; }
+        public override String Id { get; set; } = Guid.NewGuid().ToString();
+        public required String UserId { get; set; }
+        public required String VideoId { get; set; }
 
         public UserEntity? User { get; set; }
 

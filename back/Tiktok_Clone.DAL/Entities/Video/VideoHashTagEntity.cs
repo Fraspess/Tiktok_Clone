@@ -7,10 +7,10 @@ namespace Tiktok_Clone.DAL.Entities.Video
 {
     public class VideoHashTagEntity
     {
-        public Guid VideoId { get; set; }
+        public string VideoId { get; set; } = string.Empty;
         public VideoEntity Video { get; set; } = null!;
 
-        public Guid HashTagId { get; set; }
+        public string HashTagId { get; set; } = string.Empty;
         public HashTagEntity HashTag { get; set; } = null!;
     }
 }

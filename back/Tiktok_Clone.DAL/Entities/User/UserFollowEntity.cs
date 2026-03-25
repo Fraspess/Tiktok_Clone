@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Tiktok_Clone.DAL.Entities.Identity
+namespace Tiktok_Clone.DAL.Entities.User
 {
     public class UserFollowEntity
     {
-        public Guid FollowerId { get; set; }
+        public String FollowerId { get; set; } = null!;
         public UserEntity Follower { get; set; } = null!;
 
-        public Guid FollowingId { get; set; }
+        public String FollowingId { get; set; } = null!;
         public UserEntity Following { get; set; } = null!;
 
         public DateTime FollowedAt { get; set; } = DateTime.UtcNow;

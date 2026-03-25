@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tiktok_Clone.DAL;
@@ -11,9 +12,11 @@ using Tiktok_Clone.DAL;
 namespace Tiktok_Clone.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260319164619_Connect-All-Relationships")]
+    partial class ConnectAllRelationships
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -198,32 +201,6 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("HashTags");
-                });
-
-            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Like.LikeEntity", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("VideoId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VideoId");
-
-                    b.HasIndex("UserId", "VideoId")
-                        .IsUnique();
-
-                    b.ToTable("Likes");
                 });
 
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Message.MessageEntity", b =>
@@ -491,25 +468,6 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Navigation("Video");
                 });
 
-            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Like.LikeEntity", b =>
-                {
-                    b.HasOne("Tiktok_Clone.DAL.Entities.User.UserEntity", "User")
-                        .WithMany("Likes")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Tiktok_Clone.DAL.Entities.Video.VideoEntity", "Video")
-                        .WithMany("Likes")
-                        .HasForeignKey("VideoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-
-                    b.Navigation("Video");
-                });
-
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Message.MessageEntity", b =>
                 {
                     b.HasOne("Tiktok_Clone.DAL.Entities.User.UserEntity", "Receiver")
@@ -616,8 +574,6 @@ namespace Tiktok_Clone.DAL.Migrations
 
                     b.Navigation("Following");
 
-                    b.Navigation("Likes");
-
                     b.Navigation("ReceivedMessages");
 
                     b.Navigation("SentMessages");
@@ -630,8 +586,6 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("HashTags");
-
-                    b.Navigation("Likes");
                 });
 #pragma warning restore 612, 618
         }
