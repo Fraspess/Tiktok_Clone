@@ -9,47 +9,30 @@ using Tiktok_Clone.BLL.Services.User;
 using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
 
+var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .CreateBootstrapLogger();
-
-try
+builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    var builder = WebApplication.CreateBuilder(args);
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
-    builder.Host.UseSerilog((context, services, configuration) => configuration
-        .ReadFrom.Configuration(context.Configuration)
-        .ReadFrom.Services(services)
-    );
+builder.Services.AddIdentity<UserEntity, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
-    builder.Services.AddDbContext<AppDbContext>(options =>
-    {
-        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
-    });
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.LicenseKey = builder.Configuration.GetConnectionString("AutoMapper");
+}, AppDomain.CurrentDomain.GetAssemblies());
 
-    builder.Services.AddIdentity<UserEntity, RoleEntity>(options =>
-    {
-        options.Password.RequiredLength = 6;
-        options.Password.RequireDigit = false;
-        options.Password.RequireLowercase = false;
-        options.Password.RequireUppercase = false;
-        options.Password.RequireNonAlphanumeric = false;
-        options.User.RequireUniqueEmail = true;
-    })
-        .AddEntityFrameworkStores<AppDbContext>()
-        .AddDefaultTokenProviders();
+// Add services to the container.
 
-    builder.Services.AddAutoMapper(cfg =>
-    {
-        cfg.LicenseKey = builder.Configuration.GetConnectionString("AutoMapper");
-    }, AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddControllers();
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
 
-    // Add services to the container.
-
-    builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
@@ -57,46 +40,27 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IImageService, ImageService>();
 
-    var app = builder.Build();
+var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "Tiktok-Clone");
-        });
-    }
-
-    app.UseHttpsRedirection();
-
-    app.UseSerilogRequestLogging();
-    app.UseAuthorization();
-
-    app.MapControllers();
-
-    using var scope = app.Services.CreateScope();
-    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.Migrate();
-
-    try
-    {
-        await app.SeedDataAsync();
-    }
-    catch (Exception ex)
-    {
-        Log.Error(ex, "An error occurred while seeding the database");
-    }
-
-    app.Run();
-
-}
-catch (Exception ex)
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
 {
-    Log.Fatal(ex, "Application failed to start");
+    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/openapi/v1.json", "Tiktok-Clone");
+    });
 }
-finally
-{
-    Log.CloseAndFlush();
-}
+    
+app.UseHttpsRedirection();
+
+app.UseAuthorization();
+
+app.MapControllers();
+
+using var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+context.Database.Migrate();
+
+app.Run();
