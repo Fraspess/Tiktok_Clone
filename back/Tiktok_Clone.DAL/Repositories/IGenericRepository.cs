@@ -8,7 +8,7 @@ public interface IGenericRepository<TEntity, TId>
 {
     Task CreateAsync(TEntity entity);
     Task UpdateAsync(TEntity entity);
-    Task DeleteAsync(TEntity id);
-    Task<TEntity?> GetByIdAsync(TId id);
+    Task DeleteAsync(TId id);
+    Task<TEntity> GetByIdAsync(TId id);
     IQueryable<TEntity> GetAll();
 }

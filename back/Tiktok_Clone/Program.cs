@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Tiktok_Clone.BLL.Services.Comment;
-using Tiktok_Clone.BLL.Services.HashTag;
-using Tiktok_Clone.BLL.Services.Message;
-using Tiktok_Clone.BLL.Services.Report;
+using Serilog;
+using Serilog.Events;
+using Tiktok_Clone.BLL.Seeder;
+using Tiktok_Clone.BLL.Services.Images;
+using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.User;
-using Tiktok_Clone.BLL.Services.Video;
 using Tiktok_Clone.DAL;
-using Tiktok_Clone.DAL.Entities.User;
-using Tiktok_Clone.DAL.Repositories;
+using Tiktok_Clone.DAL.Entities.Identity;
 
 
 Log.Logger = new LoggerConfiguration()
@@ -52,14 +51,11 @@ try
 
     builder.Services.AddControllers();
 
-builder.Services.AddScoped(typeof(IGenericRepository<,>), typeof(GenericRepository<,>));
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IVideoService, VideoService>();
-builder.Services.AddScoped<IMessageService, MessageService>();
-builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IReportService, ReportService>();
-builder.Services.AddScoped<IHashTagService, HashTagService>();
+    builder.Services.AddScoped<IUserService, UserService>();
+    builder.Services.AddScoped<IImageService, ImageService>();
 
     var app = builder.Build();
 
