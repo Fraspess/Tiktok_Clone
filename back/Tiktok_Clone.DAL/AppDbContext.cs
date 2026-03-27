@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 using Tiktok_Clone.DAL.Entities.Comment;
 using Tiktok_Clone.DAL.Entities.HashTags;
 using Tiktok_Clone.DAL.Entities.Identity;
@@ -74,6 +73,12 @@ public class AppDbContext : IdentityDbContext<
             .HasOne(c => c.Author)
             .WithMany(u => u.Comments)
             .HasForeignKey(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.Entity<CommentEntity>()
+            .HasOne(c => c.ParentComment)
+            .WithMany(c => c.Replies)
+            .HasForeignKey(c => c.ParentCommentId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<CommentEntity>()

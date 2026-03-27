@@ -18,6 +18,8 @@ public class UserEntity : IdentityUser<Guid>
 
     public String? Avatar { get; set; }
 
+    public int RefreshTokenVersion { get; set; }
+
     public ICollection<VideoEntity> Videos { get; set; } = new List<VideoEntity>();
 
     public ICollection<UserFollowEntity> Following { get; set; } = new List<UserFollowEntity>();
