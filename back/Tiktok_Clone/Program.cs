@@ -1,3 +1,5 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +9,7 @@ using Serilog;
 using Serilog.Events;
 using System.Text;
 using Tiktok_Clone.BLL;
+using Tiktok_Clone.BLL.Behaviors;
 using Tiktok_Clone.BLL.Seeder;
 using Tiktok_Clone.BLL.Services.Images;
 using Tiktok_Clone.BLL.Services.ImageService;
@@ -92,13 +95,19 @@ try
 
     // Add services to the container.
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+        .ConfigureApiBehaviorOptions(opt =>
+        {
+            opt.SuppressModelStateInvalidFilter = true;
+        });
+
 
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IImageService, ImageService>();
     builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
 
-
+    builder.Services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
+    builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
     builder.Services.AddMediatR(opt =>
     {
