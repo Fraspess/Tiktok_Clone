@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Tiktok_Clone.DAL.Entities.Identity;
+﻿using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Video;
 
 namespace Tiktok_Clone.DAL.Entities.Comment
@@ -19,5 +16,10 @@ namespace Tiktok_Clone.DAL.Entities.Comment
         public required Guid VideoId { get; set; }
 
         public VideoEntity? Video { get; set; }
+
+        public Guid? ParentCommentId { get; set; }
+        public CommentEntity? ParentComment { get; set; }
+
+        public ICollection<CommentEntity> Replies { get; set; } = new List<CommentEntity>();
     }
 }

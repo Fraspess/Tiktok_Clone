@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
-using Tiktok_Clone.BLL.Dtos.Role;
+using Tiktok_Clone.BLL.Constants;
 using Tiktok_Clone.BLL.Dtos.User;
 using Tiktok_Clone.BLL.Services.ImageService;
-using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
 
 namespace Tiktok_Clone.BLL.Seeder
@@ -20,47 +18,43 @@ namespace Tiktok_Clone.BLL.Seeder
         public static async Task SeedDataAsync(this WebApplication webApplication)
         {
             using var scope = webApplication.Services.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<RoleEntity>>();
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
             var environment = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
             var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
 
-            context.Database.Migrate();
 
-            await SeedRolesAsync(roleManager, environment);
+            await SeedRolesAsync(roleManager);
             await SeedUsersAsync(userManager, imageService, environment);
         }
 
-        public static async Task SeedRolesAsync(RoleManager<RoleEntity> roleManager, IWebHostEnvironment environment)
+        public static async Task SeedRolesAsync(RoleManager<RoleEntity> roleManager)
         {
             if (!roleManager.Roles.Any())
             {
-                var json = File.ReadAllText(Path.Combine(environment.ContentRootPath, "Helpers", "Roles.json"));
-                var roles = JsonConvert.DeserializeObject<List<SeedRoleDTO>>(json);
-
-                if (roles == null)
+                var roles = new List<string>()
                 {
-                    Log.Error("Failed to get roles from json file to seed databse");
-                    return;
-                }
+                    RoleNames.USER_ROLE,
+                    RoleNames.ADMIN_ROLE,
+                    RoleNames.SUPER_ADMIN_ROLE
+                };
                 foreach (var role in roles)
                 {
                     var newRole = new RoleEntity()
                     {
-                        Name = role.Name
+                        Name = role
                     };
 
                     var result = await roleManager.CreateAsync(newRole);
 
                     if (result.Succeeded)
                     {
-                        Log.Information("Role {RoleName} seeded successfully", role.Name);
+                        Log.Information("Role {RoleName} seeded successfully", role);
                     }
                     else
                     {
                         Log.Error("Failed to seed role {RoleName}. Errors : {Errors}",
-                            role.Name,
+                            role,
                             string.Join(", ", result.Errors.Select(e => e.Description)));
                     }
                 }
@@ -76,7 +70,7 @@ namespace Tiktok_Clone.BLL.Seeder
 
             if (!userManager.Users.Any())
             {
-                var json = File.ReadAllText(Path.Combine(environment.ContentRootPath, "Helpers", "Users.json"));
+                var json = await File.ReadAllTextAsync(Path.Combine(environment.ContentRootPath, "Helpers", "Users.json"));
                 var users = JsonConvert.DeserializeObject<List<SeedUserDTO>>(json);
 
                 if (users == null)

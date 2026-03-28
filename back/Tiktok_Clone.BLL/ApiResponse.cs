@@ -20,4 +20,11 @@ public class ApiResponse<T>
         Message = message,
         Errors = errors,
     };
+
+    public static ApiResponse<T> Error(string error, string? message = null) => new()
+    {
+        IsSuccess = false,
+        Message = message,
+        Errors = [error]
+    };
 }

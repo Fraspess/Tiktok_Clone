@@ -119,6 +119,9 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("ParentCommentId")
+                        .HasColumnType("uuid");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text");
@@ -130,6 +133,8 @@ namespace Tiktok_Clone.DAL.Migrations
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentCommentId");
 
                     b.HasIndex("UserId");
 
@@ -240,6 +245,9 @@ namespace Tiktok_Clone.DAL.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<int>("RefreshTokenVersion")
+                        .HasColumnType("integer");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
@@ -468,6 +476,11 @@ namespace Tiktok_Clone.DAL.Migrations
 
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Comment.CommentEntity", b =>
                 {
+                    b.HasOne("Tiktok_Clone.DAL.Entities.Comment.CommentEntity", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentCommentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "Author")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
@@ -481,6 +494,8 @@ namespace Tiktok_Clone.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+
+                    b.Navigation("ParentComment");
 
                     b.Navigation("Video");
                 });
@@ -616,6 +631,11 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Navigation("HashTag");
 
                     b.Navigation("Video");
+                });
+
+            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Comment.CommentEntity", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.HashTags.HashTagEntity", b =>

@@ -1,4 +1,5 @@
-﻿using SixLabors.ImageSharp;
+﻿using Tiktok_Clone.BLL;
+using Tiktok_Clone.BLL.Exceptions;
 
 namespace Tiktok_Clone.Middleware
 {
@@ -19,15 +20,23 @@ namespace Tiktok_Clone.Middleware
             {
                 await _next(context);
             }
-            catch (UnknownImageFormatException ex)
+            catch (ValidationException ex)
             {
-                _logger.LogWarning("Invalid image format : {error} ", ex.Message);
-
+                _logger.LogWarning("Помилка валідації: {error} ", ex.Message);
+                context.Response.StatusCode = 400;
+                await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
+            }
+            catch (UnauthorizedException ex)
+            {
+                _logger.LogWarning("Не авторизований : {error} ", ex.Message);
+                context.Response.StatusCode = 401;
+                await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
             }
             catch (Exception ex)
             {
-                _logger.LogError("An unhandled exception occurred : {error} ", ex.Message);
-
+                _logger.LogError("Ну вот як так, непонятна помилка : {error} ", ex.Message);
+                context.Response.StatusCode = 500;
+                await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error("Внутрішня помилка сервера"));
             }
         }
     }

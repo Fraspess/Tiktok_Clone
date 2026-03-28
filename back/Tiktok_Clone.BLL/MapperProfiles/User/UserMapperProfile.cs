@@ -11,5 +11,9 @@ public class UserMapperProfile : Profile
         CreateMap<CreateUserDTO, UserEntity>();
 
         CreateMap<UserEntity, UserDTO>();
+
+
+        CreateMap<RegisterUserDTO, UserEntity>()
+            .ForMember(dest => dest.Avatar, opt => opt.Ignore());
     }
 }
