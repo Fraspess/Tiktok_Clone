@@ -10,4 +10,6 @@ public interface IUserService
     Task<TokenResponseDTO> Register(RegisterUserDTO dto);
 
     Task<UserDTO> GetCurrentUserAsync(string userId);
+
+    Task UpdateTokenVersion(string userId);
 }

@@ -16,6 +16,7 @@ using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.Middleware;
 
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -50,7 +51,7 @@ try
                 ValidAudience = builder.Configuration["Jwt:Audience"],
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!
-                    ))
+                    )),
             };
 
             options.Events = new JwtBearerEvents

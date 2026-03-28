@@ -3,7 +3,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using Tiktok_Clone.BLL.Dtos.Token;
+using Tiktok_Clone.BLL.Exceptions;
 using Tiktok_Clone.DAL.Entities.Identity;
 
 namespace Tiktok_Clone.BLL.Services.Token
@@ -29,6 +31,50 @@ namespace Tiktok_Clone.BLL.Services.Token
                 RefreshToken = await CreateRefreshTokenAsync(user)
             };
         }
+
+        public async Task<TokenResponseDTO> RefreshTokensAsync(string refreshToken)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = _issuer,
+                ValidAudience = _audience,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(_key
+                    )),
+            };
+
+            ClaimsPrincipal principal;
+            try
+            {
+                principal = tokenHandler.ValidateToken(refreshToken, validationParameters, out _);
+            }
+            catch (Exception ex)
+            {
+                throw new UnauthorizedException("Не валідний refresh токен");
+            }
+
+            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                ?? throw new UnauthorizedException("Не валідний refresh токен");
+
+            var tokenVersion = principal.FindFirst("Version")?.Value
+                ?? throw new UnauthorizedException("Не валідний refresh токен");
+
+            var user = userManager.Users.FirstOrDefault(u => u.Id.ToString() == userId)
+                ?? throw new UnauthorizedException("Користувача не знайдено");
+
+            if (user.RefreshTokenVersion != int.Parse(tokenVersion))
+            {
+                throw new UnauthorizedException("Не валідний refresh токен");
+            }
+
+            return await GenerateTokensAsync(user);
+        }
+
         private async Task<string> CreateAccessTokenAsync(UserEntity user)
         {
             var claims = new List<Claim>
@@ -90,6 +136,8 @@ namespace Tiktok_Clone.BLL.Services.Token
             var signingInKey = new SymmetricSecurityKey(keyBytes);
             return new SigningCredentials(signingInKey, SecurityAlgorithms.HmacSha256);
         }
+
+
 
     }
 }

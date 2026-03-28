@@ -91,4 +91,16 @@ public class UserService : IUserService
         }
         return _userMapper.Map<UserDTO>(user);
     }
+
+    public async Task UpdateTokenVersion(string userId)
+    {
+        var user = _userManager.Users.FirstOrDefault(u => u.Id.ToString() == userId)
+            ?? throw new UnauthorizedException("Користувач не знайдений");
+
+        var currentVersion = user.RefreshTokenVersion;
+        user.RefreshTokenVersion = currentVersion + 1;
+
+        await _userManager.UpdateAsync(user);
+
+    }
 }
