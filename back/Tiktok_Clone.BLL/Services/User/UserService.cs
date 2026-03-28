@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Tiktok_Clone.BLL.Constants;
 using Tiktok_Clone.BLL.Dtos.Token;
 using Tiktok_Clone.BLL.Dtos.User;
 using Tiktok_Clone.BLL.Exceptions;
+using Tiktok_Clone.BLL.Services.Email;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Token;
 using Tiktok_Clone.DAL.Entities.Identity;
@@ -19,14 +21,23 @@ public class UserService : IUserService
     private readonly IJWTTokenService _jwtTokenService;
     private readonly ILogger<UserService> _logger;
     private readonly IImageService _imageService;
+    private readonly IConfiguration _configuration;
+    private readonly IEmailService _emailService;
 
-    public UserService(UserManager<UserEntity> userManager, IMapper userMapper, IJWTTokenService tokenService, ILogger<UserService> logger, IImageService imageService)
+    public UserService(UserManager<UserEntity> userManager,
+        IMapper userMapper, IJWTTokenService tokenService,
+        ILogger<UserService> logger,
+        IImageService imageService,
+        IConfiguration configuration,
+        IEmailService emailService)
     {
         _userManager = userManager;
         _userMapper = userMapper;
         _jwtTokenService = tokenService;
         _logger = logger;
         _imageService = imageService;
+        _configuration = configuration;
+        _emailService = emailService;
     }
 
 
@@ -102,5 +113,20 @@ public class UserService : IUserService
 
         await _userManager.UpdateAsync(user);
 
+    }
+
+    public async Task ForgotPasswordAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user is null)
+        {
+            throw new UnauthorizedException("Користувач не знайдений");
+        }
+        var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+        string resetLink = $"{_configuration["Frontend:Url"]}/reset-password?token={Uri.EscapeDataString(token)}&email={email}";
+        var body = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Templates", "ResetPassword.html"));
+        body = body.Replace("{resetLink}", resetLink);
+
+        await _emailService.SendEmailAsync(email, "Скидання пароля", body);
     }
 }

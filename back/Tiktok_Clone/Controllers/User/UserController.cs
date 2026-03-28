@@ -84,6 +84,14 @@ public class UserController(IMediator _mediator) : ControllerBase
         return Ok(ApiResponse<object>.Success(null!, "Успішний вихід з усіх пристроїв"));
     }
 
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordCommand forgotPasswordCommand)
+    {
+        await _mediator.Send(forgotPasswordCommand);
+        return Ok(ApiResponse<object>.Success(null!, "Перевірте вашу почту"));
+    }
+
+
 
     private void AppendRefreshTokenCookie(string refreshToken)
     {

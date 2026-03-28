@@ -11,10 +11,12 @@ using System.Text;
 using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Behaviors;
 using Tiktok_Clone.BLL.Seeder;
+using Tiktok_Clone.BLL.Services.Email;
 using Tiktok_Clone.BLL.Services.Images;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Token;
 using Tiktok_Clone.BLL.Services.User;
+using Tiktok_Clone.BLL.Settings;
 using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.Middleware;
@@ -87,6 +89,10 @@ try
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+    builder.Services.Configure<DataProtectionTokenProviderOptions>(opt =>
+    {
+        opt.TokenLifespan = TimeSpan.FromMinutes(30);
+    });
 
     builder.Services.AddAutoMapper(cfg =>
     {
@@ -105,9 +111,13 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IImageService, ImageService>();
     builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
+    builder.Services.AddScoped<IEmailService, EmailService>();
 
     builder.Services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
     builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+    builder.Services.Configure<EmailSettings>(
+        builder.Configuration.GetSection("SMTP"));
 
     builder.Services.AddMediatR(opt =>
     {

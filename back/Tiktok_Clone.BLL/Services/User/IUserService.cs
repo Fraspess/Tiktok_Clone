@@ -12,4 +12,6 @@ public interface IUserService
     Task<UserDTO> GetCurrentUserAsync(string userId);
 
     Task UpdateTokenVersion(string userId);
+
+    Task ForgotPasswordAsync(string email);
 }
