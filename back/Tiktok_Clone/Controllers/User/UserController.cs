@@ -39,7 +39,8 @@ public class UserController(IMediator _mediator) : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+            ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
 
         var result = await _mediator.Send(new GetCurrentUserQuery(userId!));
         return Ok(ApiResponse<UserDTO>.Success(result));
@@ -76,6 +77,8 @@ public class UserController(IMediator _mediator) : ControllerBase
     {
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
             ?? throw new UnauthorizedException("User ID не знайдений");
+
+        await _mediator.Send(new LogOutOnAllDevicesCommand(userId));
 
         DeleteRefreshTokenCookie();
         return Ok(ApiResponse<object>.Success(null!, "Успішний вихід з усіх пристроїв"));
