@@ -16,10 +16,15 @@ using Tiktok_Clone.BLL.Services.Images;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Token;
 using Tiktok_Clone.BLL.Services.User;
+using Tiktok_Clone.BLL.Services.Video;
 using Tiktok_Clone.BLL.Settings;
 using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
+using Tiktok_Clone.DAL.Repositories.HashTag;
+using Tiktok_Clone.DAL.Repositories.HashTags;
+using Tiktok_Clone.DAL.Repositories.Video;
 using Tiktok_Clone.Middleware;
+using Xabe.FFmpeg;
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 
@@ -109,11 +114,14 @@ try
             opt.SuppressModelStateInvalidFilter = true;
         });
 
+    builder.Services.AddScoped<IVideoRepository, VideoRepository>();
+    builder.Services.AddScoped<IHashTagRepository, HashTagRepository>();
 
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IImageService, ImageService>();
     builder.Services.AddScoped<IJWTTokenService, JWTTokenService>();
     builder.Services.AddScoped<IEmailService, EmailService>();
+    builder.Services.AddScoped<IVideoService, VideoService>();
 
     builder.Services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
     builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -177,6 +185,7 @@ try
         Log.Error(ex, "An error occurred while seeding the database");
     }
 
+    FFmpeg.SetExecutablesPath(builder.Configuration["FFmpeg:Path"]);
     app.Run();
 
 }

@@ -12,7 +12,7 @@ using Tiktok_Clone.BLL.Exceptions;
 using Tiktok_Clone.BLL.Queries.User;
 
 [ApiController]
-[Route("api/user")]
+[Route("api/users")]
 public class UserController(IMediator _mediator) : ControllerBase
 {
     [HttpPost("login")]

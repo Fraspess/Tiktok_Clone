@@ -53,7 +53,7 @@ namespace Tiktok_Clone.BLL.Services.Token
             {
                 principal = tokenHandler.ValidateToken(refreshToken, validationParameters, out _);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw new UnauthorizedException("Не валідний refresh токен");
             }

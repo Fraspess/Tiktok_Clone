@@ -12,7 +12,7 @@ using Tiktok_Clone.DAL;
 namespace Tiktok_Clone.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260327191650_init")]
+    [Migration("20260329182105_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -412,12 +412,12 @@ namespace Tiktok_Clone.DAL.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("VideoFileName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 

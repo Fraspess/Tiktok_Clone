@@ -52,17 +52,17 @@ public class UserService : IUserService
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == dto.Login || u.Email == dto.Login);
         if (user == null)
         {
-            throw new UnauthorizedException("Невірний логін або пароль");
+            throw new ValidationException("Невірний логін або пароль");
         }
 
         var checkPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
         if (!checkPassword)
         {
-            throw new UnauthorizedException("Невірний логін або пароль");
+            throw new ValidationException("Невірний логін або пароль");
         }
         if (user.EmailConfirmed == false)
         {
-            throw new UnauthorizedException("Підтвердіть свою електронну пошту. Перевірте свою почтову скриньку");
+            throw new ValidationException("Підтвердіть свою електронну пошту. Перевірте свою почтову скриньку");
         }
         return await _jwtTokenService.GenerateTokensAsync(user);
     }
