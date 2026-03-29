@@ -2,6 +2,6 @@
 {
     public class SeedRoleDTO
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = String.Empty;
     }
 }

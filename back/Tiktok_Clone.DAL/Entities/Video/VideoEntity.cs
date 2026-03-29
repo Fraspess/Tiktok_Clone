@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Tiktok_Clone.DAL.Entities.Comment;
-using Tiktok_Clone.DAL.Entities.HashTags;
+﻿using Tiktok_Clone.DAL.Entities.Comment;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Like;
 
@@ -12,9 +8,9 @@ namespace Tiktok_Clone.DAL.Entities.Video
     {
         public override Guid Id { get; set; } = Guid.NewGuid();
 
-        public required String Name { get; set; }
-
         public required String Description { get; set; }
+
+        public required String VideoFileName { get; set; }
 
         public required Guid UserId { get; set; }
 
