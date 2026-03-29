@@ -41,6 +41,12 @@ public class UserService : IUserService
     }
 
 
+    private string GetHtmlTemplate(string templateName)
+    {
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "Templates", templateName);
+        return File.ReadAllText(path);
+    }
+
     public async Task<TokenResponseDTO> Login(LoginUserDTO dto)
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == dto.Login || u.Email == dto.Login);
@@ -54,10 +60,14 @@ public class UserService : IUserService
         {
             throw new UnauthorizedException("Невірний логін або пароль");
         }
+        if (user.EmailConfirmed == false)
+        {
+            throw new UnauthorizedException("Підтвердіть свою електронну пошту. Перевірте свою почтову скриньку");
+        }
         return await _jwtTokenService.GenerateTokensAsync(user);
     }
 
-    public async Task<TokenResponseDTO> Register(RegisterUserDTO dto)
+    public async Task Register(RegisterUserDTO dto)
     {
         var isEmailTaken = await _userManager.FindByEmailAsync(dto.Email);
         if (isEmailTaken is not null)
@@ -83,7 +93,13 @@ public class UserService : IUserService
                 await _userManager.UpdateAsync(user);
             }
             await _userManager.AddToRoleAsync(user, RoleNames.USER_ROLE);
-            return await _jwtTokenService.GenerateTokensAsync(user);
+
+            // токен є 6 значним числом, настроєно в program.cs 
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var body = GetHtmlTemplate("ConfirmEmail.html");
+            body = body.Replace("{confirmCode}", token);
+
+            await _emailService.SendEmailAsync(user.Email!, "Підтвердження реєстрації", body);
         }
         else
         {
@@ -123,10 +139,52 @@ public class UserService : IUserService
             throw new UnauthorizedException("Користувач не знайдений");
         }
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-        string resetLink = $"{_configuration["Frontend:Url"]}/reset-password?token={Uri.EscapeDataString(token)}&email={email}";
-        var body = File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Templates", "ResetPassword.html"));
+        string resetLink = $"{_configuration["Frontend:Url"]}/reset-password?token={token}&email={email}";
+        var body = GetHtmlTemplate("ResetPassword.html");
         body = body.Replace("{resetLink}", resetLink);
 
         await _emailService.SendEmailAsync(email, "Скидання пароля", body);
+    }
+
+    public async Task<TokenResponseDTO> ConfirmEmail(string email, string token)
+    {
+        var user = _userManager.Users.FirstOrDefault(u => u.Email == email)
+            ?? throw new UnauthorizedException("Користувач не знайдений");
+
+        if (user.EmailConfirmed == true)
+        {
+            throw new ValidationException("Пошта вже підтверджена");
+        }
+
+        var result = await _userManager.ConfirmEmailAsync(user, token);
+        if (result.Succeeded)
+        {
+            return await _jwtTokenService.GenerateTokensAsync(user);
+        }
+        else
+        {
+            _logger.LogWarning("Не вдалося підтвердити почту {email} того що : {error} ", email, string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw new ValidationException("Невірний токен підтвердження");
+        }
+    }
+
+    // Скидає пароль і міняє версію токен на + 1 щоб інші токени стали недійсними
+    public async Task ResetPasswordAsync(ResetPasswordDTO dto)
+    {
+        var user = _userManager.Users.FirstOrDefault(u => u.Email == dto.Email)
+            ?? throw new UnauthorizedException("Користувач не знайдений");
+
+        var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
+
+        if (result.Succeeded)
+        {
+            await UpdateTokenVersion(user.Id.ToString());
+
+        }
+        else
+        {
+            _logger.LogWarning("Не вдалося скинути пароль для {email} того що : {error} ", dto.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw new ValidationException("Невірний токен для скидання пароля");
+        }
     }
 }

@@ -7,11 +7,15 @@ public interface IUserService
 {
     Task<TokenResponseDTO> Login(LoginUserDTO dto);
 
-    Task<TokenResponseDTO> Register(RegisterUserDTO dto);
+    Task Register(RegisterUserDTO dto);
+
+    Task<TokenResponseDTO> ConfirmEmail(string email, string token);
 
     Task<UserDTO> GetCurrentUserAsync(string userId);
 
     Task UpdateTokenVersion(string userId);
 
     Task ForgotPasswordAsync(string email);
+
+    Task ResetPasswordAsync(ResetPasswordDTO dto);
 }

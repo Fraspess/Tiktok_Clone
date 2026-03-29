@@ -84,6 +84,8 @@ try
         options.Password.RequireUppercase = false;
         options.Password.RequireNonAlphanumeric = false;
         options.User.RequireUniqueEmail = true;
+
+        options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
     })
         .AddRoles<RoleEntity>()
         .AddEntityFrameworkStores<AppDbContext>()
