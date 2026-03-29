@@ -96,6 +96,8 @@ namespace Tiktok_Clone.BLL.Seeder
                         var resultR = await userManager.AddToRolesAsync(newUser, user.Roles!);
                         if (resultR.Succeeded)
                         {
+                            newUser.EmailConfirmed = true;
+                            await userManager.UpdateAsync(newUser);
                             Log.Information("User {UserName} seeded successfully", user.Username);
                         }
                         else

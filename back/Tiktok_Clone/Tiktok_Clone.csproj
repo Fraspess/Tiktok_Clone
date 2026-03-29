@@ -31,4 +31,10 @@
     <ProjectReference Include="..\Tiktok_Clone.DAL\Tiktok_Clone.DAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Templates\ResetPassword.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
