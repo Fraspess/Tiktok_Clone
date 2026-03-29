@@ -1,0 +1,21 @@
+# NuGet & build artifacts - these cause Windows path issues in Linux containers
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+
+# Local NuGet cache
+**/packages/
+**/.nuget/
+
+# Environment files 
+.env
+.env.*
+
+# Git
+.git/
+.gitignore
+
+# Logs
+**/*.log
+**/logs/
