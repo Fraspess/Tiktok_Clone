@@ -1,12 +1,9 @@
-
 # Stage 1: Build
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
 # Copy all .csproj files and restore
 COPY ["Tiktok_Clone/Tiktok_Clone.csproj", "Tiktok_Clone/"]
-COPY ["Tiktok_Clone.DAL/Tiktok_Clone.DAL.csproj", "Tiktok_Clone.DAL/"]
-COPY ["Tiktok_Clone.BLL/Tiktok_Clone.BLL.csproj", "Tiktok_Clone.BLL/"]
 
 RUN dotnet restore "Tiktok_Clone/Tiktok_Clone.csproj"
 
@@ -31,15 +28,5 @@ RUN apt-get update && \
 
 # Copy published output
 COPY --from=build /app/publish .
-
-# Non-root user for security
-RUN groupadd --system appgroup && \
-    useradd --system --gid appgroup --no-create-home appuser
-USER appuser
-
-ENV ASPNETCORE_ENVIRONMENT=Production
-ENV ASPNETCORE_URLS=http://+:8080
-
-EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "Tiktok_Clone.dll"]
