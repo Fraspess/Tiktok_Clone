@@ -11,21 +11,20 @@ namespace Tiktok_Clone.BLL.Behaviors
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             if (!validators.Any())
-            {
                 return await next();
-            }
 
             var context = new ValidationContext<TRequest>(request);
-            var failures = validators
-                .Select(v => v.Validate(context))
-                .SelectMany(result => result.Errors)
-                .Where(f => f != null)
-                .ToList();
+
+            var failures = new List<FluentValidation.Results.ValidationFailure>();
+
+            foreach (var validator in validators)
+            {
+                var result = await validator.ValidateAsync(context, cancellationToken);
+                failures.AddRange(result.Errors);
+            }
 
             if (failures.Any())
-            {
                 throw new ValidationException(failures.First().ErrorMessage);
-            }
 
             return await next();
         }

@@ -38,6 +38,8 @@ namespace Tiktok_Clone.Controllers.Video
         }
 
         [Authorize]
+        [RequestSizeLimit(287_000_000)]
+        [RequestFormLimits(MultipartBodyLengthLimit = 287_000_000)]
         [HttpPost]
         public async Task<IActionResult> UploadVideo([FromForm] CreateVideoDTO dto)
         {

@@ -96,11 +96,6 @@ namespace Tiktok_Clone.BLL.Services.Video
                 // отримуємо інформацію про відео(медіа) кине exception якщо не media
                 var mediaInfo = await FFmpeg.GetMediaInfo(inputPath);
 
-                if (!mediaInfo.VideoStreams.Any())
-                {
-                    throw new ValidationException("Файл не є відео");
-                }
-
                 var videoStream = mediaInfo.VideoStreams.FirstOrDefault()?.SetCodec(VideoCodec.h264);
                 var audioStream = mediaInfo.AudioStreams.FirstOrDefault()?.SetCodec(AudioCodec.aac);
 
@@ -122,9 +117,8 @@ namespace Tiktok_Clone.BLL.Services.Video
             {
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                _logger.LogError("Помилка при завантаженні відео {error}", ex.Message);
                 throw;
             }
             finally
