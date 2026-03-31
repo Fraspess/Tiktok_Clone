@@ -38,6 +38,16 @@ namespace Tiktok_Clone.Controllers.Video
         }
 
         [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteVideo(Guid id)
+        {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                 ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
+            await _mediator.Send(new DeleteVideoCommand(id, userId));
+            return Ok(ApiResponse<string>.Success("Відео успішно видалено"));
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> UploadVideo([FromForm] CreateVideoDTO dto)
         {

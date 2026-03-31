@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 using Tiktok_Clone.BLL.Dtos.Video;
 using Tiktok_Clone.BLL.Exceptions;
 using Tiktok_Clone.DAL.Entities.HashTags;
+using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Video;
 using Tiktok_Clone.DAL.Repositories.HashTags;
 using Tiktok_Clone.DAL.Repositories.Video;
@@ -18,8 +20,24 @@ namespace Tiktok_Clone.BLL.Services.Video
         public string CleanText { get; set; } = String.Empty;
         public List<string> Tags { get; set; } = new List<string>();
     }
-    public class VideoService(ILogger<VideoService> _logger, IVideoRepository _videoRepository, IHashTagRepository _hashTagRepository, IMapper _mapper) : IVideoService
+    public class VideoService(ILogger<VideoService> _logger, IVideoRepository _videoRepository, IHashTagRepository _hashTagRepository, IMapper _mapper, UserManager<UserEntity> _userManager) : IVideoService
     {
+        public async Task DeleteVideoById(Guid id, string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId)
+                ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
+
+            var video = await _videoRepository.GetByIdAsync(id)
+                ?? throw new NotFoundException("Відео не знайдено");
+
+            if (video.Author != user)
+            {
+                throw new NotAllowedException("Ви не маєте прав на цю дію");
+            }
+
+            await _videoRepository.DeleteAsync(video);
+        }
+
         public async Task<VideoDTO> GetVideoByIdAsync(Guid id)
         {
             return _mapper.Map<VideoDTO>(await _videoRepository.GetByIdAsync(id));

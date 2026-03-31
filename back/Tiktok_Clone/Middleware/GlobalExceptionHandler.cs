@@ -32,6 +32,18 @@ namespace Tiktok_Clone.Middleware
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
             }
+            catch (NotFoundException ex)
+            {
+                _logger.LogWarning("Не знайдено : {error} ", ex.Message);
+                context.Response.StatusCode = 404;
+                await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
+            }
+            catch (NotAllowedException ex)
+            {
+                _logger.LogWarning("Недостатньо прав : {error} ", ex.Message);
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
+            }
             catch (Exception ex)
             {
                 _logger.LogError("Ну вот як так, непонятна помилка : {error} ", ex.Message);

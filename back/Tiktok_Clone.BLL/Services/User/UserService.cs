@@ -62,7 +62,7 @@ public class UserService : IUserService
         }
         if (user.EmailConfirmed == false)
         {
-            throw new ValidationException("Підтвердіть свою електронну пошту. Перевірте свою почтову скриньку");
+            throw new NotAllowedException("Підтвердіть свою електронну пошту, щоб увійти");
         }
         return await _jwtTokenService.GenerateTokensAsync(user);
     }
