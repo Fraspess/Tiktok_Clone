@@ -7,5 +7,7 @@ namespace Tiktok_Clone.BLL.Services.Video
         Task<VideoDTO> UploadVideoAsync(CreateVideoDTO dto, string ownerId);
 
         Task<VideoDTO> GetVideoByIdAsync(Guid id);
+
+        Task DeleteVideoById(Guid id, string userId);
     }
 }
