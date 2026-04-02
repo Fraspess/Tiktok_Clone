@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using System.Text.RegularExpressions;
 using Tiktok_Clone.BLL.Dtos.Video;
 using Tiktok_Clone.BLL.Exceptions;
+using Tiktok_Clone.BLL.Extensions;
+using Tiktok_Clone.BLL.Pagination;
 using Tiktok_Clone.DAL.Entities.HashTags;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Video;
@@ -20,7 +22,7 @@ namespace Tiktok_Clone.BLL.Services.Video
         public string CleanText { get; set; } = String.Empty;
         public List<string> Tags { get; set; } = new List<string>();
     }
-    public class VideoService(ILogger<VideoService> _logger, IVideoRepository _videoRepository, IHashTagRepository _hashTagRepository, IMapper _mapper, UserManager<UserEntity> _userManager) : IVideoService
+    public class VideoService(IVideoRepository _videoRepository, IHashTagRepository _hashTagRepository, IMapper _mapper, UserManager<UserEntity> _userManager) : IVideoService
     {
         public async Task DeleteVideoById(Guid id, string userId)
         {
@@ -41,6 +43,17 @@ namespace Tiktok_Clone.BLL.Services.Video
         public async Task<VideoDTO> GetVideoByIdAsync(Guid id)
         {
             return _mapper.Map<VideoDTO>(await _videoRepository.GetByIdAsync(id));
+        }
+
+        public async Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings)
+        {
+            var videos = await _videoRepository
+                .GetAll()
+                .OrderBy(v => Guid.NewGuid())
+                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider)
+                .ToPagedResultAsync(paginationSettings);
+
+            return videos;
         }
 
         public async Task<VideoDTO> UploadVideoAsync(CreateVideoDTO dto, string ownerId)

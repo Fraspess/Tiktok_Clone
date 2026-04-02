@@ -1,4 +1,5 @@
 ﻿using Tiktok_Clone.BLL.Dtos.Video;
+using Tiktok_Clone.BLL.Pagination;
 
 namespace Tiktok_Clone.BLL.Services.Video
 {
@@ -9,5 +10,7 @@ namespace Tiktok_Clone.BLL.Services.Video
         Task<VideoDTO> GetVideoByIdAsync(Guid id);
 
         Task DeleteVideoById(Guid id, string userId);
+
+        Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings);
     }
 }

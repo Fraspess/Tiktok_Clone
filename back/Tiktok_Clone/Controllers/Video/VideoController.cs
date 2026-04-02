@@ -6,6 +6,7 @@ using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Commands.Video;
 using Tiktok_Clone.BLL.Dtos.Video;
 using Tiktok_Clone.BLL.Exceptions;
+using Tiktok_Clone.BLL.Pagination;
 using Tiktok_Clone.BLL.Queries.Video;
 
 namespace Tiktok_Clone.Controllers.Video
@@ -57,6 +58,15 @@ namespace Tiktok_Clone.Controllers.Video
                  ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
             await _mediator.Send(new CreateVideoCommand(dto, userId));
             return Ok(ApiResponse<string>.Success("Відео успішно завантажено"));
+        }
+
+
+
+        [HttpGet("fyp")]
+        public async Task<IActionResult> GetForYouPage([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
+        {
+            var videos = await _mediator.Send(new GetForYouPageVideosQuery(new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
+            return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos));
         }
     }
 }

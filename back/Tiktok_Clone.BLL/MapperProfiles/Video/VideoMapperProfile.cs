@@ -8,7 +8,10 @@ namespace Tiktok_Clone.BLL.MapperProfiles.Video
     {
         public VideoMapperProfile()
         {
-            CreateMap<VideoEntity, VideoDTO>();
+
+            CreateMap<VideoEntity, VideoDTO>()
+                .ForMember(d => d.HashTags,
+                    o => o.MapFrom(s => s.HashTags.Select(h => h.HashTag.Tag)));
         }
     }
 }
