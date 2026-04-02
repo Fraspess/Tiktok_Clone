@@ -4,11 +4,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Commands.User;
 using Tiktok_Clone.BLL.Dtos.User;
 using Tiktok_Clone.BLL.Exceptions;
+using Tiktok_Clone.BLL.Extensions;
 using Tiktok_Clone.BLL.Queries.User;
 
 [ApiController]
@@ -45,10 +45,9 @@ public class UserController(IMediator _mediator) : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
+        var userId = User.GetUserId();
 
-        var result = await _mediator.Send(new GetCurrentUserQuery(userId!));
+        var result = await _mediator.Send(new GetCurrentUserQuery(userId));
         return Ok(ApiResponse<UserDTO>.Success(result));
     }
 
@@ -81,8 +80,7 @@ public class UserController(IMediator _mediator) : ControllerBase
     [Authorize]
     public async Task<IActionResult> LogoutAll()
     {
-        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-            ?? throw new UnauthorizedException("User ID не знайдений");
+        var userId = User.GetUserId();
 
         await _mediator.Send(new LogOutOnAllDevicesCommand(userId));
 

@@ -5,11 +5,11 @@ namespace Tiktok_Clone.BLL.Services.Video
 {
     public interface IVideoService
     {
-        Task<VideoDTO> UploadVideoAsync(CreateVideoDTO dto, string ownerId);
+        Task<VideoDTO> UploadVideoAsync(CreateVideoDTO dto, Guid ownerId);
 
         Task<VideoDTO> GetVideoByIdAsync(Guid id);
 
-        Task DeleteVideoById(Guid id, string userId);
+        Task DeleteVideoById(Guid id, Guid userId);
 
         Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings);
     }

@@ -2,5 +2,5 @@
 
 namespace Tiktok_Clone.BLL.Commands.User
 {
-    public record LogOutOnAllDevicesCommand(string UserId) : IRequest<Unit>;
+    public record LogOutOnAllDevicesCommand(Guid UserId) : IRequest<Unit>;
 }
