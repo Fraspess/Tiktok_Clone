@@ -24,9 +24,9 @@ namespace Tiktok_Clone.BLL.Services.Video
     }
     public class VideoService(IVideoRepository _videoRepository, IHashTagRepository _hashTagRepository, IMapper _mapper, UserManager<UserEntity> _userManager) : IVideoService
     {
-        public async Task DeleteVideoById(Guid id, string userId)
+        public async Task DeleteVideoById(Guid id, Guid userId)
         {
-            var user = await _userManager.FindByIdAsync(userId)
+            var user = _userManager.Users.FirstOrDefault(u => u.Id == userId)
                 ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
 
             var video = await _videoRepository.GetByIdAsync(id)
@@ -56,7 +56,7 @@ namespace Tiktok_Clone.BLL.Services.Video
             return videos;
         }
 
-        public async Task<VideoDTO> UploadVideoAsync(CreateVideoDTO dto, string ownerId)
+        public async Task<VideoDTO> UploadVideoAsync(CreateVideoDTO dto, Guid ownerId)
         {
             var fileName = await SaveVideoFileAsync(dto.VideoFile);
             // витягуємо хештеги
@@ -65,7 +65,7 @@ namespace Tiktok_Clone.BLL.Services.Video
 
             var newVideo = new VideoEntity()
             {
-                UserId = Guid.Parse(ownerId),
+                UserId = ownerId,
                 Description = parsedDescription.CleanText,
                 VideoFileName = fileName
             };

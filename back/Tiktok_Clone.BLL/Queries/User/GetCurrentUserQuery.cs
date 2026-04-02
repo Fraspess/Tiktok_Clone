@@ -3,6 +3,6 @@ using Tiktok_Clone.BLL.Dtos.User;
 
 namespace Tiktok_Clone.BLL.Queries.User
 {
-    public record GetCurrentUserQuery(string Id) : IRequest<UserDTO>;
+    public record GetCurrentUserQuery(Guid Id) : IRequest<UserDTO>;
 
 }

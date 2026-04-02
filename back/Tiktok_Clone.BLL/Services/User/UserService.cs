@@ -109,9 +109,9 @@ public class UserService : IUserService
 
     }
 
-    public async Task<UserDTO> GetCurrentUserAsync(string userId)
+    public async Task<UserDTO> GetCurrentUserAsync(Guid userId)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id.ToString() == userId);
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null)
         {
             throw new UnauthorizedException("Користувач не знайдений");
@@ -119,9 +119,9 @@ public class UserService : IUserService
         return _userMapper.Map<UserDTO>(user);
     }
 
-    public async Task UpdateTokenVersion(string userId)
+    public async Task UpdateTokenVersion(Guid userId)
     {
-        var user = _userManager.Users.FirstOrDefault(u => u.Id.ToString() == userId)
+        var user = _userManager.Users.FirstOrDefault(u => u.Id == userId)
             ?? throw new UnauthorizedException("Користувач не знайдений");
 
         var currentVersion = user.RefreshTokenVersion;
@@ -178,7 +178,7 @@ public class UserService : IUserService
 
         if (result.Succeeded)
         {
-            await UpdateTokenVersion(user.Id.ToString());
+            await UpdateTokenVersion(user.Id);
 
         }
         else

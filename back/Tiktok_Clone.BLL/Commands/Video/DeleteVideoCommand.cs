@@ -2,6 +2,6 @@
 
 namespace Tiktok_Clone.BLL.Commands.Video
 {
-    public record DeleteVideoCommand(Guid VideoId, string UserId) : IRequest<Unit>;
+    public record DeleteVideoCommand(Guid VideoId, Guid UserId) : IRequest<Unit>;
 
 }

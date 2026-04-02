@@ -1,11 +1,10 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Commands.Video;
 using Tiktok_Clone.BLL.Dtos.Video;
-using Tiktok_Clone.BLL.Exceptions;
+using Tiktok_Clone.BLL.Extensions;
 using Tiktok_Clone.BLL.Pagination;
 using Tiktok_Clone.BLL.Queries.Video;
 
@@ -42,8 +41,7 @@ namespace Tiktok_Clone.Controllers.Video
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVideo(Guid id)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                 ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
+            var userId = User.GetUserId();
             await _mediator.Send(new DeleteVideoCommand(id, userId));
             return Ok(ApiResponse<string>.Success("Відео успішно видалено"));
         }
@@ -54,8 +52,7 @@ namespace Tiktok_Clone.Controllers.Video
         [HttpPost]
         public async Task<IActionResult> UploadVideo([FromForm] CreateVideoDTO dto)
         {
-            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                 ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
+            var userId = User.GetUserId();
             await _mediator.Send(new CreateVideoCommand(dto, userId));
             return Ok(ApiResponse<string>.Success("Відео успішно завантажено"));
         }

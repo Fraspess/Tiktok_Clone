@@ -11,9 +11,9 @@ public interface IUserService
 
     Task<TokenResponseDTO> ConfirmEmail(string email, string token);
 
-    Task<UserDTO> GetCurrentUserAsync(string userId);
+    Task<UserDTO> GetCurrentUserAsync(Guid userId);
 
-    Task UpdateTokenVersion(string userId);
+    Task UpdateTokenVersion(Guid userId);
 
     Task ForgotPasswordAsync(string email);
 
