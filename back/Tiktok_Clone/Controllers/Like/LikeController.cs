@@ -11,7 +11,7 @@ namespace Tiktok_Clone.Controllers.Like
     [ApiController]
     public class LikeController(IMediator _mediator) : ControllerBase
     {
-        [HttpPost]
+        [HttpPost("like")]
         [Authorize]
         public async Task<IActionResult> ToogleLike(Guid videoId)
         {

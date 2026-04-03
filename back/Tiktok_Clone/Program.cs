@@ -40,6 +40,7 @@ try
 {
     var builder = WebApplication.CreateBuilder(args);
 
+
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
         .ReadFrom.Services(services)
@@ -110,6 +111,17 @@ try
 
     // Add services to the container.
 
+    builder.Services.AddCors(opt =>
+    {
+        opt.AddPolicy("MyPolicy", policy =>
+        {
+            policy.WithOrigins(builder.Configuration["Frontend:Url"]!)
+                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
+    });
+
     builder.Services.AddControllers()
         .ConfigureApiBehaviorOptions(opt =>
         {
@@ -171,6 +183,7 @@ try
 
     app.UseSerilogRequestLogging();
 
+    app.UseCors("MyPolicy");
     app.UseAuthentication();
     app.UseAuthorization();
 
