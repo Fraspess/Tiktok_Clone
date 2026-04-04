@@ -45,9 +45,7 @@ public class UserController(IMediator _mediator) : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var userId = User.GetUserId();
-
-        var result = await _mediator.Send(new GetCurrentUserQuery(userId));
+        var result = await _mediator.Send(new GetCurrentUserQuery(User.GetUserId()));
         return Ok(ApiResponse<UserDTO>.Success(result));
     }
 
@@ -80,9 +78,7 @@ public class UserController(IMediator _mediator) : ControllerBase
     [Authorize]
     public async Task<IActionResult> LogoutAll()
     {
-        var userId = User.GetUserId();
-
-        await _mediator.Send(new LogOutOnAllDevicesCommand(userId));
+        await _mediator.Send(new LogOutOnAllDevicesCommand(User.GetUserId()));
 
         DeleteRefreshTokenCookie();
         return Ok(ApiResponse<object>.Success(null!, "Успішний вихід з усіх пристроїв"));

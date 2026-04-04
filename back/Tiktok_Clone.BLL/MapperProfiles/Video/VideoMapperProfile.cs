@@ -13,7 +13,9 @@ namespace Tiktok_Clone.BLL.MapperProfiles.Video
                 .ForMember(d => d.HashTags,
                     o => o.MapFrom(s => s.HashTags.Select(h => h.HashTag.Tag)))
                 .ForMember(d => d.LikeCount,
-                o => o.MapFrom(s => s.Likes.Count));
+                    o => o.MapFrom(s => s.Likes.Count))
+                .ForMember(d => d.CommentsCount,
+                    o => o.MapFrom(v => v.Comments.Count));
         }
     }
 }

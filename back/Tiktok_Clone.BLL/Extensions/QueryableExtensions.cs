@@ -18,7 +18,7 @@ namespace Tiktok_Clone.BLL.Extensions
 
             var pagedResult = new PagedResult<T>
             {
-                Data = data,
+                Items = data,
                 Metadata = new PaginationMetadata
                 {
                     CurrentPage = paginationSettings.PageNumber,

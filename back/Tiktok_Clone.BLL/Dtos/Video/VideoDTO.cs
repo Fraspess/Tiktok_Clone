@@ -11,5 +11,7 @@
 
         public int LikeCount { get; set; }
 
+        public int CommentsCount { get; set; }
+
     }
 }
