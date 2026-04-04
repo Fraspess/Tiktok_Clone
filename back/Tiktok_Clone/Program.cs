@@ -197,6 +197,9 @@ try
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
 
+    // треба ставить ffmpeg перед seed-ом бо сидер використає його
+
+    FFmpeg.SetExecutablesPath(builder.Configuration["FFmpeg:Path"]);
     try
     {
         await app.SeedDataAsync();
@@ -206,7 +209,6 @@ try
         Log.Error(ex, "An error occurred while seeding the database");
     }
 
-    FFmpeg.SetExecutablesPath(builder.Configuration["FFmpeg:Path"]);
     app.Run();
 
 }
