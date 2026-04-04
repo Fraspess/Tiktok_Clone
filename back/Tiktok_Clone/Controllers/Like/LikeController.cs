@@ -7,11 +7,11 @@ using Tiktok_Clone.BLL.Extensions;
 
 namespace Tiktok_Clone.Controllers.Like
 {
-    [Route("api/[controller]")]
+    [Route("api/likes")]
     [ApiController]
     public class LikeController(IMediator _mediator) : ControllerBase
     {
-        [HttpPost("like")]
+        [HttpPost]
         [Authorize]
         public async Task<IActionResult> ToogleLike(Guid videoId)
         {

@@ -2,6 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 using Tiktok_Clone.BLL.Dtos.Video;
 using Tiktok_Clone.BLL.Exceptions;
@@ -42,7 +43,11 @@ namespace Tiktok_Clone.BLL.Services.Video
 
         public async Task<VideoDTO> GetVideoByIdAsync(Guid id)
         {
-            return _mapper.Map<VideoDTO>(await _videoRepository.GetByIdAsync(id));
+            return await _videoRepository
+                .GetAll()
+                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider)
+                .FirstOrDefaultAsync(v => v.Id == id) ?? throw new NotFoundException("Відео не знайдено");
+
         }
 
         public async Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings)
