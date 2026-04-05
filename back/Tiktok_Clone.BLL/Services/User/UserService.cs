@@ -72,14 +72,15 @@ public class UserService : IUserService
         var isEmailTaken = await _userManager.FindByEmailAsync(dto.Email);
         if (isEmailTaken is not null)
         {
-            throw new ValidationException("Почта вже занята");
+            throw new ValidationException("Почта вже зайнята");
         }
 
         var isUsernameTaken = await _userManager.FindByNameAsync(dto.Username);
         if (isUsernameTaken is not null)
         {
-            throw new ValidationException("Юзернейм вже занятий");
+            throw new ValidationException("Це ім'я користувача уже зайняте");
         }
+
 
         var user = _userMapper.Map<UserEntity>(dto);
 
@@ -90,20 +91,15 @@ public class UserService : IUserService
             {
                 var imageName = await _imageService.SaveImageAsync(dto.Avatar);
                 user.Avatar = imageName;
-                await _userManager.UpdateAsync(user);
             }
             await _userManager.AddToRoleAsync(user, RoleNames.USER_ROLE);
 
-            // токен є 6 значним числом, настроєно в program.cs 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var body = GetHtmlTemplate("ConfirmEmail.html");
-            body = body.Replace("{confirmCode}", token);
-
-            await _emailService.SendEmailAsync(user.Email!, "Підтвердження реєстрації", body);
+            user.LastConfirmationEmailSentAt = DateTime.UtcNow;
+            await _userManager.UpdateAsync(user);
+            await GenerateTokenAndSendAsync(user);
         }
         else
         {
-            _logger.LogWarning("Failed to create user because : {error} ", string.Join(", ", result.Errors.Select(e => e.Description)));
             throw new ValidationException("Помилка при створенні користувача : " + string.Join(", ", result.Errors.Select(e => e.Description)));
         }
 
@@ -163,7 +159,6 @@ public class UserService : IUserService
         }
         else
         {
-            _logger.LogWarning("Не вдалося підтвердити почту {email} того що : {error} ", email, string.Join(", ", result.Errors.Select(e => e.Description)));
             throw new ValidationException("Невірний токен підтвердження");
         }
     }
@@ -186,5 +181,36 @@ public class UserService : IUserService
             _logger.LogWarning("Не вдалося скинути пароль для {email} того що : {error} ", dto.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
             throw new ValidationException("Невірний токен для скидання пароля");
         }
+    }
+
+    public async Task ResendConfirmationEmailAsync(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email)
+            ?? throw new NotFoundException("Почту не знайдено");
+
+        if (user.EmailConfirmed) throw new ValidationException("Почту уже підтвердженно");
+
+        if (user.LastConfirmationEmailSentAt.HasValue)
+        {
+            var timePassed = DateTime.UtcNow - user.LastConfirmationEmailSentAt.Value;
+            if (timePassed.TotalMinutes < 5)
+            {
+                var remaining = 5 - (int)timePassed.TotalMinutes;
+                throw new ValidationException($"Повторіть спробу через {remaining} хвилин ");
+            }
+        }
+
+        user.LastConfirmationEmailSentAt = DateTime.UtcNow;
+        await _userManager.UpdateAsync(user);
+        await GenerateTokenAndSendAsync(user);
+    }
+
+
+    private async Task GenerateTokenAndSendAsync(UserEntity user)
+    {
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        var body = GetHtmlTemplate("ConfirmEmail.html");
+        body = body.Replace("{confirmCode}", token);
+        await _emailService.SendEmailAsync(user.Email!, "Підтвердження реєстрації", body);
     }
 }

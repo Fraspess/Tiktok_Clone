@@ -98,6 +98,13 @@ public class UserController(IMediator _mediator) : ControllerBase
         return Ok(ApiResponse<object>.Success(null!, "Пароль успішно змінено"));
     }
 
+    [HttpPost("resend-confirmation-email")]
+    public async Task<IActionResult> ResendConfirmationEmail(ResendConfirmationEmailCommand command)
+    {
+        await _mediator.Send(command);
+        return Ok(ApiResponse<object>.Success(null!, "Перевірте вашу почту"));
+    }
+
 
 
     private void AppendRefreshTokenCookie(string refreshToken)
