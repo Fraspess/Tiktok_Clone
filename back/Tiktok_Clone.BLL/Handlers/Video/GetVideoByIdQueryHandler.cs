@@ -5,11 +5,11 @@ using Tiktok_Clone.BLL.Services.Video;
 
 namespace Tiktok_Clone.BLL.Handlers.Video
 {
-    public class GetVideoFileNameQueryHandler(IVideoService videoService) : IRequestHandler<GetVideoByIdQuery, VideoDTO>
+    public class GetVideoByIdQueryHandler(IVideoService videoService) : IRequestHandler<GetVideoByIdQuery, VideoDTO>
     {
         public async Task<VideoDTO> Handle(GetVideoByIdQuery request, CancellationToken cancellationToken)
         {
-            return await videoService.GetVideoByIdAsync(request.id);
+            return await videoService.GetVideoByIdAsync(request.Id, request.UserId);
         }
     }
 }

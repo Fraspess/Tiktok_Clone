@@ -9,10 +9,10 @@ namespace Tiktok_Clone.BLL.Services.Video
 
         Task UploadVideoAsyncDev(string url, string key, Guid[] randomUsersId, string videoDescription = "Good description salo");
 
-        Task<VideoDTO> GetVideoByIdAsync(Guid id);
+        Task<VideoDTO> GetVideoByIdAsync(Guid id, Guid? userId);
 
         Task DeleteVideoById(Guid id, Guid userId);
 
-        Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings);
+        Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings, Guid? userId);
     }
 }

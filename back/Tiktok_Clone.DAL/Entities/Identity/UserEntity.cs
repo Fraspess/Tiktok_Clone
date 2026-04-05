@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Tiktok_Clone.DAL.Entities.Comment;
+using Tiktok_Clone.DAL.Entities.Favorite;
 using Tiktok_Clone.DAL.Entities.Like;
 using Tiktok_Clone.DAL.Entities.Message;
 using Tiktok_Clone.DAL.Entities.Video;
@@ -37,4 +38,6 @@ public class UserEntity : IdentityUser<Guid>
     public ICollection<LikeEntity> Likes { get; set; } = new List<LikeEntity>();
 
     public virtual ICollection<UserRoleEntity>? UserRoles { get; set; }
+
+    public ICollection<FavoriteEntity> Favorites { get; set; } = new List<FavoriteEntity>();
 }
