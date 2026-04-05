@@ -10,7 +10,7 @@ namespace Tiktok_Clone.BLL.Handlers.Video
     {
         public async Task<PagedResult<VideoDTO>> Handle(GetForYouPageVideosQuery request, CancellationToken cancellationToken)
         {
-            return await videoService.GetForYouPageVideos(request.PaginationSettings);
+            return await videoService.GetForYouPageVideos(request.PaginationSettings, request.UserId);
         }
     }
 }

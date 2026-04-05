@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Commands.Video;
 using Tiktok_Clone.BLL.Dtos.Video;
@@ -29,7 +30,7 @@ namespace Tiktok_Clone.Controllers.Video
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVideoById(Guid id)
         {
-            var video = await _mediator.Send(new GetVideoByIdQuery(id));
+            var video = await _mediator.Send(new GetVideoByIdQuery(id, GetUserIfExists()));
             if (video is null)
             {
                 return NotFound(ApiResponse<string>.Error("Відео не знайдено"));
@@ -62,8 +63,20 @@ namespace Tiktok_Clone.Controllers.Video
         [HttpGet("fyp")]
         public async Task<IActionResult> GetForYouPage([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
         {
-            var videos = await _mediator.Send(new GetForYouPageVideosQuery(new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
+
+            var videos = await _mediator.Send(new GetForYouPageVideosQuery(new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, GetUserIfExists()));
             return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos));
+        }
+
+
+        private Guid? GetUserIfExists()
+        {
+            Guid? currentUserId = null;
+
+            if (User.Identity?.IsAuthenticated == true)
+                currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+            return currentUserId;
         }
     }
 }

@@ -21,5 +21,6 @@ namespace Tiktok_Clone.DAL.Entities.Comment
         public CommentEntity? ParentComment { get; set; }
 
         public ICollection<CommentEntity> Replies { get; set; } = new List<CommentEntity>();
+
     }
 }

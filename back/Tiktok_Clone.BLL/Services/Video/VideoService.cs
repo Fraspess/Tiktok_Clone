@@ -42,21 +42,21 @@ namespace Tiktok_Clone.BLL.Services.Video
             await _videoRepository.DeleteAsync(video);
         }
 
-        public async Task<VideoDTO> GetVideoByIdAsync(Guid id)
+        public async Task<VideoDTO> GetVideoByIdAsync(Guid id, Guid? userId)
         {
             return await _videoRepository
                 .GetAll()
-                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider)
+                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = userId })
                 .FirstOrDefaultAsync(v => v.Id == id) ?? throw new NotFoundException("Відео не знайдено");
 
         }
 
-        public async Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings)
+        public async Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings, Guid? userId)
         {
             var videos = await _videoRepository
                 .GetAll()
                 .OrderBy(v => Guid.NewGuid())
-                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider)
+                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = userId })
                 .ToPagedResultAsync(paginationSettings);
 
             return videos;
