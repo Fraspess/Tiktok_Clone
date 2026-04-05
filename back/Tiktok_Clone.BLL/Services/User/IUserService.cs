@@ -18,4 +18,6 @@ public interface IUserService
     Task ForgotPasswordAsync(string email);
 
     Task ResetPasswordAsync(ResetPasswordDTO dto);
+
+    Task ResendConfirmationEmailAsync(string email);
 }

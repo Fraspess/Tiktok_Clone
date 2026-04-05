@@ -220,6 +220,9 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
 
+                    b.Property<DateTime?>("LastConfirmationEmailSentAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 

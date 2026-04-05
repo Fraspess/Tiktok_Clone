@@ -20,6 +20,8 @@ public class UserEntity : IdentityUser<Guid>
 
     public int RefreshTokenVersion { get; set; }
 
+    public DateTime? LastConfirmationEmailSentAt { get; set; }
+
     public ICollection<VideoEntity> Videos { get; set; } = new List<VideoEntity>();
 
     public ICollection<UserFollowEntity> Following { get; set; } = new List<UserFollowEntity>();
