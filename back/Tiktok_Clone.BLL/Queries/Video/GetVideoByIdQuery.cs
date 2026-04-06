@@ -3,5 +3,5 @@ using Tiktok_Clone.BLL.Dtos.Video;
 
 namespace Tiktok_Clone.BLL.Queries.Video
 {
-    public record GetVideoByIdQuery(Guid id) : IRequest<VideoDTO>;
+    public record GetVideoByIdQuery(Guid Id, Guid? UserId) : IRequest<VideoDTO>;
 }

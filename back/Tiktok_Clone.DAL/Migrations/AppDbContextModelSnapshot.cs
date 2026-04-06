@@ -143,6 +143,31 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Favorite.FavoriteEntity", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("VideoId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VideoId");
+
+                    b.HasIndex("UserId", "VideoId")
+                        .IsUnique();
+
+                    b.ToTable("Favorites");
+                });
+
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.HashTags.HashTagEntity", b =>
                 {
                     b.Property<Guid>("Id")
@@ -219,6 +244,9 @@ namespace Tiktok_Clone.DAL.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
+
+                    b.Property<DateTime?>("LastConfirmationEmailSentAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
                         .HasColumnType("text");
@@ -479,12 +507,12 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.HasOne("Tiktok_Clone.DAL.Entities.Comment.CommentEntity", "ParentComment")
                         .WithMany("Replies")
                         .HasForeignKey("ParentCommentId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "Author")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Tiktok_Clone.DAL.Entities.Video.VideoEntity", "Video")
@@ -496,6 +524,25 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Navigation("Author");
 
                     b.Navigation("ParentComment");
+
+                    b.Navigation("Video");
+                });
+
+            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Favorite.FavoriteEntity", b =>
+                {
+                    b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "User")
+                        .WithMany("Favorites")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Tiktok_Clone.DAL.Entities.Video.VideoEntity", "Video")
+                        .WithMany("Favorites")
+                        .HasForeignKey("VideoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
 
                     b.Navigation("Video");
                 });
@@ -652,6 +699,8 @@ namespace Tiktok_Clone.DAL.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("Favorites");
+
                     b.Navigation("Followers");
 
                     b.Navigation("Following");
@@ -670,6 +719,8 @@ namespace Tiktok_Clone.DAL.Migrations
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Video.VideoEntity", b =>
                 {
                     b.Navigation("Comments");
+
+                    b.Navigation("Favorites");
 
                     b.Navigation("HashTags");
 

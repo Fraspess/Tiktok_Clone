@@ -45,9 +45,7 @@ public class UserController(IMediator _mediator) : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetCurrentUser()
     {
-        var userId = User.GetUserId();
-
-        var result = await _mediator.Send(new GetCurrentUserQuery(userId));
+        var result = await _mediator.Send(new GetCurrentUserQuery(User.GetUserId()));
         return Ok(ApiResponse<UserDTO>.Success(result));
     }
 
@@ -80,9 +78,7 @@ public class UserController(IMediator _mediator) : ControllerBase
     [Authorize]
     public async Task<IActionResult> LogoutAll()
     {
-        var userId = User.GetUserId();
-
-        await _mediator.Send(new LogOutOnAllDevicesCommand(userId));
+        await _mediator.Send(new LogOutOnAllDevicesCommand(User.GetUserId()));
 
         DeleteRefreshTokenCookie();
         return Ok(ApiResponse<object>.Success(null!, "Успішний вихід з усіх пристроїв"));
@@ -102,6 +98,13 @@ public class UserController(IMediator _mediator) : ControllerBase
         return Ok(ApiResponse<object>.Success(null!, "Пароль успішно змінено"));
     }
 
+    [HttpPost("resend-confirmation-email")]
+    public async Task<IActionResult> ResendConfirmationEmail(ResendConfirmationEmailCommand command)
+    {
+        await _mediator.Send(command);
+        return Ok(ApiResponse<object>.Success(null!, "Перевірте вашу почту"));
+    }
+
 
 
     private void AppendRefreshTokenCookie(string refreshToken)
@@ -110,7 +113,7 @@ public class UserController(IMediator _mediator) : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.None,
             Expires = DateTime.UtcNow.AddDays(7)
         });
     }
@@ -122,7 +125,7 @@ public class UserController(IMediator _mediator) : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Strict,
+            SameSite = SameSiteMode.None,
             Expires = DateTime.UtcNow.AddDays(-1)
         });
     }

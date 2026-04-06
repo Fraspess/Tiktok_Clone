@@ -4,6 +4,6 @@ using Tiktok_Clone.BLL.Pagination;
 
 namespace Tiktok_Clone.BLL.Queries.Video
 {
-    public record GetForYouPageVideosQuery(PaginationSettings PaginationSettings) : IRequest<PagedResult<VideoDTO>>;
+    public record GetForYouPageVideosQuery(PaginationSettings PaginationSettings, Guid? UserId) : IRequest<PagedResult<VideoDTO>>;
 
 }

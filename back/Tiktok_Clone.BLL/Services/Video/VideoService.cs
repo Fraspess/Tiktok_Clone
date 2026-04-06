@@ -2,6 +2,8 @@
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using Tiktok_Clone.BLL.Dtos.Video;
 using Tiktok_Clone.BLL.Exceptions;
@@ -40,17 +42,21 @@ namespace Tiktok_Clone.BLL.Services.Video
             await _videoRepository.DeleteAsync(video);
         }
 
-        public async Task<VideoDTO> GetVideoByIdAsync(Guid id)
+        public async Task<VideoDTO> GetVideoByIdAsync(Guid id, Guid? userId)
         {
-            return _mapper.Map<VideoDTO>(await _videoRepository.GetByIdAsync(id));
+            return await _videoRepository
+                .GetAll()
+                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = userId })
+                .FirstOrDefaultAsync(v => v.Id == id) ?? throw new NotFoundException("Відео не знайдено");
+
         }
 
-        public async Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings)
+        public async Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings, Guid? userId)
         {
             var videos = await _videoRepository
                 .GetAll()
                 .OrderBy(v => Guid.NewGuid())
-                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider)
+                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = userId })
                 .ToPagedResultAsync(paginationSettings);
 
             return videos;
@@ -159,5 +165,44 @@ namespace Tiktok_Clone.BLL.Services.Video
             }
         }
 
+        public async Task UploadVideoAsyncDev(string url, string key, Guid[] randomUsersId, string videoDescription = "Good description salo")
+        {
+            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "Videos");
+            Directory.CreateDirectory(uploadFolder);
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", key);
+                var response = await httpClient.GetStringAsync(url);
+
+                var json = JsonConvert.DeserializeObject<dynamic>(response);
+
+                foreach (var video in json!.videos)
+                {
+                    string videoUrl = null!;
+                    foreach (var file in video.video_files)
+                    {
+                        if (file.quality == "hd")
+                        {
+                            videoUrl = file.link;
+                            break;
+                        }
+                    }
+                    if (videoUrl == null) continue;
+
+                    var fileName = $"{Guid.NewGuid()}.mp4";
+                    var savePath = Path.Combine(uploadFolder, fileName);
+
+                    var bytes = await httpClient.GetByteArrayAsync(videoUrl);
+                    await File.WriteAllBytesAsync(savePath, bytes); ;
+
+                    var randomUserId = randomUsersId[Random.Shared.Next(randomUsersId.Count())];
+
+                    var newVideo = new VideoEntity { Description = videoDescription, UserId = randomUserId, VideoFileName = fileName };
+                    await _videoRepository.CreateAsync(newVideo);
+                }
+            }
+
+
+        }
     }
 }

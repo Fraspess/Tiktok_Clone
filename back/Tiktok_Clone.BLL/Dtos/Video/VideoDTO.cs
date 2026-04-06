@@ -11,5 +11,13 @@
 
         public int LikeCount { get; set; }
 
+        public int CommentsCount { get; set; }
+
+        public int FavoriteCount { get; set; }
+
+        public bool IsFavorited { get; set; }
+        public bool IsLiked { get; set; }
+
+
     }
 }

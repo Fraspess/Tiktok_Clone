@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Tiktok_Clone.DAL.Entities.Comment;
+using Tiktok_Clone.DAL.Entities.Favorite;
 using Tiktok_Clone.DAL.Entities.HashTags;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Like;
@@ -31,6 +32,8 @@ public class AppDbContext : IdentityDbContext<
     public DbSet<UserFollowEntity> UserFollows { get; set; }
     public DbSet<VideoHashTagEntity> VideoHashTags { get; set; }
     public DbSet<HashTagEntity> HashTags { get; set; }
+
+    public DbSet<FavoriteEntity> Favorites { get; set; }
 
     public DbSet<LikeEntity> Likes { get; set; }
 
@@ -73,13 +76,13 @@ public class AppDbContext : IdentityDbContext<
             .HasOne(c => c.Author)
             .WithMany(u => u.Comments)
             .HasForeignKey(c => c.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<CommentEntity>()
             .HasOne(c => c.ParentComment)
             .WithMany(c => c.Replies)
             .HasForeignKey(c => c.ParentCommentId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<CommentEntity>()
             .HasOne(c => c.Video)
@@ -166,5 +169,23 @@ public class AppDbContext : IdentityDbContext<
                 .HasForeignKey(u => u.UserId)
                 .IsRequired();
         });
+
+        // favorites many-to-many
+        builder.Entity<FavoriteEntity>()
+            .HasOne(f => f.Video)
+            .WithMany(v => v.Favorites)
+            .HasForeignKey(f => f.VideoId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<FavoriteEntity>()
+            .HasOne(f => f.User)
+            .WithMany(u => u.Favorites)
+            .HasForeignKey(f => f.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<FavoriteEntity>()
+            .HasIndex(f => new { f.UserId, f.VideoId })
+            .IsUnique();
+
     }
 }

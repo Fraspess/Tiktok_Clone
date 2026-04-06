@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
 using Tiktok_Clone.BLL.Constants;
 using Tiktok_Clone.BLL.Dtos.User;
 using Tiktok_Clone.BLL.Services.ImageService;
+using Tiktok_Clone.BLL.Services.Video;
+using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
 
 namespace Tiktok_Clone.BLL.Seeder
@@ -22,10 +25,13 @@ namespace Tiktok_Clone.BLL.Seeder
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
             var environment = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
             var imageService = scope.ServiceProvider.GetRequiredService<IImageService>();
-
+            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
+            var videoService = scope.ServiceProvider.GetRequiredService<IVideoService>();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             await SeedRolesAsync(roleManager);
             await SeedUsersAsync(userManager, imageService, environment);
+            await SeedVideosAsync(configuration, videoService, userManager, context);
         }
 
         public static async Task SeedRolesAsync(RoleManager<RoleEntity> roleManager)
@@ -117,6 +123,23 @@ namespace Tiktok_Clone.BLL.Seeder
             else
             {
                 Log.Information("Users already exists in database, skipping seeding");
+            }
+        }
+
+
+        public static async Task SeedVideosAsync(IConfiguration configuration, IVideoService videoService, UserManager<UserEntity> userManager, AppDbContext context)
+        {
+            if (context.Videos.Any()) return;
+
+            var key = configuration["Pexels:Key"];
+            var userIds = userManager.Users.Select(u => u.Id).ToArray();
+
+            var queries = new[] { "nature", "city", "food", "animals", "sports" };
+
+            foreach (var query in queries)
+            {
+                var url = $"https://api.pexels.com/videos/search?query={query}&per_page=5&orientation=portrait";
+                await videoService.UploadVideoAsyncDev(url, key!, userIds);
             }
         }
     }

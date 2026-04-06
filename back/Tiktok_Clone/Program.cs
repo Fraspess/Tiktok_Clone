@@ -11,7 +11,9 @@ using System.Text;
 using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Behaviors;
 using Tiktok_Clone.BLL.Seeder;
+using Tiktok_Clone.BLL.Services.Comment;
 using Tiktok_Clone.BLL.Services.Email;
+using Tiktok_Clone.BLL.Services.Favorite;
 using Tiktok_Clone.BLL.Services.Images;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Like;
@@ -21,6 +23,8 @@ using Tiktok_Clone.BLL.Services.Video;
 using Tiktok_Clone.BLL.Settings;
 using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
+using Tiktok_Clone.DAL.Repositories.Comment;
+using Tiktok_Clone.DAL.Repositories.Favorite;
 using Tiktok_Clone.DAL.Repositories.HashTag;
 using Tiktok_Clone.DAL.Repositories.HashTags;
 using Tiktok_Clone.DAL.Repositories.Like;
@@ -39,6 +43,7 @@ Log.Logger = new LoggerConfiguration()
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
         .ReadFrom.Configuration(context.Configuration)
@@ -110,6 +115,17 @@ try
 
     // Add services to the container.
 
+    builder.Services.AddCors(opt =>
+    {
+        opt.AddPolicy("MyPolicy", policy =>
+        {
+            policy.WithOrigins(builder.Configuration["Frontend:Url"]!)
+                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .AllowAnyHeader()
+                .AllowCredentials();
+        });
+    });
+
     builder.Services.AddControllers()
         .ConfigureApiBehaviorOptions(opt =>
         {
@@ -119,6 +135,8 @@ try
     builder.Services.AddScoped<IVideoRepository, VideoRepository>();
     builder.Services.AddScoped<IHashTagRepository, HashTagRepository>();
     builder.Services.AddScoped<ILikeRepository, LikeRepository>();
+    builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+    builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
 
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IImageService, ImageService>();
@@ -126,6 +144,8 @@ try
     builder.Services.AddScoped<IEmailService, EmailService>();
     builder.Services.AddScoped<IVideoService, VideoService>();
     builder.Services.AddScoped<ILikeService, LikeService>();
+    builder.Services.AddScoped<ICommentService, CommentService>();
+    builder.Services.AddScoped<IFavoriteService, FavoriteService>();
 
     builder.Services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
     builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -136,6 +156,7 @@ try
     builder.Services.AddMediatR(opt =>
     {
         opt.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly);
+        opt.LicenseKey = builder.Configuration.GetConnectionString("AutoMapper");
     });
 
 
@@ -171,6 +192,7 @@ try
 
     app.UseSerilogRequestLogging();
 
+    app.UseCors("MyPolicy");
     app.UseAuthentication();
     app.UseAuthorization();
 
@@ -180,6 +202,9 @@ try
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.Migrate();
 
+    // треба ставить ffmpeg перед seed-ом бо сидер використає його
+
+    FFmpeg.SetExecutablesPath(builder.Configuration["FFmpeg:Path"]);
     try
     {
         await app.SeedDataAsync();
@@ -189,7 +214,6 @@ try
         Log.Error(ex, "An error occurred while seeding the database");
     }
 
-    FFmpeg.SetExecutablesPath(builder.Configuration["FFmpeg:Path"]);
     app.Run();
 
 }

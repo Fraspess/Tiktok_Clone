@@ -1,4 +1,5 @@
 ﻿using Tiktok_Clone.DAL.Entities.Comment;
+using Tiktok_Clone.DAL.Entities.Favorite;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Like;
 
@@ -21,5 +22,7 @@ namespace Tiktok_Clone.DAL.Entities.Video
         public ICollection<VideoHashTagEntity> HashTags { get; set; } = new List<VideoHashTagEntity>();
 
         public ICollection<LikeEntity> Likes { get; set; } = new List<LikeEntity>();
+
+        public ICollection<FavoriteEntity> Favorites { get; set; } = new List<FavoriteEntity>();
     }
 }
