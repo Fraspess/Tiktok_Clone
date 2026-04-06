@@ -9,8 +9,8 @@ function App() {
 
   const handleLogin = async () => {
     const testData : ILogin = {
-      login: "Frasp",
-      password:"Samchuk01"
+      login: "admin@example.com",
+      password:"Admin123!"
     };
     try{
       const response = await login(testData).unwrap();
