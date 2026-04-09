@@ -25,6 +25,7 @@ using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Repositories.Comment;
 using Tiktok_Clone.DAL.Repositories.Favorite;
+using Tiktok_Clone.DAL.Repositories.Follow;
 using Tiktok_Clone.DAL.Repositories.HashTag;
 using Tiktok_Clone.DAL.Repositories.HashTags;
 using Tiktok_Clone.DAL.Repositories.Like;
@@ -137,6 +138,7 @@ try
     builder.Services.AddScoped<ILikeRepository, LikeRepository>();
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
+    builder.Services.AddScoped<IFollowRepository, FollowRepository>();
 
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IImageService, ImageService>();

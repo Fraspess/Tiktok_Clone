@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Tiktok_Clone.DAL.Entities.Identity
+﻿namespace Tiktok_Clone.DAL.Entities.Identity
 {
     public class UserFollowEntity
     {

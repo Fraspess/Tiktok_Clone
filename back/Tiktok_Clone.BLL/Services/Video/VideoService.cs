@@ -204,5 +204,16 @@ namespace Tiktok_Clone.BLL.Services.Video
 
 
         }
+
+        public async Task<PagedResult<VideoDTO>> GetUserVideos(Guid userId, PaginationSettings settings, Guid? currentUser)
+        {
+            var videos = await _videoRepository
+                .GetAll()
+                .Where(v => v.UserId == userId)
+                .OrderBy(v => v.CreatedAt)
+                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = currentUser })
+                .ToPagedResultAsync(settings);
+            return videos;
+        }
     }
 }

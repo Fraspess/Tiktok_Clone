@@ -1,4 +1,6 @@
-﻿namespace Tiktok_Clone.BLL.Dtos.Video
+﻿using Tiktok_Clone.BLL.Dtos.User;
+
+namespace Tiktok_Clone.BLL.Dtos.Video
 {
     public class VideoDTO
     {
@@ -18,6 +20,7 @@
         public bool IsFavorited { get; set; }
         public bool IsLiked { get; set; }
 
+        public UserAuthorDTO? Author { get; set; }
 
     }
 }

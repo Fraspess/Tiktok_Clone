@@ -7,11 +7,11 @@ using Tiktok_Clone.BLL.Services.User;
 namespace Tiktok_Clone.BLL.Handlers.User
 {
     public class GetCurrentUserQueryHandler(IUserService userService, IMapper mapper)
-        : IRequestHandler<GetCurrentUserQuery, UserDTO>
+        : IRequestHandler<GetCurrentUserQuery, UserMeDTO>
     {
-        public async Task<UserDTO> Handle(GetCurrentUserQuery request, CancellationToken cancellationToken)
+        public async Task<UserMeDTO> Handle(GetCurrentUserQuery request, CancellationToken cancellationToken)
         {
-            return mapper.Map<UserDTO>(await userService.GetCurrentUserAsync(request.Id));
+            return await userService.GetCurrentUserAsync(request.Id);
         }
     }
 }

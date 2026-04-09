@@ -12,5 +12,6 @@ namespace Tiktok_Clone.DAL.Repositories.Favorite
         {
             return _context.Favorites.Where(f => f.VideoId == videoId && f.UserId == userId).FirstOrDefault()!;
         }
+
     }
 }

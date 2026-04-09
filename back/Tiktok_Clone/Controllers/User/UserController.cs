@@ -4,11 +4,14 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Commands.User;
 using Tiktok_Clone.BLL.Dtos.User;
+using Tiktok_Clone.BLL.Dtos.Video;
 using Tiktok_Clone.BLL.Exceptions;
 using Tiktok_Clone.BLL.Extensions;
+using Tiktok_Clone.BLL.Pagination;
 using Tiktok_Clone.BLL.Queries.User;
 
 [ApiController]
@@ -46,7 +49,7 @@ public class UserController(IMediator _mediator) : ControllerBase
     public async Task<IActionResult> GetCurrentUser()
     {
         var result = await _mediator.Send(new GetCurrentUserQuery(User.GetUserId()));
-        return Ok(ApiResponse<UserDTO>.Success(result));
+        return Ok(ApiResponse<UserMeDTO>.Success(result));
     }
 
     [HttpPost("refresh")]
@@ -105,6 +108,29 @@ public class UserController(IMediator _mediator) : ControllerBase
         return Ok(ApiResponse<object>.Success(null!, "Перевірте вашу почту"));
     }
 
+    [HttpGet("{username}")]
+    public async Task<IActionResult> GetUserProfile(string username)
+    {
+        username = username.TrimStart('@');
+        var profile = await _mediator.Send(new GetUserByUsernameQuery(username, GetUserIfExists()));
+        return Ok(ApiResponse<UserDTO>.Success(profile, null));
+    }
+
+    [HttpPost("follow")]
+    [Authorize]
+    public async Task<IActionResult> Follow(Guid following)
+    {
+        var userId = User.GetUserId();
+        await _mediator.Send(new FollowUserCommand(userId, following));
+        return Ok(ApiResponse<object>.Success(null!, null));
+    }
+
+    [HttpGet("videos/{id}")]
+    public async Task<IActionResult> GetUserVideos(Guid id, int pageNumber = 1, int pageSize = 5)
+    {
+        var videos = await _mediator.Send(new GetUserVideosQuery(id, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, GetUserIfExists()));
+        return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos, null));
+    }
 
 
     private void AppendRefreshTokenCookie(string refreshToken)
@@ -128,5 +154,15 @@ public class UserController(IMediator _mediator) : ControllerBase
             SameSite = SameSiteMode.None,
             Expires = DateTime.UtcNow.AddDays(-1)
         });
+    }
+
+    private Guid? GetUserIfExists()
+    {
+        Guid? currentUserId = null;
+
+        if (User.Identity?.IsAuthenticated == true)
+            currentUserId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        return currentUserId;
     }
 }
