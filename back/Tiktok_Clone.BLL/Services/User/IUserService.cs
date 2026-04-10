@@ -11,7 +11,7 @@ public interface IUserService
 
     Task<TokenResponseDTO> ConfirmEmail(string email, string token);
 
-    Task<UserDTO> GetCurrentUserAsync(Guid userId);
+    Task<UserMeDTO> GetCurrentUserAsync(Guid userId);
 
     Task UpdateTokenVersion(Guid userId);
 
@@ -20,4 +20,11 @@ public interface IUserService
     Task ResetPasswordAsync(ResetPasswordDTO dto);
 
     Task ResendConfirmationEmailAsync(string email);
+
+    Task<UserDTO> GetByUsernameAsync(string username, Guid? currentUserId);
+
+    Task ToggleFollowAsync(Guid follower, Guid following);
+
+
+
 }

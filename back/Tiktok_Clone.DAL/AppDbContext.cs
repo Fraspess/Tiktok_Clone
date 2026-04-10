@@ -186,6 +186,5 @@ public class AppDbContext : IdentityDbContext<
         builder.Entity<FavoriteEntity>()
             .HasIndex(f => new { f.UserId, f.VideoId })
             .IsUnique();
-
     }
 }

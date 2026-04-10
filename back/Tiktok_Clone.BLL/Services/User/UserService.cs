@@ -11,6 +11,7 @@ using Tiktok_Clone.BLL.Services.Email;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Token;
 using Tiktok_Clone.DAL.Entities.Identity;
+using Tiktok_Clone.DAL.Repositories.Follow;
 
 namespace Tiktok_Clone.BLL.Services.User;
 
@@ -23,13 +24,15 @@ public class UserService : IUserService
     private readonly IImageService _imageService;
     private readonly IConfiguration _configuration;
     private readonly IEmailService _emailService;
+    private readonly IFollowRepository _followRepository;
 
     public UserService(UserManager<UserEntity> userManager,
         IMapper userMapper, IJWTTokenService tokenService,
         ILogger<UserService> logger,
         IImageService imageService,
         IConfiguration configuration,
-        IEmailService emailService)
+        IEmailService emailService,
+        IFollowRepository followRepository)
     {
         _userManager = userManager;
         _userMapper = userMapper;
@@ -38,6 +41,7 @@ public class UserService : IUserService
         _imageService = imageService;
         _configuration = configuration;
         _emailService = emailService;
+        _followRepository = followRepository;
     }
 
 
@@ -105,14 +109,18 @@ public class UserService : IUserService
 
     }
 
-    public async Task<UserDTO> GetCurrentUserAsync(Guid userId)
+    public async Task<UserMeDTO> GetCurrentUserAsync(Guid userId)
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
         if (user == null)
         {
             throw new UnauthorizedException("Користувач не знайдений");
         }
-        return _userMapper.Map<UserDTO>(user);
+        var dto = _userMapper.Map<UserMeDTO>(user);
+        dto.IsOwnProfile = true;
+        dto.FollowingCount = await _followRepository.GetFollowingCountAsync(userId);
+        dto.FollowersCount = await _followRepository.GetFollowersCountAsync(userId);
+        return dto;
     }
 
     public async Task UpdateTokenVersion(Guid userId)
@@ -213,4 +221,35 @@ public class UserService : IUserService
         body = body.Replace("{confirmCode}", token);
         await _emailService.SendEmailAsync(user.Email!, "Підтвердження реєстрації", body);
     }
+
+    public async Task<UserDTO> GetByUsernameAsync(string username, Guid? currentUserId)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username)
+            ?? throw new NotFoundException("Користувача з таким ім'ям не знайдено");
+
+        var dto = _userMapper.Map<UserDTO>(user);
+        dto.IsOwnProfile = currentUserId == dto.Id;
+        dto.IsFollowing = currentUserId.HasValue && await _followRepository.IsFollowingAsync(currentUserId.Value, dto.Id);
+        dto.FollowersCount = await _followRepository.GetFollowersCountAsync(dto.Id);
+        dto.FollowingCount = await _followRepository.GetFollowingCountAsync(dto.Id);
+        return dto;
+    }
+
+    public async Task ToggleFollowAsync(Guid follower, Guid following)
+    {
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == follower)
+              ?? throw new UnauthorizedException("Користувача не знайдено");
+        var isAlreadyFollowing = await _followRepository.GetFollowAsync(follower, following);
+
+        if (isAlreadyFollowing is null)
+        {
+            user.Following.Add(new UserFollowEntity { FollowerId = follower, FollowingId = following });
+        }
+        else
+        {
+            user.Following.Remove(isAlreadyFollowing);
+        }
+        await _userManager.UpdateAsync(user);
+    }
+
 }

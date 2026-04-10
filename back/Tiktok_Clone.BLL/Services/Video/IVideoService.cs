@@ -14,5 +14,7 @@ namespace Tiktok_Clone.BLL.Services.Video
         Task DeleteVideoById(Guid id, Guid userId);
 
         Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings, Guid? userId);
+
+        Task<PagedResult<VideoDTO>> GetUserVideos(Guid userId, PaginationSettings settings, Guid? currentUserId);
     }
 }
