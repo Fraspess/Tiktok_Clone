@@ -11,4 +11,6 @@ public interface IGenericRepository<TEntity, TId>
     Task DeleteAsync(TEntity entity);
     Task<TEntity?> GetByIdAsync(TId id);
     IQueryable<TEntity> GetAll();
+    Task SaveChangesAsync();
+    public TEntity? GetTracked(Func<TEntity, bool> predicate);
 }

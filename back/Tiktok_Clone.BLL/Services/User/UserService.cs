@@ -11,7 +11,7 @@ using Tiktok_Clone.BLL.Services.Email;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Token;
 using Tiktok_Clone.DAL.Entities.Identity;
-using Tiktok_Clone.DAL.Repositories.Follow;
+using Tiktok_Clone.DAL.UnitOfWork;
 
 namespace Tiktok_Clone.BLL.Services.User;
 
@@ -24,7 +24,7 @@ public class UserService : IUserService
     private readonly IImageService _imageService;
     private readonly IConfiguration _configuration;
     private readonly IEmailService _emailService;
-    private readonly IFollowRepository _followRepository;
+    private readonly IUnitOfWork _uow;
 
     public UserService(UserManager<UserEntity> userManager,
         IMapper userMapper, IJWTTokenService tokenService,
@@ -32,7 +32,7 @@ public class UserService : IUserService
         IImageService imageService,
         IConfiguration configuration,
         IEmailService emailService,
-        IFollowRepository followRepository)
+        IUnitOfWork uow)
     {
         _userManager = userManager;
         _userMapper = userMapper;
@@ -41,7 +41,7 @@ public class UserService : IUserService
         _imageService = imageService;
         _configuration = configuration;
         _emailService = emailService;
-        _followRepository = followRepository;
+        _uow = uow;
     }
 
 
@@ -118,8 +118,8 @@ public class UserService : IUserService
         }
         var dto = _userMapper.Map<UserMeDTO>(user);
         dto.IsOwnProfile = true;
-        dto.FollowingCount = await _followRepository.GetFollowingCountAsync(userId);
-        dto.FollowersCount = await _followRepository.GetFollowersCountAsync(userId);
+        dto.FollowingCount = await _uow.Follows.GetFollowingCountAsync(userId);
+        dto.FollowersCount = await _uow.Follows.GetFollowersCountAsync(userId);
         return dto;
     }
 
@@ -229,9 +229,9 @@ public class UserService : IUserService
 
         var dto = _userMapper.Map<UserDTO>(user);
         dto.IsOwnProfile = currentUserId == dto.Id;
-        dto.IsFollowing = currentUserId.HasValue && await _followRepository.IsFollowingAsync(currentUserId.Value, dto.Id);
-        dto.FollowersCount = await _followRepository.GetFollowersCountAsync(dto.Id);
-        dto.FollowingCount = await _followRepository.GetFollowingCountAsync(dto.Id);
+        dto.IsFollowing = currentUserId.HasValue && await _uow.Follows.IsFollowingAsync(currentUserId.Value, dto.Id);
+        dto.FollowersCount = await _uow.Follows.GetFollowersCountAsync(dto.Id);
+        dto.FollowingCount = await _uow.Follows.GetFollowingCountAsync(dto.Id);
         return dto;
     }
 
@@ -239,7 +239,7 @@ public class UserService : IUserService
     {
         var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == follower)
               ?? throw new UnauthorizedException("Користувача не знайдено");
-        var isAlreadyFollowing = await _followRepository.GetFollowAsync(follower, following);
+        var isAlreadyFollowing = await _uow.Follows.GetFollowAsync(follower, following);
 
         if (isAlreadyFollowing is null)
         {
