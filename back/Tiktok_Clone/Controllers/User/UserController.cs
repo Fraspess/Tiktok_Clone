@@ -6,13 +6,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Tiktok_Clone.BLL;
-using Tiktok_Clone.BLL.Commands.User;
-using Tiktok_Clone.BLL.Dtos.User;
 using Tiktok_Clone.BLL.Dtos.Video;
 using Tiktok_Clone.BLL.Exceptions;
 using Tiktok_Clone.BLL.Extensions;
+using Tiktok_Clone.BLL.Features.User.ConfirmEmail;
+using Tiktok_Clone.BLL.Features.User.FollowUser;
+using Tiktok_Clone.BLL.Features.User.ForgotPassword;
+using Tiktok_Clone.BLL.Features.User.GetByUsername;
+using Tiktok_Clone.BLL.Features.User.GetCurrentUser;
+using Tiktok_Clone.BLL.Features.User.GetUserVideos;
+using Tiktok_Clone.BLL.Features.User.Login;
+using Tiktok_Clone.BLL.Features.User.LogOutOnAllDevices;
+using Tiktok_Clone.BLL.Features.User.RefreshTokens;
+using Tiktok_Clone.BLL.Features.User.Register;
+using Tiktok_Clone.BLL.Features.User.ResendConfirmationEmail;
+using Tiktok_Clone.BLL.Features.User.ResetPassword;
 using Tiktok_Clone.BLL.Pagination;
-using Tiktok_Clone.BLL.Queries.User;
 
 [ApiController]
 [Route("api/users")]

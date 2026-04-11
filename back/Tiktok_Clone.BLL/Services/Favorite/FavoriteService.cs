@@ -7,7 +7,7 @@ namespace Tiktok_Clone.BLL.Services.Favorite
 {
     public class FavoriteService(IVideoService _service, IUnitOfWork _uow) : IFavoriteService
     {
-        public async Task ToogleFavoriteAsync(Guid videoId, Guid userId)
+        public async Task ToggleFavoriteAsync(Guid videoId, Guid userId)
         {
             var video = await _service.GetVideoByIdAsync(videoId, userId)
                 ?? throw new NotFoundException("Відео не знайдено");

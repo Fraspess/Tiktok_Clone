@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Tiktok_Clone.BLL.Dtos.Video;
+using Tiktok_Clone.BLL.Features.Video.GetBySomeQuery;
 using Tiktok_Clone.DAL.Entities.Video;
 
 namespace Tiktok_Clone.BLL.MapperProfiles.Video

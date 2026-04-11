@@ -3,11 +3,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Tiktok_Clone.BLL;
-using Tiktok_Clone.BLL.Commands.Video;
 using Tiktok_Clone.BLL.Dtos.Video;
 using Tiktok_Clone.BLL.Extensions;
+using Tiktok_Clone.BLL.Features.Video.Create;
+using Tiktok_Clone.BLL.Features.Video.Delete;
+using Tiktok_Clone.BLL.Features.Video.GetById;
+using Tiktok_Clone.BLL.Features.Video.GetBySomeQuery;
+using Tiktok_Clone.BLL.Features.Video.GetFYP;
+using Tiktok_Clone.BLL.Features.Video.Upload;
 using Tiktok_Clone.BLL.Pagination;
-using Tiktok_Clone.BLL.Queries.Video;
 
 namespace Tiktok_Clone.Controllers.Video
 {

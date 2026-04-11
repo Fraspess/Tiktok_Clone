@@ -1,4 +1,6 @@
 ﻿using Tiktok_Clone.BLL.Dtos.Video;
+using Tiktok_Clone.BLL.Features.Video.Create;
+using Tiktok_Clone.BLL.Features.Video.GetBySomeQuery;
 using Tiktok_Clone.BLL.Pagination;
 
 namespace Tiktok_Clone.BLL.Services.Video
