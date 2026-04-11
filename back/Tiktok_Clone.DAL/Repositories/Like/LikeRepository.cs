@@ -1,4 +1,5 @@
-﻿using Tiktok_Clone.DAL.Entities.Like;
+﻿using Microsoft.EntityFrameworkCore;
+using Tiktok_Clone.DAL.Entities.Like;
 
 namespace Tiktok_Clone.DAL.Repositories.Like;
 
@@ -6,9 +7,9 @@ public class LikeRepository : GenericRepository<LikeEntity, Guid>, ILikeReposito
 {
     public LikeRepository(AppDbContext context) : base(context) { }
 
-    public LikeEntity GetLikeByUserAndVideoId(Guid userId, Guid videoId)
+    public async Task<LikeEntity?> GetLikeByUserAndVideoIdAsync(Guid userId, Guid videoId)
     {
-        return _context.Likes.FirstOrDefault(l => l.UserId == userId && l.VideoId == videoId)!;
+        return await _context.Likes.FirstOrDefaultAsync(l => l.UserId == userId && l.VideoId == videoId);
     }
 
 

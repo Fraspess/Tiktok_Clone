@@ -30,6 +30,7 @@ using Tiktok_Clone.DAL.Repositories.HashTag;
 using Tiktok_Clone.DAL.Repositories.HashTags;
 using Tiktok_Clone.DAL.Repositories.Like;
 using Tiktok_Clone.DAL.Repositories.Video;
+using Tiktok_Clone.DAL.UnitOfWork;
 using Tiktok_Clone.Middleware;
 using Xabe.FFmpeg;
 
@@ -88,6 +89,8 @@ try
     {
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
     });
+
+    builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
     builder.Services.AddIdentityCore<UserEntity>(options =>
     {

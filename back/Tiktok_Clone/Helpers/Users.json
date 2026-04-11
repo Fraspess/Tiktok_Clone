@@ -1,5 +1,14 @@
 [
   {
+    "Email": "string@example.com",
+    "Username": "string",
+    "FirstName": "string",
+    "LastName": "string",
+    "Image": "https://randomuser.me/api/portraits/men/1.jpg",
+    "Password": "string",
+    "Roles": [ "Admin" ]
+  },
+  {
     "Email": "admin@example.com",
     "Username": "admin",
     "FirstName": "Адмін",

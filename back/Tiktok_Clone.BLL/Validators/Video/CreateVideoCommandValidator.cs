@@ -39,8 +39,9 @@ namespace Tiktok_Clone.BLL.Validators.Video
                 return mediaInfo.VideoStreams.Any();
 
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine(ex);
                 return false;
             }
             finally

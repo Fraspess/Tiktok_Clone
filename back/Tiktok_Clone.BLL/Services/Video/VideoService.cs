@@ -12,8 +12,7 @@ using Tiktok_Clone.BLL.Pagination;
 using Tiktok_Clone.DAL.Entities.HashTags;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Entities.Video;
-using Tiktok_Clone.DAL.Repositories.HashTags;
-using Tiktok_Clone.DAL.Repositories.Video;
+using Tiktok_Clone.DAL.UnitOfWork;
 using Xabe.FFmpeg;
 
 namespace Tiktok_Clone.BLL.Services.Video
@@ -24,14 +23,14 @@ namespace Tiktok_Clone.BLL.Services.Video
         public string CleanText { get; set; } = String.Empty;
         public List<string> Tags { get; set; } = new List<string>();
     }
-    public class VideoService(IVideoRepository _videoRepository, IHashTagRepository _hashTagRepository, IMapper _mapper, UserManager<UserEntity> _userManager) : IVideoService
+    public class VideoService(IMapper _mapper, UserManager<UserEntity> _userManager, IUnitOfWork _uow) : IVideoService
     {
         public async Task DeleteVideoById(Guid id, Guid userId)
         {
             var user = _userManager.Users.FirstOrDefault(u => u.Id == userId)
                 ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
 
-            var video = await _videoRepository.GetByIdAsync(id)
+            var video = await _uow.Videos.GetByIdAsync(id)
                 ?? throw new NotFoundException("Відео не знайдено");
 
             if (video.Author != user)
@@ -39,12 +38,12 @@ namespace Tiktok_Clone.BLL.Services.Video
                 throw new NotAllowedException("Ви не маєте прав на цю дію");
             }
 
-            await _videoRepository.DeleteAsync(video);
+            await _uow.Videos.DeleteAsync(video);
         }
 
         public async Task<VideoDTO> GetVideoByIdAsync(Guid id, Guid? userId)
         {
-            return await _videoRepository
+            return await _uow.Videos
                 .GetAll()
                 .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = userId })
                 .FirstOrDefaultAsync(v => v.Id == id) ?? throw new NotFoundException("Відео не знайдено");
@@ -53,7 +52,7 @@ namespace Tiktok_Clone.BLL.Services.Video
 
         public async Task<PagedResult<VideoDTO>> GetForYouPageVideos(PaginationSettings paginationSettings, Guid? userId)
         {
-            var videos = await _videoRepository
+            var videos = await _uow.Videos
                 .GetAll()
                 .OrderBy(v => Guid.NewGuid())
                 .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = userId })
@@ -61,6 +60,8 @@ namespace Tiktok_Clone.BLL.Services.Video
 
             return videos;
         }
+
+
 
         public async Task<VideoDTO> UploadVideoAsync(CreateVideoDTO dto, Guid ownerId)
         {
@@ -77,26 +78,13 @@ namespace Tiktok_Clone.BLL.Services.Video
             };
 
             // зберігаємо відео в базі даних щоб потім звязати з хештегами
-            await _videoRepository.CreateAsync(newVideo);
 
-            var hashTags = parsedDescription.Tags;
-            foreach (var hashTag in hashTags)
-            {
-                var tag = await _hashTagRepository.GetByNameAsync(hashTag);
-                if (tag is null)
-                {
-                    tag = new HashTagEntity() { Tag = hashTag };
-                    await _hashTagRepository.CreateAsync(tag);
-                }
+            var hashtags = await GetOrCreateHashtagsAsync(parsedDescription.Tags);
+            foreach (var tag in hashtags)
+                newVideo.HashTags.Add(new VideoHashTagEntity { HashTagId = tag.Id, VideoId = newVideo.Id });
 
-                newVideo.HashTags.Add(new VideoHashTagEntity
-                {
-                    HashTagId = tag.Id,
-                    VideoId = newVideo.Id
-                });
-            }
-
-            await _videoRepository.UpdateAsync(newVideo);
+            await _uow.Videos.CreateAsync(newVideo);
+            await _uow.SaveChangesAsync();
             return _mapper.Map<VideoDTO>(newVideo);
         }
 
@@ -165,8 +153,9 @@ namespace Tiktok_Clone.BLL.Services.Video
             }
         }
 
-        public async Task UploadVideoAsyncDev(string url, string key, Guid[] randomUsersId, string videoDescription = "Good description salo")
+        public async Task UploadVideoAsyncDev(string url, string key, Guid[] randomUsersId, string videoDescription = "Good description salo #salo #potuzhno #ukraine #football #sport")
         {
+            Console.WriteLine($"Raw description: '{videoDescription}'");
             var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "Videos");
             Directory.CreateDirectory(uploadFolder);
             using (var httpClient = new HttpClient())
@@ -197,23 +186,76 @@ namespace Tiktok_Clone.BLL.Services.Video
 
                     var randomUserId = randomUsersId[Random.Shared.Next(randomUsersId.Count())];
 
-                    var newVideo = new VideoEntity { Description = videoDescription, UserId = randomUserId, VideoFileName = fileName };
-                    await _videoRepository.CreateAsync(newVideo);
+                    var parsedDescription = ParseDescription(videoDescription);
+                    var newVideo = new VideoEntity { Description = parsedDescription.CleanText, UserId = randomUserId, VideoFileName = fileName };
+
+                    var hashtags = await GetOrCreateHashtagsAsync(parsedDescription.Tags);
+                    foreach (var tag in hashtags)
+                    {
+                        newVideo.HashTags.Add(new VideoHashTagEntity { HashTagId = tag.Id, VideoId = newVideo.Id });
+                    }
+                    await _uow.Videos.CreateAsync(newVideo);
                 }
             }
+            await _uow.SaveChangesAsync();
 
 
         }
 
         public async Task<PagedResult<VideoDTO>> GetUserVideos(Guid userId, PaginationSettings settings, Guid? currentUser)
         {
-            var videos = await _videoRepository
+            var videos = await _uow.Videos
                 .GetAll()
                 .Where(v => v.UserId == userId)
                 .OrderBy(v => v.CreatedAt)
                 .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = currentUser })
                 .ToPagedResultAsync(settings);
             return videos;
+        }
+
+        public async Task<PagedResult<SimpleVideoDTO>> FindVideosBySomeStringAsync(string someString, PaginationSettings settings)
+        {
+            someString = someString.ToLower().Trim();
+            var query = _uow.Videos
+                .GetAll()
+                .Include(v => v.HashTags)
+                .Include(v => v.Author)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(someString))
+            {
+                query = query.Where(v =>
+                    v.Description.ToLower().Contains(someString) ||
+                    v.Author!.UserName!.ToLower().Contains(someString) ||
+                    v.HashTags.Any(h => h.HashTag.Tag.ToLower().Contains(someString))
+                );
+            }
+
+            var videos = await query
+                .OrderByDescending(v => v.CreatedAt)
+                .ProjectTo<SimpleVideoDTO>(_mapper.ConfigurationProvider)
+                .ToPagedResultAsync(settings);
+
+            return videos;
+
+        }
+
+        private async Task<List<HashTagEntity>> GetOrCreateHashtagsAsync(List<string> tags)
+        {
+            var result = new List<HashTagEntity>();
+            foreach (var tagName in tags)
+            {
+                var tag = await _uow.HashTags.GetByNameAsync(tagName)
+                       ?? _uow.HashTags.GetTracked(h => h.Tag == tagName);
+
+                if (tag is null)
+                {
+                    tag = new HashTagEntity { Tag = tagName };
+                    await _uow.HashTags.CreateAsync(tag);
+                }
+                result.Add(tag);
+            }
+            return result;
         }
     }
 }

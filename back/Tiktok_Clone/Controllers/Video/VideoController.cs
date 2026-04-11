@@ -68,6 +68,12 @@ namespace Tiktok_Clone.Controllers.Video
             return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos));
         }
 
+        [HttpGet("search/{query}")]
+        public async Task<IActionResult> GetVideoBySomeQuery(string query, int pageNumber = 1, int pageSize = 5)
+        {
+            var videos = await _mediator.Send(new GetVideosBySomeStringQuery(query, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
+            return Ok(ApiResponse<PagedResult<SimpleVideoDTO>>.Success(videos));
+        }
 
         private Guid? GetUserIfExists()
         {

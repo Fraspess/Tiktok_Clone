@@ -1,18 +1,18 @@
 ﻿using Tiktok_Clone.BLL.Exceptions;
 using Tiktok_Clone.BLL.Services.Video;
 using Tiktok_Clone.DAL.Entities.Favorite;
-using Tiktok_Clone.DAL.Repositories.Favorite;
+using Tiktok_Clone.DAL.UnitOfWork;
 
 namespace Tiktok_Clone.BLL.Services.Favorite
 {
-    public class FavoriteService(IFavoriteRepository repository, IVideoService videoService) : IFavoriteService
+    public class FavoriteService(IVideoService _service, IUnitOfWork _uow) : IFavoriteService
     {
         public async Task ToogleFavoriteAsync(Guid videoId, Guid userId)
         {
-            var video = await videoService.GetVideoByIdAsync(videoId, userId)
+            var video = await _service.GetVideoByIdAsync(videoId, userId)
                 ?? throw new NotFoundException("Відео не знайдено");
 
-            var favoriteEntity = repository.GetByVideoAndUserIds(videoId, userId);
+            var favoriteEntity = _uow.Favorites.GetByVideoAndUserIds(videoId, userId);
             if (favoriteEntity is null)
             {
                 favoriteEntity = new FavoriteEntity
@@ -20,12 +20,13 @@ namespace Tiktok_Clone.BLL.Services.Favorite
                     UserId = userId,
                     VideoId = videoId,
                 };
-                await repository.CreateAsync(favoriteEntity);
+                await _uow.Favorites.CreateAsync(favoriteEntity);
             }
             else
             {
-                await repository.DeleteAsync(favoriteEntity);
+                await _uow.Favorites.DeleteAsync(favoriteEntity);
             }
+            await _uow.SaveChangesAsync();
         }
     }
 }

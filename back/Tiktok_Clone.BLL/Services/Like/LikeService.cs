@@ -1,38 +1,33 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Tiktok_Clone.BLL.Exceptions;
-using Tiktok_Clone.DAL.Entities.Identity;
+﻿using Tiktok_Clone.BLL.Exceptions;
 using Tiktok_Clone.DAL.Entities.Like;
-using Tiktok_Clone.DAL.Repositories.Like;
-using Tiktok_Clone.DAL.Repositories.Video;
+using Tiktok_Clone.DAL.UnitOfWork;
 
 namespace Tiktok_Clone.BLL.Services.Like
 {
-    public class LikeService(ILikeRepository _likeRepository, IVideoRepository _videoRepository, UserManager<UserEntity> _userManager) : ILikeService
+    public class LikeService(IUnitOfWork _uow) : ILikeService
     {
         // Якщо є лайк забирає, нема - ставить
         public async Task ToogleLike(Guid videoId, Guid userId)
         {
-            var video = await _videoRepository.GetByIdAsync(videoId) ?? throw new NotFoundException("Відео не знайдено");
-            var user = _userManager.Users.FirstOrDefault(u => u.Id == userId) ?? throw new NotFoundException("Користувач не знайдений");
+            var video = await _uow.Videos.GetByIdAsync(videoId)
+                ?? throw new NotFoundException("Відео не знайдено");
 
-            var newLikeEntity = _likeRepository.GetLikeByUserAndVideoId(userId, videoId);
-            if (newLikeEntity == null)
+            var existingLike = await _uow.Likes.GetLikeByUserAndVideoIdAsync(userId, videoId);
+
+            if (existingLike == null)
             {
-                newLikeEntity = new LikeEntity
+                await _uow.Likes.CreateAsync(new LikeEntity
                 {
                     UserId = userId,
                     VideoId = videoId
-                };
-                await _likeRepository.CreateAsync(newLikeEntity);
-                user.Likes.Add(newLikeEntity);
-                video.Likes.Add(newLikeEntity);
+                });
             }
             else
             {
-                user.Likes.Remove(newLikeEntity);
-                video.Likes.Remove(newLikeEntity);
+                await _uow.Likes.DeleteAsync(existingLike);
             }
-            await _userManager.UpdateAsync(user);
+
+            await _uow.SaveChangesAsync();
         }
     }
 }

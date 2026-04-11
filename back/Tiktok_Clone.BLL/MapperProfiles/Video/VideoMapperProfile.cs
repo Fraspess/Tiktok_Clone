@@ -31,6 +31,11 @@ namespace Tiktok_Clone.BLL.MapperProfiles.Video
                 .ForMember(dest => dest.IsFavorited,
                        opt => opt.MapFrom(src => src.Favorites.Any(f => f.UserId == currentUserId)));
 
+
+            CreateMap<VideoEntity, SimpleVideoDTO>()
+                .ForMember(d => d.HashTags,
+                    o => o.MapFrom(s => s.HashTags.Select(h => h.HashTag.Tag)));
+
         }
     }
 }
