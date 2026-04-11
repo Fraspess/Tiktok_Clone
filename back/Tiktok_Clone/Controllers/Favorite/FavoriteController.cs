@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tiktok_Clone.BLL;
-using Tiktok_Clone.BLL.Commands.Favorite;
 using Tiktok_Clone.BLL.Extensions;
+using Tiktok_Clone.BLL.Features.Favorite.ToggleFavorite;
 
 
 namespace Tiktok_Clone.Controllers.Favorite
@@ -16,7 +16,7 @@ namespace Tiktok_Clone.Controllers.Favorite
         [Authorize]
         public async Task<IActionResult> Favorite(Guid videoId)
         {
-            await mediator.Send(new ToogleFavoriteCommand(videoId, User.GetUserId()));
+            await mediator.Send(new ToggleFavoriteCommand(videoId, User.GetUserId()));
             return Ok(ApiResponse<object>.Success(null!, null));
         }
 

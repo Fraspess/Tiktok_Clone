@@ -2,11 +2,13 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Tiktok_Clone.BLL;
-using Tiktok_Clone.BLL.Commands.Comment;
 using Tiktok_Clone.BLL.Dtos.Comment;
 using Tiktok_Clone.BLL.Extensions;
+using Tiktok_Clone.BLL.Features.Comment.Create;
+using Tiktok_Clone.BLL.Features.Comment.Delete;
+using Tiktok_Clone.BLL.Features.Comment.Get;
+using Tiktok_Clone.BLL.Features.Comment.GetReplies;
 using Tiktok_Clone.BLL.Pagination;
-using Tiktok_Clone.BLL.Queries.Comment;
 
 namespace Tiktok_Clone.Controllers.Comment
 {

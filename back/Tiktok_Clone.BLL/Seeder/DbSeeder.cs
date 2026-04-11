@@ -6,7 +6,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
 using Tiktok_Clone.BLL.Constants;
-using Tiktok_Clone.BLL.Dtos.User;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Video;
 using Tiktok_Clone.DAL;

@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Tiktok_Clone.BLL.Dtos.User;
+using Tiktok_Clone.BLL.Features.User.GetByUsername;
+using Tiktok_Clone.BLL.Features.User.GetCurrentUser;
+using Tiktok_Clone.BLL.Features.User.Register;
 using Tiktok_Clone.DAL.Entities.Identity;
 
 namespace Tiktok_Clone.BLL.MapperProfiles.User;
@@ -9,7 +12,6 @@ public class UserMapperProfile : Profile
     public UserMapperProfile()
     {
 
-        CreateMap<CreateUserDTO, UserEntity>();
 
         CreateMap<UserEntity, UserDTO>()
             .ForMember(u => u.FollowersCount,

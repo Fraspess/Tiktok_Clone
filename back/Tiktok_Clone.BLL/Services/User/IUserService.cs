@@ -1,5 +1,9 @@
 ﻿using Tiktok_Clone.BLL.Dtos.Token;
-using Tiktok_Clone.BLL.Dtos.User;
+using Tiktok_Clone.BLL.Features.User.GetByUsername;
+using Tiktok_Clone.BLL.Features.User.GetCurrentUser;
+using Tiktok_Clone.BLL.Features.User.Login;
+using Tiktok_Clone.BLL.Features.User.Register;
+using Tiktok_Clone.BLL.Features.User.ResetPassword;
 
 namespace Tiktok_Clone.BLL.Services.User;
 

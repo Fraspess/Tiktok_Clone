@@ -2,6 +2,6 @@
 {
     public interface IFavoriteService
     {
-        public Task ToogleFavoriteAsync(Guid videoId, Guid userId);
+        public Task ToggleFavoriteAsync(Guid videoId, Guid userId);
     }
 }
