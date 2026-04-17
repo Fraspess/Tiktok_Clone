@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="Hubs/Hubs.csproj" Id="5d8d69b3-d26b-4dc3-ac9b-6287fc9eb5c4" />
   <Project Path="Tiktok_Clone.BLL/Tiktok_Clone.BLL.csproj" />
   <Project Path="Tiktok_Clone.DAL/Tiktok_Clone.DAL.csproj" />
   <Project Path="Tiktok_Clone/Tiktok_Clone.csproj" />

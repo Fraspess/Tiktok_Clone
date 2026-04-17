@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Tiktok_Clone.DAL.Entities.Comment;
+using Tiktok_Clone.DAL.Entities.Conversation;
 using Tiktok_Clone.DAL.Entities.Favorite;
 using Tiktok_Clone.DAL.Entities.HashTags;
 using Tiktok_Clone.DAL.Entities.Identity;
@@ -32,6 +33,7 @@ public class AppDbContext : IdentityDbContext<
     public DbSet<UserFollowEntity> UserFollows { get; set; }
     public DbSet<VideoHashTagEntity> VideoHashTags { get; set; }
     public DbSet<HashTagEntity> HashTags { get; set; }
+    public DbSet<ConversationEntity> Conversations { get; set; }
 
     public DbSet<FavoriteEntity> Favorites { get; set; }
 
@@ -95,12 +97,6 @@ public class AppDbContext : IdentityDbContext<
             .HasOne(m => m.Sender)
             .WithMany(u => u.SentMessages)
             .HasForeignKey(m => m.SenderId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.Entity<MessageEntity>()
-            .HasOne(m => m.Receiver)
-            .WithMany(u => u.ReceivedMessages)
-            .HasForeignKey(m => m.ReceiverId)
             .OnDelete(DeleteBehavior.Restrict);
 
         // ── Reports ─────────────────────────────────────────
@@ -186,5 +182,30 @@ public class AppDbContext : IdentityDbContext<
         builder.Entity<FavoriteEntity>()
             .HasIndex(f => new { f.UserId, f.VideoId })
             .IsUnique();
+
+
+        builder.Entity<ConversationEntity>()
+            .HasMany(c => c.Participants)
+            .WithOne(p => p.Conversation)
+            .HasForeignKey(p => p.ConversationId);
+
+        builder.Entity<ConversationEntity>()
+            .HasMany(c => c.Messages)
+            .WithOne(m => m.Conversation)
+            .HasForeignKey(m => m.ConversationId);
+
+        builder.Entity<ConversationParticipant>()
+            .HasKey(p => new { p.ConversationId, p.UserId });
+
+
+        builder.Entity<ConversationParticipant>()
+            .HasOne(p => p.User)
+            .WithMany(u => u.ConversationParticipants)
+            .HasForeignKey(p => p.UserId);
+
+        builder.Entity<ConversationParticipant>()
+            .HasOne(p => p.Conversation)
+            .WithMany(c => c.Participants)
+            .HasForeignKey(p => p.ConversationId);
     }
 }

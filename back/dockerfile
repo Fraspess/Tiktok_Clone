@@ -32,11 +32,6 @@ RUN apt-get update && \
 # Copy published output
 COPY --from=build /app/publish .
 
-# Non-root user for security
-RUN groupadd --system appgroup && \
-    useradd --system --gid appgroup --no-create-home appuser
-USER appuser
-
 ENV ASPNETCORE_ENVIRONMENT=Production
 ENV ASPNETCORE_URLS=http://+:8080
 

@@ -1,9 +1,11 @@
 ﻿using Tiktok_Clone.DAL.Repositories.Comment;
+using Tiktok_Clone.DAL.Repositories.Conversation;
 using Tiktok_Clone.DAL.Repositories.Favorite;
 using Tiktok_Clone.DAL.Repositories.Follow;
 using Tiktok_Clone.DAL.Repositories.HashTag;
 using Tiktok_Clone.DAL.Repositories.HashTags;
 using Tiktok_Clone.DAL.Repositories.Like;
+using Tiktok_Clone.DAL.Repositories.Message;
 using Tiktok_Clone.DAL.Repositories.Video;
 
 namespace Tiktok_Clone.DAL.UnitOfWork
@@ -18,6 +20,9 @@ namespace Tiktok_Clone.DAL.UnitOfWork
         public IHashTagRepository HashTags { get; }
         public IFollowRepository Follows { get; }
         public IFavoriteRepository Favorites { get; }
+        public IConversationRepository Conversations { get; }
+        public IMessageRepository Messages { get; }
+
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
@@ -27,6 +32,8 @@ namespace Tiktok_Clone.DAL.UnitOfWork
             HashTags = new HashTagRepository(context);
             Follows = new FollowRepository(context);
             Favorites = new FavoriteRepository(context);
+            Conversations = new ConversationRepository(context);
+            Messages = new MessageRepository(context);
         }
 
         public Task<int> SaveChangesAsync() => _context.SaveChangesAsync();
