@@ -44,7 +44,8 @@ public class UserMapperProfile : Profile
         CreateMap<RegisterUserDTO, UserEntity>()
             .ForMember(dest => dest.Avatar, opt => opt.Ignore());
 
-        CreateMap<UserEntity, UserAuthorDTO>();
+        CreateMap<UserEntity, UserAuthorDTO>()
+            .ForMember(u => u.Username, o => o.MapFrom(u => $"@{u.UserName}"));
 
         CreateMap<UserEntity, SimpleUserDTO>()
             .ForMember(u => u.Username,

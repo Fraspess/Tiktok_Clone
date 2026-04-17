@@ -12,7 +12,6 @@ using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Behaviors;
 using Tiktok_Clone.BLL.Seeder;
 using Tiktok_Clone.BLL.Services.Comment;
-using Tiktok_Clone.BLL.Services.ConnectionManager;
 using Tiktok_Clone.BLL.Services.Conversation;
 using Tiktok_Clone.BLL.Services.Email;
 using Tiktok_Clone.BLL.Services.Favorite;
@@ -20,6 +19,7 @@ using Tiktok_Clone.BLL.Services.Images;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Like;
 using Tiktok_Clone.BLL.Services.Message;
+using Tiktok_Clone.BLL.Services.Notification;
 using Tiktok_Clone.BLL.Services.Token;
 using Tiktok_Clone.BLL.Services.User;
 using Tiktok_Clone.BLL.Services.Video;
@@ -33,10 +33,12 @@ using Tiktok_Clone.DAL.Repositories.Follow;
 using Tiktok_Clone.DAL.Repositories.HashTag;
 using Tiktok_Clone.DAL.Repositories.HashTags;
 using Tiktok_Clone.DAL.Repositories.Like;
+using Tiktok_Clone.DAL.Repositories.Message;
 using Tiktok_Clone.DAL.Repositories.Video;
 using Tiktok_Clone.DAL.UnitOfWork;
 using Tiktok_Clone.Hubs;
 using Tiktok_Clone.Middleware;
+using Tiktok_Clone.Notifications;
 using Xabe.FFmpeg;
 
 Console.OutputEncoding = System.Text.Encoding.UTF8;
@@ -77,6 +79,20 @@ try
                     Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!
                     )),
             };
+
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+
+                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                        context.Token = accessToken;
+
+                    return Task.CompletedTask;
+                }
+            };
         });
 
     builder.Services.AddAuthorization();
@@ -115,16 +131,32 @@ try
 
     // Add services to the container.
 
-    builder.Services.AddCors(opt =>
+
+    if (builder.Environment.IsDevelopment())
     {
-        opt.AddPolicy("MyPolicy", policy =>
+        builder.Services.AddCors(options =>
         {
-            policy.WithOrigins(builder.Configuration["Frontend:Url"]!)
-                .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .AllowAnyHeader()
-                .AllowCredentials();
+            options.AddDefaultPolicy(policy => policy
+                       .SetIsOriginAllowed(_ => true)
+                       .AllowAnyHeader()
+                       .AllowAnyMethod()
+                       .AllowCredentials());
         });
-    });
+    }
+    else
+    {
+        builder.Services.AddCors(opt =>
+        {
+            opt.AddDefaultPolicy(policy =>
+            {
+                policy.WithOrigins(builder.Configuration["Frontend:Url"]!)
+                    .WithMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });
+        });
+    }
+
 
     builder.Services.AddControllers()
         .ConfigureApiBehaviorOptions(opt =>
@@ -139,6 +171,7 @@ try
     builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
     builder.Services.AddScoped<IFollowRepository, FollowRepository>();
     builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
+    builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IImageService, ImageService>();
@@ -150,6 +183,7 @@ try
     builder.Services.AddScoped<IFavoriteService, FavoriteService>();
     builder.Services.AddScoped<IConversationService, ConversationService>();
     builder.Services.AddScoped<IMessageService, MessageService>();
+    builder.Services.AddScoped<IChatNotifier, ChatNotifier>();
 
     builder.Services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
     builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -164,8 +198,6 @@ try
     });
 
     builder.Services.AddSignalR();
-    builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
-
 
     builder.Services.AddSwaggerGen(opt =>
     {
@@ -185,8 +217,6 @@ try
 
     var app = builder.Build();
 
-    app.MapHub<ChatHub>("/hubs/chat");
-
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -195,16 +225,18 @@ try
         {
             options.SwaggerEndpoint("/swagger/v1/swagger.json", "Tiktok-Clone");
         });
+
     }
     app.UseMiddleware<GlobalExceptionHandler>();
 
     app.UseSerilogRequestLogging();
 
-    app.UseCors("MyPolicy");
+    app.UseCors();
     app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
+    app.MapHub<ChatHub>("/hubs/chat");
 
     using var scope = app.Services.CreateScope();
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -221,6 +253,7 @@ try
     {
         Log.Error(ex, "An error occurred while seeding the database");
     }
+
 
     app.Run();
 

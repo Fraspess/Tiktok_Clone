@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using Tiktok_Clone.BLL.Dtos.Token;
-using Tiktok_Clone.BLL.Dtos.User;
 using Tiktok_Clone.BLL.Services.User;
 
 namespace Tiktok_Clone.BLL.Features.User.Login

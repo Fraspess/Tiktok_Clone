@@ -14,7 +14,8 @@ namespace Tiktok_Clone.BLL.MapperProfiles.Conversations
             CreateMap<ConversationEntity, ConversationDTO>()
                 .ForMember(c => c.Participants, o => o.MapFrom(c => c.Participants));
 
-            CreateMap<MessageEntity, MessageDTO>();
+            CreateMap<MessageEntity, MessageDTO>()
+                .ForMember(c => c.SenderUsername, o => o.MapFrom(o => $"@{o.Sender.UserName}"));
 
             CreateMap<ConversationParticipant, SimpleUserDTO>()
                 .ForMember(u => u.Username, o => o.MapFrom(p => $"@{p.User.UserName}"))

@@ -11,7 +11,7 @@ namespace Tiktok_Clone.DAL.Entities.Message
         public UserEntity Sender { get; set; } = null!;
         public bool IsDelivered { get; set; } = false;
 
-        public required String Text { get; set; }
+        public required String Content { get; set; }
 
         public bool IsRead { get; set; } = false;
 

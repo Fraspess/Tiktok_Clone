@@ -5,23 +5,24 @@
 namespace Tiktok_Clone.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class UserLastEmailSent : Migration
+    public partial class userauthprovider : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<DateTime>(
-                name: "LastConfirmationEmailSentAt",
+            migrationBuilder.AddColumn<string>(
+                name: "AuthProvider",
                 table: "AspNetUsers",
-                type: "timestamp with time zone",
-                nullable: true);
+                type: "text",
+                nullable: false,
+                defaultValue: "");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "LastConfirmationEmailSentAt",
+                name: "AuthProvider",
                 table: "AspNetUsers");
         }
     }

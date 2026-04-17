@@ -1,26 +1,92 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using Microsoft.EntityFrameworkCore;
+using Tiktok_Clone.BLL.Dtos.Message;
+using Tiktok_Clone.BLL.Exceptions;
+using Tiktok_Clone.BLL.Extensions;
+using Tiktok_Clone.BLL.Pagination;
+using Tiktok_Clone.BLL.Services.Notification;
 using Tiktok_Clone.DAL.Entities.Message;
 using Tiktok_Clone.DAL.UnitOfWork;
 
 namespace Tiktok_Clone.BLL.Services.Message
 {
-    public class MessageService(IUnitOfWork _uow, IMapper _mapper) : IMessageService
+    public class MessageService(IUnitOfWork _uow, IMapper _mapper, IChatNotifier _notifier) : IMessageService
     {
-        public Task FlushPendingAsync(Guid userId)
+        public async Task FlushPendingAsync(Guid userId)
         {
-            throw new NotImplementedException();
+            var pendingMessages = await _uow.Messages
+                .GetAll()
+                .Where(m =>
+                    m.IsDelivered == false &&
+                    m.SenderId != userId &&
+                    m.Conversation.Participants
+                        .Any(p => p.UserId == userId))
+                .OrderBy(m => m.CreatedAt)
+                .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider)
+                .ToListAsync();
+
+            if (!pendingMessages.Any()) return;
+
+            await _notifier.SendPendingMessagesAsync(userId, pendingMessages);
+
+        }
+
+        public async Task<PagedResult<MessageDTO>> GetMessagesAsync(Guid conversationId, PaginationSettings settings)
+        {
+            var conversationExists = await _uow.Conversations.GetAll().AnyAsync(u => u.Id == conversationId);
+            if (!conversationExists) throw new NotFoundException("Чат не знайдено");
+
+            var messages = await _uow.Messages
+                .GetAll()
+                .Where(m => m.ConversationId == conversationId)
+                .OrderByDescending(m => m.CreatedAt)
+                .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider)
+                .ToPagedResultAsync(settings);
+
+            return messages;
+        }
+
+        public async Task MarkAsDeliveredAsync(Guid userId, Guid messageId)
+        {
+            var message = await _uow.Messages
+                .GetAll()
+                .FirstOrDefaultAsync(m =>
+                    m.Id == messageId &&
+                    m.Conversation.Participants.Any(p => p.UserId == userId))
+            ?? throw new NotFoundException("Повідомлення не знайдено");
+
+            message.IsDelivered = true;
+            await _uow.SaveChangesAsync();
+        }
+
+        public async Task MarkAsReadAsync(Guid userId, Guid messageId)
+        {
+            var message = await _uow.Messages
+                .GetAll()
+                .FirstOrDefaultAsync(m =>
+                    m.Id == messageId &&
+                    m.Conversation.Participants.Any(p => p.UserId == userId))
+                ?? throw new NotFoundException("Повідомлення не знайдено");
+
+            message.IsRead = true;
+            await _uow.SaveChangesAsync();
         }
 
         public async Task SendAsync(Guid userId, Guid conversationId, string content)
         {
+            var conversationExists = await _uow.Conversations.GetAll().AnyAsync(u => u.Id == conversationId);
+            if (!conversationExists) throw new NotFoundException("Чат не знайдено");
 
             var newMessage = new MessageEntity
             {
                 SenderId = userId,
                 ConversationId = conversationId,
-                Text = content
+                Content = content
             };
 
+            await _uow.Messages.CreateAsync(newMessage);
+            await _uow.SaveChangesAsync();
         }
     }
 }

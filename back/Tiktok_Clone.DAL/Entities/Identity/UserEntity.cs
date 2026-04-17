@@ -22,6 +22,8 @@ public class UserEntity : IdentityUser<Guid>
 
     public int RefreshTokenVersion { get; set; }
 
+    public string AuthProvider { get; set; } = "local"; // local or google
+
     public DateTime? LastConfirmationEmailSentAt { get; set; }
 
     public ICollection<VideoEntity> Videos { get; set; } = new List<VideoEntity>();
