@@ -7,11 +7,13 @@ namespace Tiktok_Clone.Middleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<GlobalExceptionHandler> _logger;
+        private readonly IWebHostEnvironment webHostEnvironment;
 
-        public GlobalExceptionHandler(RequestDelegate next, ILogger<GlobalExceptionHandler> logger)
+        public GlobalExceptionHandler(RequestDelegate next, ILogger<GlobalExceptionHandler> logger, IWebHostEnvironment environment)
         {
             _next = next;
             _logger = logger;
+            webHostEnvironment = environment;
         }
 
         public async Task InvokeAsync(HttpContext context)
@@ -47,6 +49,12 @@ namespace Tiktok_Clone.Middleware
             catch (Exception ex)
             {
                 _logger.LogError("Ну вот як так, непонятна помилка : {error} ", ex.Message);
+                if (webHostEnvironment.IsDevelopment())
+                {
+                    context.Response.StatusCode = 500;
+                    await context.Response.WriteAsJsonAsync($"Внутрішня помилка сервера: {ex.Message}");
+                    return;
+                }
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error("Внутрішня помилка сервера"));
             }

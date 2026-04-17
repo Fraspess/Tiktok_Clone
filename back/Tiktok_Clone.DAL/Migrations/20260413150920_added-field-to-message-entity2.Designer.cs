@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tiktok_Clone.DAL;
@@ -11,13 +12,15 @@ using Tiktok_Clone.DAL;
 namespace Tiktok_Clone.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260413150920_added-field-to-message-entity2")]
+    partial class addedfieldtomessageentity2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.6")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -141,44 +144,6 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.HasIndex("VideoId");
 
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Conversation.ConversationEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Conversations");
-                });
-
-            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Conversation.ConversationParticipant", b =>
-                {
-                    b.Property<Guid>("ConversationId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("LastReadAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("ConversationId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ConversationParticipant");
                 });
 
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Favorite.FavoriteEntity", b =>
@@ -407,9 +372,6 @@ namespace Tiktok_Clone.DAL.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ConversationId")
-                        .HasColumnType("uuid");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -418,6 +380,9 @@ namespace Tiktok_Clone.DAL.Migrations
 
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uuid");
@@ -428,7 +393,7 @@ namespace Tiktok_Clone.DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ConversationId");
+                    b.HasIndex("ReceiverId");
 
                     b.HasIndex("SenderId");
 
@@ -572,25 +537,6 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Navigation("Video");
                 });
 
-            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Conversation.ConversationParticipant", b =>
-                {
-                    b.HasOne("Tiktok_Clone.DAL.Entities.Conversation.ConversationEntity", "Conversation")
-                        .WithMany("Participants")
-                        .HasForeignKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "User")
-                        .WithMany("ConversationParticipants")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Conversation");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Favorite.FavoriteEntity", b =>
                 {
                     b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "User")
@@ -669,10 +615,10 @@ namespace Tiktok_Clone.DAL.Migrations
 
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Message.MessageEntity", b =>
                 {
-                    b.HasOne("Tiktok_Clone.DAL.Entities.Conversation.ConversationEntity", "Conversation")
-                        .WithMany("Messages")
-                        .HasForeignKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "Receiver")
+                        .WithMany("ReceivedMessages")
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "Sender")
@@ -681,7 +627,7 @@ namespace Tiktok_Clone.DAL.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Conversation");
+                    b.Navigation("Receiver");
 
                     b.Navigation("Sender");
                 });
@@ -748,13 +694,6 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Navigation("Replies");
                 });
 
-            modelBuilder.Entity("Tiktok_Clone.DAL.Entities.Conversation.ConversationEntity", b =>
-                {
-                    b.Navigation("Messages");
-
-                    b.Navigation("Participants");
-                });
-
             modelBuilder.Entity("Tiktok_Clone.DAL.Entities.HashTags.HashTagEntity", b =>
                 {
                     b.Navigation("VideoHashTags");
@@ -769,8 +708,6 @@ namespace Tiktok_Clone.DAL.Migrations
                 {
                     b.Navigation("Comments");
 
-                    b.Navigation("ConversationParticipants");
-
                     b.Navigation("Favorites");
 
                     b.Navigation("Followers");
@@ -778,6 +715,8 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Navigation("Following");
 
                     b.Navigation("Likes");
+
+                    b.Navigation("ReceivedMessages");
 
                     b.Navigation("SentMessages");
 

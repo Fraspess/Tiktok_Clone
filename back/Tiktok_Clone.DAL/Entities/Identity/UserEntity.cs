@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Tiktok_Clone.DAL.Entities.Comment;
+using Tiktok_Clone.DAL.Entities.Conversation;
 using Tiktok_Clone.DAL.Entities.Favorite;
 using Tiktok_Clone.DAL.Entities.Like;
 using Tiktok_Clone.DAL.Entities.Message;
@@ -29,10 +30,6 @@ public class UserEntity : IdentityUser<Guid>
 
     public ICollection<UserFollowEntity> Followers { get; set; } = new List<UserFollowEntity>();
 
-    public ICollection<MessageEntity> SentMessages { get; set; } = new List<MessageEntity>();
-    public ICollection<MessageEntity> ReceivedMessages { get; set; } = new List<MessageEntity>();
-
-
     public ICollection<CommentEntity> Comments { get; set; } = new List<CommentEntity>();
 
     public ICollection<LikeEntity> Likes { get; set; } = new List<LikeEntity>();
@@ -40,4 +37,8 @@ public class UserEntity : IdentityUser<Guid>
     public virtual ICollection<UserRoleEntity>? UserRoles { get; set; }
 
     public ICollection<FavoriteEntity> Favorites { get; set; } = new List<FavoriteEntity>();
+
+    public ICollection<ConversationParticipant> ConversationParticipants { get; set; } = [];
+
+    public ICollection<MessageEntity> SentMessages { get; set; } = [];
 }

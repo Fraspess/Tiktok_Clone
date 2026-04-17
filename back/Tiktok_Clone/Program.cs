@@ -12,11 +12,14 @@ using Tiktok_Clone.BLL;
 using Tiktok_Clone.BLL.Behaviors;
 using Tiktok_Clone.BLL.Seeder;
 using Tiktok_Clone.BLL.Services.Comment;
+using Tiktok_Clone.BLL.Services.ConnectionManager;
+using Tiktok_Clone.BLL.Services.Conversation;
 using Tiktok_Clone.BLL.Services.Email;
 using Tiktok_Clone.BLL.Services.Favorite;
 using Tiktok_Clone.BLL.Services.Images;
 using Tiktok_Clone.BLL.Services.ImageService;
 using Tiktok_Clone.BLL.Services.Like;
+using Tiktok_Clone.BLL.Services.Message;
 using Tiktok_Clone.BLL.Services.Token;
 using Tiktok_Clone.BLL.Services.User;
 using Tiktok_Clone.BLL.Services.Video;
@@ -24,6 +27,7 @@ using Tiktok_Clone.BLL.Settings;
 using Tiktok_Clone.DAL;
 using Tiktok_Clone.DAL.Entities.Identity;
 using Tiktok_Clone.DAL.Repositories.Comment;
+using Tiktok_Clone.DAL.Repositories.Conversation;
 using Tiktok_Clone.DAL.Repositories.Favorite;
 using Tiktok_Clone.DAL.Repositories.Follow;
 using Tiktok_Clone.DAL.Repositories.HashTag;
@@ -31,6 +35,7 @@ using Tiktok_Clone.DAL.Repositories.HashTags;
 using Tiktok_Clone.DAL.Repositories.Like;
 using Tiktok_Clone.DAL.Repositories.Video;
 using Tiktok_Clone.DAL.UnitOfWork;
+using Tiktok_Clone.Hubs;
 using Tiktok_Clone.Middleware;
 using Xabe.FFmpeg;
 
@@ -71,15 +76,6 @@ try
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!
                     )),
-            };
-
-            options.Events = new JwtBearerEvents
-            {
-                OnAuthenticationFailed = context =>
-                {
-                    Console.WriteLine($"Auth failed: {context.Exception.Message}");
-                    return Task.CompletedTask;
-                }
             };
         });
 
@@ -142,6 +138,7 @@ try
     builder.Services.AddScoped<ICommentRepository, CommentRepository>();
     builder.Services.AddScoped<IFavoriteRepository, FavoriteRepository>();
     builder.Services.AddScoped<IFollowRepository, FollowRepository>();
+    builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IImageService, ImageService>();
@@ -151,6 +148,8 @@ try
     builder.Services.AddScoped<ILikeService, LikeService>();
     builder.Services.AddScoped<ICommentService, CommentService>();
     builder.Services.AddScoped<IFavoriteService, FavoriteService>();
+    builder.Services.AddScoped<IConversationService, ConversationService>();
+    builder.Services.AddScoped<IMessageService, MessageService>();
 
     builder.Services.AddValidatorsFromAssembly(typeof(AssemblyReference).Assembly);
     builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
@@ -163,6 +162,9 @@ try
         opt.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly);
         opt.LicenseKey = builder.Configuration.GetConnectionString("AutoMapper");
     });
+
+    builder.Services.AddSignalR();
+    builder.Services.AddSingleton<IConnectionManager, ConnectionManager>();
 
 
     builder.Services.AddSwaggerGen(opt =>
@@ -182,6 +184,8 @@ try
     });
 
     var app = builder.Build();
+
+    app.MapHub<ChatHub>("/hubs/chat");
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())

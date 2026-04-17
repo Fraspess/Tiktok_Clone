@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Tiktok_Clone.DAL;
@@ -11,13 +12,15 @@ using Tiktok_Clone.DAL;
 namespace Tiktok_Clone.DAL.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414200302_AddConversationEntity")]
+    partial class AddConversationEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.6")
+                .HasAnnotation("ProductVersion", "10.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -419,6 +422,9 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.Property<bool>("IsRead")
                         .HasColumnType("boolean");
 
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("SenderId")
                         .HasColumnType("uuid");
 
@@ -429,6 +435,8 @@ namespace Tiktok_Clone.DAL.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ConversationId");
+
+                    b.HasIndex("ReceiverId");
 
                     b.HasIndex("SenderId");
 
@@ -675,6 +683,12 @@ namespace Tiktok_Clone.DAL.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Tiktok_Clone.DAL.Entities.Identity.UserEntity", "Sender")
                         .WithMany("SentMessages")
                         .HasForeignKey("SenderId")
@@ -682,6 +696,8 @@ namespace Tiktok_Clone.DAL.Migrations
                         .IsRequired();
 
                     b.Navigation("Conversation");
+
+                    b.Navigation("Receiver");
 
                     b.Navigation("Sender");
                 });
