@@ -67,7 +67,7 @@ namespace Tiktok_Clone.BLL.Services.Images
 
         public async Task<string> SaveImageAsync(string url)
         {
-            var httpStream = await _httpClient.GetStreamAsync(url);
+            var httpStream = await _httpClient.GetStreamAsync(new Uri(url));
             var stream = new MemoryStream();
 
             await httpStream.CopyToAsync(stream);

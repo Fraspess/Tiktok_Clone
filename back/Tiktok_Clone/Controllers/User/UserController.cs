@@ -15,6 +15,7 @@ using Tiktok_Clone.BLL.Features.User.ForgotPassword;
 using Tiktok_Clone.BLL.Features.User.GetByUsername;
 using Tiktok_Clone.BLL.Features.User.GetCurrentUser;
 using Tiktok_Clone.BLL.Features.User.GetUserVideos;
+using Tiktok_Clone.BLL.Features.User.GoogleAuth;
 using Tiktok_Clone.BLL.Features.User.Login;
 using Tiktok_Clone.BLL.Features.User.LogOutOnAllDevices;
 using Tiktok_Clone.BLL.Features.User.RefreshTokens;
@@ -52,6 +53,13 @@ public class UserController(IMediator _mediator) : ControllerBase
         return Ok(ApiResponse<object>.Success(new { accessToken = tokens.AccessToken }, "Пошта підтверджена."));
     }
 
+    [HttpPost("google")]
+    public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthDTO request)
+    {
+        var tokens = await _mediator.Send(new GoogleAuthCommand(request.IdToken));
+        AppendRefreshTokenCookie(tokens.RefreshToken);
+        return Ok(ApiResponse<object>.Success(new { accessToken = tokens.AccessToken }));
+    }
 
     [HttpGet("me")]
     [Authorize]
@@ -148,7 +156,7 @@ public class UserController(IMediator _mediator) : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None,
+            SameSite = SameSiteMode.Strict,
             Expires = DateTime.UtcNow.AddDays(7)
         });
     }
@@ -160,7 +168,7 @@ public class UserController(IMediator _mediator) : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.None,
+            SameSite = SameSiteMode.Strict,
             Expires = DateTime.UtcNow.AddDays(-1)
         });
     }
