@@ -51,6 +51,7 @@ Log.Logger = new LoggerConfiguration()
 
 try
 {
+    DotNetEnv.Env.Load();
     var builder = WebApplication.CreateBuilder(args);
 
 
@@ -126,7 +127,7 @@ try
 
     builder.Services.AddAutoMapper(cfg =>
     {
-        cfg.LicenseKey = builder.Configuration.GetConnectionString("AutoMapper");
+        cfg.LicenseKey = builder.Configuration["AutoMapper:Key"];
     }, AppDomain.CurrentDomain.GetAssemblies());
 
     // Add services to the container.
@@ -194,7 +195,7 @@ try
     builder.Services.AddMediatR(opt =>
     {
         opt.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly);
-        opt.LicenseKey = builder.Configuration.GetConnectionString("AutoMapper");
+        opt.LicenseKey = builder.Configuration["AutoMapper:Key"];
     });
 
     builder.Services.AddSignalR();
