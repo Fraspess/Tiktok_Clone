@@ -58,7 +58,7 @@ namespace Tiktok_Clone.Middleware
                 if (webHostEnvironment.IsDevelopment())
                 {
                     context.Response.StatusCode = 500;
-                    await context.Response.WriteAsJsonAsync($"Внутрішня помилка сервера: {ex.Message}");
+                    await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error($"Внутрішня помилка сервера: {ex.Message}"));
                     return;
                 }
                 context.Response.StatusCode = 500;

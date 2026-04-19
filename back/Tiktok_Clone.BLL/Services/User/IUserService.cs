@@ -29,6 +29,7 @@ public interface IUserService
 
     Task ToggleFollowAsync(Guid follower, Guid following);
 
+    Task<TokenResponseDTO> GoogleAuth(string idToken);
 
 
 }

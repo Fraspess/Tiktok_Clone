@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -146,6 +147,8 @@ public class UserService : IUserService
         {
             throw new UnauthorizedException("Користувач не знайдений");
         }
+        if (!await _userManager.HasPasswordAsync(user)) throw new BadRequestException("Аккаунтам створених зовнішими сервісами не можливо сбросити пароль");
+
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         string resetLink = $"{_configuration["Frontend:Url"]}/reset-password?token={token}&email={email}";
         var body = GetHtmlTemplate("ResetPassword.html");
@@ -190,7 +193,6 @@ public class UserService : IUserService
         }
         else
         {
-            _logger.LogWarning("Не вдалося скинути пароль для {email} того що : {error} ", dto.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
             throw new ValidationException("Невірний токен для скидання пароля");
         }
     }
@@ -256,4 +258,72 @@ public class UserService : IUserService
         await _userManager.UpdateAsync(user);
     }
 
+    public async Task<TokenResponseDTO> GoogleAuth(string idToken)
+    {
+        GoogleJsonWebSignature.Payload payload;
+        try
+        {
+            var settings = new GoogleJsonWebSignature.ValidationSettings
+            {
+                Audience = new[] { _configuration["Google:ClientId"] }
+            };
+            payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+        }
+        catch (InvalidJwtException)
+        {
+            throw new UnauthorizedException("Помилка при вході через гугл. Спробуйте ще раз.");
+        }
+        if (!payload.EmailVerified) throw new UnauthorizedException("Помилка при валідації почти. Спробуйте ще раз.");
+
+        var existingUser = await _userManager.FindByLoginAsync("Google", payload.Subject);
+        if (existingUser is not null)
+            return await _jwtTokenService.GenerateTokensAsync(existingUser);
+
+        var user = await _userManager.FindByEmailAsync(payload.Email);
+        if (user is not null)
+        {
+
+            await _userManager.AddLoginAsync(user, new UserLoginInfo(
+                "Google",
+                payload.Subject,
+                "Google"
+            ));
+
+            return await _jwtTokenService.GenerateTokensAsync(user);
+        }
+
+        var baseUsername = payload.Email.Split('@')[0];
+        var username = baseUsername;
+        var counter = 1;
+
+        while (await _userManager.FindByNameAsync(username) is not null)
+        {
+            username = $"{baseUsername}{counter++}";
+        }
+
+        user = new UserEntity
+        {
+            Email = payload.Email,
+            FirstName = payload.GivenName,
+            LastName = payload.FamilyName,
+            EmailConfirmed = true,
+            UserName = username
+        };
+
+        await _userManager.CreateAsync(user);
+        if (!string.IsNullOrEmpty(payload.Picture))
+        {
+            user.Avatar = await _imageService.SaveImageAsync(payload.Picture);
+            await _userManager.UpdateAsync(user);
+        }
+
+        await _userManager.AddToRoleAsync(user, RoleNames.USER_ROLE);
+        await _userManager.AddLoginAsync(user, new UserLoginInfo(
+            "Google",
+            payload.Subject,
+            "Google"
+        ));
+
+        return await _jwtTokenService.GenerateTokensAsync(user);
+    }
 }
