@@ -60,5 +60,24 @@ namespace Tiktok_Clone.BLL.Services.Comment
                  .ProjectTo<CommentDTO>(_mapper.ConfigurationProvider)
                  .ToPagedResultAsync(settings);
         }
+
+        public async Task ToggleLikeAsync(Guid commentId, Guid userId)
+        {
+            var comment = await _uow.Comments.GetByIdAsync(commentId)
+                ?? throw new NotFoundException("Коментарій не знайдено");
+
+            var isExists = comment.CommentLikes.FirstOrDefault(c => c.UserId == userId);
+            if (isExists is null)
+            {
+                isExists = new CommentLikeEntity() { CommentId = commentId, UserId = userId };
+                comment.CommentLikes.Add(isExists);
+                await _uow.SaveChangesAsync();
+            }
+            else
+            {
+                comment.CommentLikes.Remove(isExists);
+                await _uow.SaveChangesAsync();
+            }
+        }
     }
 }

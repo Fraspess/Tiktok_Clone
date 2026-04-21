@@ -20,6 +20,8 @@ namespace Tiktok_Clone.BLL.MapperProfiles.Conversations
             CreateMap<ConversationParticipant, SimpleUserDTO>()
                 .ForMember(u => u.Username, o => o.MapFrom(p => $"@{p.User.UserName}"))
                 .ForMember(u => u.Avatar, o => o.MapFrom(p => p.User.Avatar));
+
+
         }
     }
 }

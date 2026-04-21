@@ -8,6 +8,7 @@ using Tiktok_Clone.BLL.Features.Comment.Create;
 using Tiktok_Clone.BLL.Features.Comment.Delete;
 using Tiktok_Clone.BLL.Features.Comment.Get;
 using Tiktok_Clone.BLL.Features.Comment.GetReplies;
+using Tiktok_Clone.BLL.Features.Comment.Like;
 using Tiktok_Clone.BLL.Pagination;
 
 namespace Tiktok_Clone.Controllers.Comment
@@ -44,6 +45,15 @@ namespace Tiktok_Clone.Controllers.Comment
         {
             await _mediator.Send(new DeleteCommentCommand(commentId, User.GetUserId()));
             return Ok(ApiResponse<object>.Success(null!, "Успішно видалено коментар"));
+        }
+
+
+        [HttpPost("like")]
+        [Authorize]
+        public async Task<IActionResult> ToggleLikeComment([FromQuery] Guid commentId)
+        {
+            await _mediator.Send(new LikeCommentCommand(commentId, User.GetUserId()));
+            return Ok(ApiResponse<object>.Success(null!));
         }
     }
 }

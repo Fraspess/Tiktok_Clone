@@ -10,7 +10,8 @@ namespace Tiktok_Clone.BLL.MapperProfiles.Comment
         {
             CreateMap<CommentEntity, CommentDTO>()
                 .ForMember(d => d.RepliesCount, o => o.MapFrom(c => c.Replies.Count))
-                .ForMember(d => d.Owner, o => o.MapFrom(c => c.Author!.UserName));
+                .ForMember(d => d.Owner, o => o.MapFrom(c => $"@{c.Author!.UserName}"))
+                .ForMember(d => d.LikesCount, o => o.MapFrom(c => c.CommentLikes.Count));
         }
     }
 }

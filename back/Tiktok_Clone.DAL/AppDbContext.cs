@@ -207,5 +207,26 @@ public class AppDbContext : IdentityDbContext<
             .HasOne(p => p.Conversation)
             .WithMany(c => c.Participants)
             .HasForeignKey(p => p.ConversationId);
+
+
+
+
+        builder.Entity<CommentLikeEntity>()
+            .HasKey(c => new { c.UserId, c.CommentId });
+
+        builder.Entity<CommentLikeEntity>()
+            .HasOne(p => p.Comment)
+            .WithMany(c => c.CommentLikes)
+            .HasForeignKey(p => p.CommentId);
+
+        builder.Entity<CommentLikeEntity>()
+            .HasOne(p => p.User)
+            .WithMany(u => u.LikedComments)
+            .HasForeignKey(u => u.UserId);
+
+        builder.Entity<CommentLikeEntity>()
+           .HasIndex(x => new { x.UserId, x.CommentId })
+           .IsUnique();
+
     }
 }

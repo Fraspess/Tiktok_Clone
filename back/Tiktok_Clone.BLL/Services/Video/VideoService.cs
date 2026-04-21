@@ -29,13 +29,10 @@ namespace Tiktok_Clone.BLL.Services.Video
     {
         public async Task DeleteVideoById(Guid id, Guid userId)
         {
-            var user = _userManager.Users.FirstOrDefault(u => u.Id == userId)
-                ?? throw new UnauthorizedException("Користувача не знайдено. Невалідний токен");
-
             var video = await _uow.Videos.GetByIdAsync(id)
                 ?? throw new NotFoundException("Відео не знайдено");
 
-            if (video.Author != user)
+            if (video.UserId != userId)
             {
                 throw new NotAllowedException("Ви не маєте прав на цю дію");
             }

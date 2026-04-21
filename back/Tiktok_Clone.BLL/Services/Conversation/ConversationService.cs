@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Tiktok_Clone.BLL.Dtos.Conversation;
+using Tiktok_Clone.BLL.Dtos.Message;
 using Tiktok_Clone.BLL.Exceptions;
 using Tiktok_Clone.BLL.Extensions;
 using Tiktok_Clone.BLL.Pagination;
@@ -21,10 +22,22 @@ namespace Tiktok_Clone.BLL.Services.Conversation
                 participants.Add(currentUserId);
             }
 
+            var existingConversation = await _uow.Conversations
+                .GetAll()
+                 .Include(c => c.Participants)
+                .Where(c => c.Participants.Count == participants.Count &&
+                    c.Participants.All(p => participants.Contains(p.UserId)))
+                .FirstOrDefaultAsync();
+
+            if (existingConversation is not null)
+            {
+                return _mapper.Map<ConversationDTO>(existingConversation);
+            }
+
             foreach (var participant in participants)
             {
                 var _ = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == participant)
-                    ?? throw new NotFoundException("Користувача з таким id не знайдено");
+                    ?? throw new BadRequestException("Користувача з таким id не знайдено");
             }
 
             var conversation = new ConversationEntity
@@ -43,16 +56,28 @@ namespace Tiktok_Clone.BLL.Services.Conversation
 
         public async Task<ConversationDTO> GetConversationAsync(Guid conversationId, Guid userId)
         {
-            var conversation = await _uow.Conversations.GetByIdAsync(conversationId)
-                ?? throw new NotFoundException("Бесіда не знайдена");
-
-            if (!conversation.Participants.Any(p => p.Id == conversation.Id))
-            {
-                throw new NotAllowedException("Ви не маєте прав на перегляд цієї сторінки.");
-            }
+            var conversation = await GetAuthorizedConversationAsync(conversationId, userId);
 
             var dto = _mapper.Map<ConversationDTO>(conversation);
             return dto;
+        }
+
+        public async Task<PagedResult<MessageDTO>> GetConversationMessagesAsync(Guid conversationId, PaginationSettings settings, Guid userId)
+        {
+            await GetAuthorizedConversationAsync(conversationId, userId);
+
+            var messages = await _uow.Messages
+                .GetAll()
+                .Where(m => m.ConversationId == conversationId)
+                .OrderByDescending(m => m.CreatedAt)
+                .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider, new { currentUserId = userId })
+                .ToPagedResultAsync(settings);
+
+            foreach (var message in messages.Items)
+            {
+                message.IsOwn = message.SenderId == userId;
+            }
+            return messages;
         }
 
         public async Task<PagedResult<ConversationDTO>> GetConversationsAsync(Guid userId, PaginationSettings settings)
@@ -64,9 +89,22 @@ namespace Tiktok_Clone.BLL.Services.Conversation
                 .OrderByDescending(x => x.CreatedAt)
                 .ProjectTo<ConversationDTO>(_mapper.ConfigurationProvider)
                 .ToPagedResultAsync(settings);
-
-
             return convo;
+        }
+
+
+        private async Task<ConversationEntity> GetAuthorizedConversationAsync(Guid conversationId, Guid userId)
+        {
+            var conversation = await _uow.Conversations
+                .GetAll()
+                .Include(c => c.Participants)
+                .FirstOrDefaultAsync(c => c.Id == conversationId)
+                    ?? throw new NotFoundException("Розмову не знайдено");
+
+            if (!conversation.Participants.Any(p => p.UserId == userId))
+                throw new NotAllowedException("Ви не маєте прав на перегляд цієї сторінки.");
+
+            return conversation;
         }
     }
 }
