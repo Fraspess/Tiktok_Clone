@@ -7,7 +7,7 @@ namespace Tiktok_Clone.DAL.Entities.Like
     {
         public override Guid Id { get; set; } = Guid.NewGuid();
         public required Guid UserId { get; set; }
-        public required Guid VideoId { get; set; }
+        public Guid VideoId { get; set; }
 
         public UserEntity? User { get; set; }
 

@@ -58,11 +58,8 @@ public class UserService : IUserService
 
     public async Task<TokenResponseDTO> Login(LoginUserDTO dto)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == dto.Login || u.Email == dto.Login);
-        if (user == null)
-        {
-            throw new ValidationException("Невірний логін або пароль");
-        }
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == dto.Login || u.Email == dto.Login)
+            ?? throw new BadRequestException("Невірний логін або пароль");
 
         var checkPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
         if (!checkPassword)
@@ -78,18 +75,11 @@ public class UserService : IUserService
 
     public async Task Register(RegisterUserDTO dto)
     {
-        var isEmailTaken = await _userManager.FindByEmailAsync(dto.Email);
-        if (isEmailTaken is not null)
-        {
-            throw new ValidationException("Почта вже зайнята");
-        }
+        var isEmailTaken = await _userManager.FindByEmailAsync(dto.Email)
+            ?? throw new BadRequestException("Почта вже є занятою");
 
-        var isUsernameTaken = await _userManager.FindByNameAsync(dto.Username);
-        if (isUsernameTaken is not null)
-        {
-            throw new ValidationException("Це ім'я користувача уже зайняте");
-        }
-
+        var isUsernameTaken = await _userManager.FindByNameAsync(dto.Username)
+            ?? throw new BadRequestException("Це ім'я користувача заняте");
 
         var user = _userMapper.Map<UserEntity>(dto);
 
@@ -109,18 +99,15 @@ public class UserService : IUserService
         }
         else
         {
-            throw new ValidationException("Помилка при створенні користувача : " + string.Join(", ", result.Errors.Select(e => e.Description)));
+            throw new Exception("Помилка при створенні користувача : " + string.Join(", ", result.Errors.Select(e => e.Description)));
         }
 
     }
 
     public async Task<UserMeDTO> GetCurrentUserAsync(Guid userId)
     {
-        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
-        if (user == null)
-        {
-            throw new UnauthorizedException("Користувач не знайдений");
-        }
+        var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId)
+            ?? throw new UnauthorizedException("Користувач не знайдений");
         var dto = _userMapper.Map<UserMeDTO>(user);
         dto.IsOwnProfile = true;
         dto.FollowingCount = await _uow.Follows.GetFollowingCountAsync(userId);
@@ -142,12 +129,10 @@ public class UserService : IUserService
 
     public async Task ForgotPasswordAsync(string email)
     {
-        var user = await _userManager.FindByEmailAsync(email);
-        if (user is null)
-        {
-            throw new UnauthorizedException("Користувач не знайдений");
-        }
-        if (!await _userManager.HasPasswordAsync(user)) throw new BadRequestException("Аккаунтам створених зовнішими сервісами не можливо сбросити пароль");
+        var user = await _userManager.FindByEmailAsync(email)
+           ?? throw new UnauthorizedException("Користувач не знайдений");
+
+        if (!await _userManager.HasPasswordAsync(user)) throw new BadRequestException("Аккаунтам створених зовнішними сервісами не можливо сбросити пароль");
 
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
         string resetLink = $"{_configuration["Frontend:Url"]}/reset-password?token={token}&email={email}";

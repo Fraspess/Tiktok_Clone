@@ -41,4 +41,6 @@ public class UserEntity : IdentityUser<Guid>
     public ICollection<ConversationParticipant> ConversationParticipants { get; set; } = [];
 
     public ICollection<MessageEntity> SentMessages { get; set; } = [];
+
+    public ICollection<CommentLikeEntity> LikedComments { get; set; } = new List<CommentLikeEntity>();
 }

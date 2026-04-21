@@ -13,5 +13,7 @@ namespace Tiktok_Clone.BLL.Services.Comment
         Task<PagedResult<CommentDTO>> GetRepliesAsync(Guid parentCommentId, PaginationSettings settings);
 
         Task DeleteCommentAsync(Guid commentId, Guid userId);
+
+        Task ToggleLikeAsync(Guid commentId, Guid userId);
     }
 }

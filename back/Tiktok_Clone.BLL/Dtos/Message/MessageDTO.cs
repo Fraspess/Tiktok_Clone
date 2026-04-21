@@ -9,5 +9,6 @@
         public string Content { get; set; } = String.Empty;
         public DateTime CreatedAt { get; set; }
 
+        public bool IsOwn { get; set; }
     }
 }

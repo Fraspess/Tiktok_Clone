@@ -7,7 +7,7 @@
     <script>
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("http://localhost:5189/hubs/chat", {
-                accessTokenFactory: () => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMTlkN2JlYS01MTVmLTdjZTEtOWIzYS05MGIzNjdjNjdlOGYiLCJlbWFpbCI6ImthdGVyeW5hLnBAZXhhbXBsZS5jb20iLCJ1c2VybmFtZSI6ImthdGVyeW5hLnAiLCJpbWFnZSI6IjMzYTk2MzliLTIxMzAtNDc2OC1iZDc1LWYxZWFjNjI1MTRiMS53ZWJwIiwicm9sZSI6IlVzZXIiLCJleHAiOjE3NzY0NTM0OTYsImlzcyI6IkZyYXNwZXNzIDopIiwiYXVkIjoiRnJhc3Blc3MgOikifQ.5SWOlXAXwuZYhoG1JN_bbWExjSdXUD7ICnvTfXGdBRQ"
+                accessTokenFactory: () => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMTlkYTExNS01YWE3LTcwMzYtYTdhMy1mN2JlNDNlMTY5NzQiLCJlbWFpbCI6InBhdmxvc2FtY2h5a0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6InBhdmxvc2FtY2h5ayIsImltYWdlIjoiNTlmZjFiNTAtZjQxYS00YWQ2LTliODEtMmY3YjY2MzNiZmYyLndlYnAiLCJleHAiOjE3NzY4MDUzMjUsImlzcyI6IkZyYXNwZXNzIDopIiwiYXVkIjoiRnJhc3Blc3MgOikifQ.s3F-aUHDpswVRt3vchLiptj23D78E-ey3adhqmUIhQ0"
             })
             .withAutomaticReconnect()
             .build();
@@ -25,7 +25,7 @@
                 console.log("Connected!");
 
                 connection.invoke("SendMessage", 
-                    "46d75cde-2d6e-4ec1-8807-72b73b6435b8", 
+                    "39f5c213-e7b0-4818-bb00-ba7bc1431c9b", 
                     "hello world"
                 );
             })
