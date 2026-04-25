@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Application.Services.Message;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Tiktok_Clone.BLL.Services.Message;
 
-namespace Tiktok_Clone.Hubs
+namespace Api.Hubs
 {
     [Authorize]
     public class ChatHub(IMessageService messageService) : Hub

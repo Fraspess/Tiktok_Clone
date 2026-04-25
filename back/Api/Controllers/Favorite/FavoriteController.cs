@@ -1,0 +1,24 @@
+﻿using Application;
+using Application.Extensions;
+using Application.Features.Favorite.ToggleFavorite;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+
+namespace Api.Controllers.Favorite
+{
+    [Route("api/favorites")]
+    [ApiController]
+    public class FavoriteController(IMediator mediator) : ControllerBase
+    {
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> Favorite(Guid videoId)
+        {
+            await mediator.Send(new ToggleFavoriteCommand(videoId, User.GetUserId()));
+            return Ok(ApiResponse<object>.Success(null!, null));
+        }
+
+    }
+}

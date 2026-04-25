@@ -1,0 +1,24 @@
+﻿using Application.Interfaces.Video;
+using Domain.Entities.Video;
+using Microsoft.EntityFrameworkCore;
+
+namespace Persistence.Repositories.Video
+{
+    internal class VideoRepository : GenericRepository<VideoEntity, Guid>, IVideoRepository
+    {
+        public VideoRepository(AppDbContext context)
+            : base(context)
+        {
+
+        }
+
+        public async Task<VideoEntity?> FindVideoBySomeString(string someString)
+        {
+            return await _context.Videos
+                .Include(v => v.HashTags)
+                .Include(v => v.Author)
+                .FirstOrDefaultAsync(v =>
+                    v.HashTags.Any(h => h.HashTag.Tag.StartsWith(someString)) || v.Author!.UserName == someString);
+        }
+    }
+}
