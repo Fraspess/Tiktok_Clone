@@ -478,8 +478,7 @@ $RECYCLE.BIN/
 
 .idea/
 
-Tiktok_Clone/Images/
-Tiktok_Clone/Videos/
-Tiktok_Clone/.env
-
+Api/images/
+Api/videos/
+.env
 
