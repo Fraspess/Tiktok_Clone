@@ -3,7 +3,6 @@
 
 using Application;
 using Application.Dtos.User;
-using Application.Dtos.Video;
 using Application.Extensions;
 using Application.Features.User.ConfirmEmail;
 using Application.Features.User.FollowUser;
@@ -17,8 +16,6 @@ using Application.Features.User.RefreshTokens;
 using Application.Features.User.Register;
 using Application.Features.User.ResendConfirmationEmail;
 using Application.Features.User.ResetPassword;
-using Application.Features.Video.GetUserVideos;
-using Application.Pagination;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -142,15 +139,6 @@ public class UserController(IMediator _mediator) : ControllerBase
         await _mediator.Send(new FollowUserCommand(userId, following));
         return Ok(ApiResponse<object>.Success(null!, null));
     }
-
-    [HttpGet("videos/{id}")]
-    public async Task<IActionResult> GetUserVideos(Guid id, int pageNumber = 1, int pageSize = 5)
-    {
-        var videos = await _mediator.Send(new GetUserVideosQuery(id, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, GetUserIfExists()));
-        return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos, null));
-    }
-
-
     private void AppendRefreshTokenCookie(string refreshToken)
     {
         Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
@@ -161,8 +149,6 @@ public class UserController(IMediator _mediator) : ControllerBase
             Expires = DateTime.UtcNow.AddDays(7)
         });
     }
-
-
     private void DeleteRefreshTokenCookie()
     {
         Response.Cookies.Append("refreshToken", "", new CookieOptions

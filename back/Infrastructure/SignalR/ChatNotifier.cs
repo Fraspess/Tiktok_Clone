@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Infrastructure.SignalR
 {
-    public class ChatNotifier(IHubContext<ChatHub> hubContext) : IChatNotifier
+    internal class ChatNotifier(IHubContext<ChatHub> hubContext) : IChatNotifier
     {
         public async Task SendMessageAsync(Guid recipientId, MessageDTO message)
         {

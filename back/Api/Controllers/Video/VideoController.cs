@@ -5,6 +5,8 @@ using Application.Features.Video.Delete;
 using Application.Features.Video.GetById;
 using Application.Features.Video.GetBySomeQuery;
 using Application.Features.Video.GetFYP;
+using Application.Features.Video.GetUserVideos;
+using Application.Features.Video.MyVideos;
 using Application.Features.Video.Upload;
 using Application.Pagination;
 using MediatR;
@@ -58,7 +60,7 @@ namespace Api.Controllers.Video
         {
             var userId = User.GetUserId();
             await _mediator.Send(new UploadVideoCommand(dto, userId));
-            return Ok(ApiResponse<string>.Success("Відео успішно завантажено"));
+            return Ok(ApiResponse<string>.Success("Відео успішно відправлено на обробку."));
         }
 
 
@@ -76,6 +78,21 @@ namespace Api.Controllers.Video
         {
             var videos = await _mediator.Send(new GetVideosBySomeStringQuery(query, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
             return Ok(ApiResponse<PagedResult<SimpleVideoDTO>>.Success(videos));
+        }
+
+        [HttpGet("user/{id}")]
+        public async Task<IActionResult> GetUserVideos(Guid id, int pageNumber = 1, int pageSize = 5)
+        {
+            var videos = await _mediator.Send(new GetUserVideosQuery(id, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, GetUserIfExists()));
+            return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos, null));
+        }
+
+        [HttpGet("user/my")]
+        [Authorize]
+        public async Task<IActionResult> GetMyVideos(int pageNumber = 1, int pageSize = 5)
+        {
+            var videos = await _mediator.Send(new GetMyVideosQuery(new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, User.GetUserId()));
+            return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos));
         }
 
         private Guid? GetUserIfExists()

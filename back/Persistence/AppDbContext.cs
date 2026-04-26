@@ -73,6 +73,9 @@ public class AppDbContext : IdentityDbContext<
             .HasForeignKey(v => v.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Entity<VideoEntity>()
+            .HasQueryFilter(v => v.Status == "Processed");
+
         // ── Comments ────────────────────────────────────────
         builder.Entity<CommentEntity>()
             .HasOne(c => c.Author)

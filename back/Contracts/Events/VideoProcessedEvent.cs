@@ -1,7 +1,9 @@
-﻿namespace Contracts.Events;
-
-public class VideoProcessedEvent
+﻿namespace Contracts.Events
 {
-    public Guid Id { get; set; }
-    public string FilePath { get; set; } = string.Empty;
+    public class VideoProcessedEvent
+    {
+        public Guid VideoId { get; set; }
+        public Guid UserId { get; set; }
+        public string FilePath { get; set; } = string.Empty;
+    }
 }

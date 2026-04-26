@@ -1,5 +1,7 @@
 ﻿using Application.Interfaces;
+using Contracts;
 using Infrastructure.RabbitMQ;
+using Infrastructure.RabbitMQ.Consumers;
 using Infrastructure.Services.Email;
 using Infrastructure.Services.Images;
 using Infrastructure.Services.TempStorage;
@@ -25,13 +27,15 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IEmailService, EmailService>();
 
             services.AddScoped<IChatNotifier, ChatNotifier>();
+            services.AddScoped<IVideoProcessingNotifier, VideoProcessingNotifier>();
             services.AddScoped<ITempVideoStorage, TempVideoStorage>();
             services.AddScoped(typeof(IEventBus<>), typeof(EventBus<>));
 
             services.AddMassTransit(x =>
             {
-                //x.AddConsumer<VideoProcessedConsumer>();
-
+                x.AddConsumer<VideoProcessedConsumer>();
+                x.AddConsumer<VideoProcessingProgressConsumer>();
+                x.AddConsumer<VideoProcessingFailedConsumer>();
                 x.UsingRabbitMq((ctx, cfg) =>
                 {
 

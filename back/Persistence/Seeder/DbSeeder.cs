@@ -131,14 +131,14 @@ namespace Persistence.Seeder
         {
             if (context.Videos.Any()) return;
 
-            var key = configuration["Pexels:Key"];
+            var key = configuration["Pexels:Key"]!;
             var userIds = userManager.Users.Select(u => u.Id).ToArray();
 
-            var queries = new[] { "nature", "city", "food", "animals", "sports" };
+            var queries = new[] { "nature", "city", "food", "animals", "sports", "football" };
 
             foreach (var query in queries)
             {
-                var url = $"https://api.pexels.com/videos/search?query={query}&per_page=5&orientation=portrait";
+                var url = $"https://api.pexels.com/videos/search?query={query}&per_page=10&orientation=portrait";
                 await mediator.Send(new UploadVideoCommandDev(url, key, userIds, "Good description #salo #potuzhno #new-hashtag-test #new_hashtag_test"));
             }
         }

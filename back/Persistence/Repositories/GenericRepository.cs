@@ -54,4 +54,14 @@ internal class GenericRepository<TEntity, TId> : IGenericRepository<TEntity, TId
             .Entries<TEntity>()
             .FirstOrDefault(e => predicate(e.Entity))?.Entity;
     }
+
+    public async Task<TEntity?> GetByIdAsyncIgnoreQueryFilters(TId id)
+    {
+        return await _context.Set<TEntity>().IgnoreQueryFilters().FirstOrDefaultAsync(v => v.Id.Equals(id));
+    }
+
+    public IQueryable<TEntity> GetAllIgnoreQueryFilters()
+    {
+        return _context.Set<TEntity>().IgnoreQueryFilters();
+    }
 }

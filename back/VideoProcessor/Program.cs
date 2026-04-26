@@ -8,7 +8,7 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<VideoProcessedConsumer>();
+    x.AddConsumer<VideoStartProcessingConsumer>();
 
     x.UsingRabbitMq((ctx, cfg) =>
     {
