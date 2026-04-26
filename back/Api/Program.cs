@@ -53,6 +53,7 @@ try
 
     app.MapControllers();
     app.MapHub<ChatHub>("/hubs/chat");
+    app.MapHub<VideoProcessingHub>("/hubs/video-process-status");
 
     // also auto-migrates
     await app.SeedDataAsync();

@@ -12,5 +12,9 @@ public interface IGenericRepository<TEntity, TId>
     Task<TEntity?> GetByIdAsync(TId id);
     IQueryable<TEntity> GetAll();
     Task SaveChangesAsync();
-    public TEntity? GetTracked(Func<TEntity, bool> predicate);
+    TEntity? GetTracked(Func<TEntity, bool> predicate);
+
+    Task<TEntity?> GetByIdAsyncIgnoreQueryFilters(TId id);
+
+    IQueryable<TEntity> GetAllIgnoreQueryFilters();
 }

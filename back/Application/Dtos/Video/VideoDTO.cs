@@ -22,6 +22,10 @@ namespace Application.Dtos.Video
         public bool IsLiked { get; set; }
 
         public UserAuthorDTO? Author { get; set; }
+        public string Status { get; set; } = string.Empty;
+
+        public int ProccessedInProcents { get; set; }
+
 
     }
 }

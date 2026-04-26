@@ -8,7 +8,6 @@ namespace Infrastructure.Services.TempStorage
         String tempPath = Path.Combine(Directory.GetCurrentDirectory(), "videos");
         public async Task<string> SaveVideoAsync(IFormFile file)
         {
-            Console.WriteLine(tempPath);
             Directory.CreateDirectory(tempPath);
 
             var inputPath = Path.Combine(tempPath, "Input");

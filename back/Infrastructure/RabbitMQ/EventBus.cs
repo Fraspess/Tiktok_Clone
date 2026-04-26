@@ -1,4 +1,4 @@
-﻿using Application.Interfaces;
+﻿using Contracts;
 using MassTransit;
 
 namespace Infrastructure.RabbitMQ;

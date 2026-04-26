@@ -1,4 +1,4 @@
-﻿namespace Application.Interfaces
+﻿namespace Contracts
 {
     public interface IEventBus<T>
     {

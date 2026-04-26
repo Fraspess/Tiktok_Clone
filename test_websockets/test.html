@@ -4,7 +4,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.0/signalr.min.js"></script>
 </head>
 <body>
-    <script>
+    <!-- <script>
         const connection = new signalR.HubConnectionBuilder()
             .withUrl("http://localhost:5189/hubs/chat", {
                 accessTokenFactory: () => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMTlkYTExNS01YWE3LTcwMzYtYTdhMy1mN2JlNDNlMTY5NzQiLCJlbWFpbCI6InBhdmxvc2FtY2h5a0BnbWFpbC5jb20iLCJ1c2VybmFtZSI6InBhdmxvc2FtY2h5ayIsImltYWdlIjoiNTlmZjFiNTAtZjQxYS00YWQ2LTliODEtMmY3YjY2MzNiZmYyLndlYnAiLCJleHAiOjE3NzY4MDUzMjUsImlzcyI6IkZyYXNwZXNzIDopIiwiYXVkIjoiRnJhc3Blc3MgOikifQ.s3F-aUHDpswVRt3vchLiptj23D78E-ey3adhqmUIhQ0"
@@ -30,6 +30,33 @@
                 );
             })
             .catch(console.error);
+    </script> -->
+
+    <script>
+        const videoStatusConnection = new signalR.HubConnectionBuilder()
+        .withUrl("http://localhost:5189/hubs/video-process-status", {
+            accessTokenFactory: () => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMTlkYzQzOS0xZjZmLTdkZGEtYTAzNy1mOGI0ZjkzM2NiZGUiLCJlbWFpbCI6InN0cmluZ0BleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoic3RyaW5nIiwiaW1hZ2UiOiJhNGYwOGYwNS00MzM3LTQ1N2EtYTJjYS1lMjhjZDM4MTg4MjEud2VicCIsInJvbGUiOiJBZG1pbiIsImV4cCI6MTc3NzIzMDkwMSwiaXNzIjoiRnJhc3Blc3MgOikiLCJhdWQiOiJGcmFzcGVzcyA6KSJ9.plpJW3pUhvOeWqSnUsOicM746a4glhDQjycv7ylvR1s"
+        })
+        .withAutomaticReconnect()
+        .build()
+
+        videoStatusConnection.on("SendVideoProcessingProgress", (message, progress) => {
+            console.log("Progress:", progress)
+        })
+        videoStatusConnection.on("SendVideoProcessingFailed", (video,message) => {
+            console.log("Failed:", message)
+        })
+        videoStatusConnection.on("SendVideoProcessingSucceded", (message) => {
+            console.log("Success:", message)
+        })
+
+        videoStatusConnection.start()
+        .then(() => {
+            console.log("Connected!");
+
+            
+        }).catch(console.error);
+        
     </script>
 </body>
 </html>
