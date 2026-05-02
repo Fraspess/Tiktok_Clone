@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Message;
+﻿using Application.Interfaces;
 using Domain.Entities.Message;
 
 namespace Persistence.Repositories.Message

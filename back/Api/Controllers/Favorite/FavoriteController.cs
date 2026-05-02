@@ -19,6 +19,5 @@ namespace Api.Controllers.Favorite
             await mediator.Send(new ToggleFavoriteCommand(videoId, User.GetUserId()));
             return Ok(ApiResponse<object>.Success(null!, null));
         }
-
     }
 }

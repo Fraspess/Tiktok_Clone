@@ -1,11 +1,4 @@
 ﻿using Application.Interfaces;
-using Application.Interfaces.Comment;
-using Application.Interfaces.Conversation;
-using Application.Interfaces.Favorite;
-using Application.Interfaces.HashTags;
-using Application.Interfaces.Like;
-using Application.Interfaces.Message;
-using Application.Interfaces.Video;
 using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -34,19 +27,19 @@ namespace Persistence.DependencyInjection
             });
 
             services.AddIdentityCore<UserEntity>(options =>
-            {
-                options.Password.RequiredLength = 6;
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.User.RequireUniqueEmail = true;
+                {
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.User.RequireUniqueEmail = true;
 
-                options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
-            })
+                    options.Tokens.EmailConfirmationTokenProvider = TokenOptions.DefaultEmailProvider;
+                })
                 .AddRoles<RoleEntity>()
                 .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders();
 
             services.AddDataProtection();
 
@@ -65,13 +58,8 @@ namespace Persistence.DependencyInjection
             services.AddScoped<IMessageRepository, MessageRepository>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-
-
             services.AddScoped<IUserService, UserService>();
             return services;
         }
-
-
     }
 }

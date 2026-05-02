@@ -8,7 +8,8 @@ using MediatR;
 
 namespace Application.Features.Comment.Get
 {
-    public class GetCommentsQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetCommentsQuery, PagedResult<CommentDTO>>
+    public class GetCommentsQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetCommentsQuery, PagedResult<CommentDTO>>
     {
         public async Task<PagedResult<CommentDTO>> Handle(GetCommentsQuery request, CancellationToken cancellationToken)
         {

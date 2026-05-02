@@ -8,9 +8,11 @@ using MediatR;
 
 namespace Application.Features.Video.GetFYP
 {
-    public class GetForYouPageVideosQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetForYouPageVideosQuery, PagedResult<VideoDTO>>
+    public class GetForYouPageVideosQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetForYouPageVideosQuery, PagedResult<VideoDTO>>
     {
-        public async Task<PagedResult<VideoDTO>> Handle(GetForYouPageVideosQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<VideoDTO>> Handle(GetForYouPageVideosQuery request,
+            CancellationToken cancellationToken)
         {
             var videos = await _uow.Videos
                 .GetAll()

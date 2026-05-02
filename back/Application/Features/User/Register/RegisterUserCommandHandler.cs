@@ -6,8 +6,8 @@ namespace Application.Features.User.Register
 {
     public class RegisterUserCommandHandler(IUserService userService) : IRequestHandler<RegisterUserCommand, Unit>
     {
-
-        async Task<Unit> IRequestHandler<RegisterUserCommand, Unit>.Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+        async Task<Unit> IRequestHandler<RegisterUserCommand, Unit>.Handle(RegisterUserCommand request,
+            CancellationToken cancellationToken)
         {
             await userService.Register(new RegisterUserDTO
             {

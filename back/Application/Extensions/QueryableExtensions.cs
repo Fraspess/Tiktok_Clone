@@ -5,7 +5,8 @@ namespace Application.Extensions
 {
     public static class QueryableExtensions
     {
-        public static async Task<PagedResult<T>> ToPagedResultAsync<T>(this IQueryable<T> query, PaginationSettings paginationSettings)
+        public static async Task<PagedResult<T>> ToPagedResultAsync<T>(this IQueryable<T> query,
+            PaginationSettings paginationSettings)
         {
             var totalCount = await query.CountAsync();
             var data = await query

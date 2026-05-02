@@ -9,7 +9,8 @@ namespace Api.Middleware
         private readonly ILogger<GlobalExceptionHandler> _logger;
         private readonly IWebHostEnvironment webHostEnvironment;
 
-        public GlobalExceptionHandler(RequestDelegate next, ILogger<GlobalExceptionHandler> logger, IWebHostEnvironment environment)
+        public GlobalExceptionHandler(RequestDelegate next, ILogger<GlobalExceptionHandler> logger,
+            IWebHostEnvironment environment)
         {
             _next = next;
             _logger = logger;
@@ -24,31 +25,31 @@ namespace Api.Middleware
             }
             catch (ValidationException ex)
             {
-                _logger.LogInformation("Помилка валідації: {error} ", ex.Message);
+                _logger.LogInformation(ex, "Помилка валідації");
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
             }
             catch (UnauthorizedException ex)
             {
-                _logger.LogWarning("Не авторизований : {error} ", ex.Message);
+                _logger.LogWarning(ex, "Не авторизований");
                 context.Response.StatusCode = 401;
                 await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
             }
             catch (NotFoundException ex)
             {
-                _logger.LogInformation("Не знайдено : {error} ", ex.Message);
+                _logger.LogInformation(ex, "Не знайдено");
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
             }
             catch (NotAllowedException ex)
             {
-                _logger.LogWarning("Недостатньо прав : {error} ", ex.Message);
+                _logger.LogWarning(ex, "Недостатньо прав");
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
             }
             catch (BadRequestException ex)
             {
-                _logger.LogInformation("Поганий запит : {error} ", ex.Message);
+                _logger.LogInformation(ex, "Поганий запит");
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error(ex.Message));
             }
@@ -58,9 +59,11 @@ namespace Api.Middleware
                 if (webHostEnvironment.IsDevelopment())
                 {
                     context.Response.StatusCode = 500;
-                    await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error($"Внутрішня помилка сервера: {ex.Message}"));
+                    await context.Response.WriteAsJsonAsync(
+                        ApiResponse<object>.Error($"Внутрішня помилка сервера: {ex.Message}"));
                     return;
                 }
+
                 context.Response.StatusCode = 500;
                 await context.Response.WriteAsJsonAsync(ApiResponse<object>.Error("Внутрішня помилка сервера"));
             }

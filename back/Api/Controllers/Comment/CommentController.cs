@@ -28,14 +28,16 @@ namespace Api.Controllers.Comment
         [HttpGet]
         public async Task<IActionResult> GetComments(Guid videoId, int pageNumber = 1, int pageSize = 20)
         {
-            var comments = await _mediator.Send(new GetCommentsQuery(videoId, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
+            var comments = await _mediator.Send(new GetCommentsQuery(videoId,
+                new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
             return Ok(ApiResponse<PagedResult<CommentDTO>>.Success(comments, null));
         }
 
         [HttpGet("replies")]
         public async Task<IActionResult> GetReplies(Guid commentId, int pageNumber = 1, int pageSize = 5)
         {
-            var replies = await _mediator.Send(new GetRepliesQuery(commentId, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
+            var replies = await _mediator.Send(new GetRepliesQuery(commentId,
+                new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
             return Ok(ApiResponse<PagedResult<CommentDTO>>.Success(replies, null));
         }
 

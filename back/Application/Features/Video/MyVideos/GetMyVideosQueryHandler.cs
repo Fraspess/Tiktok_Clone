@@ -8,15 +8,16 @@ using MediatR;
 
 namespace Application.Features.Video.MyVideos
 {
-    internal class GetMyVideosQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetMyVideosQuery, PagedResult<VideoDTO>>
+    internal class GetMyVideosQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetMyVideosQuery, PagedResult<MyVideoDTO>>
     {
-        public Task<PagedResult<VideoDTO>> Handle(GetMyVideosQuery request, CancellationToken cancellationToken)
+        public Task<PagedResult<MyVideoDTO>> Handle(GetMyVideosQuery request, CancellationToken cancellationToken)
         {
             var videos = _uow.Videos
                 .GetAllIgnoreQueryFilters()
                 .Where(v => v.UserId == request.UserId)
                 .OrderByDescending(v => v.CreatedAt)
-                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider)
+                .ProjectTo<MyVideoDTO>(_mapper.ConfigurationProvider)
                 .ToPagedResultAsync(request.Settings);
             return videos;
         }

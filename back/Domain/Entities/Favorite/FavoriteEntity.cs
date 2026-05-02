@@ -10,6 +10,5 @@ namespace Domain.Entities.Favorite
         public VideoEntity Video { get; set; } = null!;
         public Guid UserId { get; set; }
         public UserEntity User { get; set; } = null!;
-
     }
 }

@@ -11,7 +11,7 @@ namespace Application.Features.LIke.ToogleLike
         public async Task<Unit> Handle(ToogleLikeCommand request, CancellationToken cancellationToken)
         {
             var video = await _uow.Videos.GetByIdAsync(request.VideoId)
-                ?? throw new NotFoundException("Відео не знайдено");
+                        ?? throw new NotFoundException("Відео не знайдено");
 
             var existingLike = await _uow.Likes.GetLikeByUserAndVideoIdAsync(request.UserId, request.VideoId);
 

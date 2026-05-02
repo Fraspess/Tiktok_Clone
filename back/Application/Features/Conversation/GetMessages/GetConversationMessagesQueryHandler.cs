@@ -10,15 +10,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Conversation.GetMessages
 {
-    public class GetConversationMessagesQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetConversationMessagesQuery, PagedResult<MessageDTO>>
+    public class GetConversationMessagesQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetConversationMessagesQuery, PagedResult<MessageDTO>>
     {
-        public async Task<PagedResult<MessageDTO>> Handle(GetConversationMessagesQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<MessageDTO>> Handle(GetConversationMessagesQuery request,
+            CancellationToken cancellationToken)
         {
             var conversation = await _uow.Conversations
-                .GetAll()
-                .Include(c => c.Participants)
-                .FirstOrDefaultAsync(c => c.Id == request.ConversationId)
-                    ?? throw new NotFoundException("Розмову не знайдено");
+                                   .GetAll()
+                                   .Include(c => c.Participants)
+                                   .FirstOrDefaultAsync(c => c.Id == request.ConversationId)
+                               ?? throw new NotFoundException("Розмову не знайдено");
 
             if (!conversation.Participants.Any(p => p.UserId == request.UserId))
                 throw new NotAllowedException("Ви не маєте прав на перегляд цієї сторінки.");
@@ -26,7 +28,7 @@ namespace Application.Features.Conversation.GetMessages
             var messages = await _uow.Messages
                 .GetAll()
                 .Where(m => m.ConversationId == request.ConversationId)
-                 .OrderByDescending(m => m.CreatedAt)
+                .OrderByDescending(m => m.CreatedAt)
                 .ProjectTo<MessageDTO>(_mapper.ConfigurationProvider, new { currentUserId = request.UserId })
                 .ToPagedResultAsync(request.Settings);
 

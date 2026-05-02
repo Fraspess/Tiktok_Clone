@@ -14,8 +14,12 @@ namespace Application.Features.Comment.Create
             if (dto.ParentCommentId is not null)
             {
                 var comment = await _uow.Comments.GetByIdAsync(dto.ParentCommentId.Value)
-                    ?? throw new ValidationException("Коментарій не знайдено");
-                var newComment = new CommentEntity { Text = dto.Text, ParentCommentId = dto.ParentCommentId.Value, UserId = ownerId, VideoId = dto.VideoId };
+                              ?? throw new ValidationException("Коментарій не знайдено");
+                var newComment = new CommentEntity
+                {
+                    Text = dto.Text, ParentCommentId = dto.ParentCommentId.Value, UserId = ownerId,
+                    VideoId = dto.VideoId
+                };
                 await _uow.Comments.CreateAsync(newComment);
             }
             else
@@ -23,6 +27,7 @@ namespace Application.Features.Comment.Create
                 var comment = new CommentEntity { Text = dto.Text, UserId = ownerId, VideoId = dto.VideoId };
                 await _uow.Comments.CreateAsync(comment);
             }
+
             await _uow.SaveChangesAsync();
             return Unit.Value;
         }

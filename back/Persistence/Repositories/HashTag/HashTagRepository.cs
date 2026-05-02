@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.HashTags;
+﻿using Application.Interfaces;
 using Domain.Entities.HashTags;
 using Microsoft.EntityFrameworkCore;
 

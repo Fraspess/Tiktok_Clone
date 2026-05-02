@@ -47,7 +47,8 @@ namespace Persistence.Services
 
         public async Task<TokenResponseDTO> Login(LoginUserDTO dto)
         {
-            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == dto.Login || u.Email == dto.Login)
+            var user =
+                await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == dto.Login || u.Email == dto.Login)
                 ?? throw new BadRequestException("Невірний логін або пароль");
 
             var checkPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
@@ -55,20 +56,22 @@ namespace Persistence.Services
             {
                 throw new ValidationException("Невірний логін або пароль");
             }
+
             if (user.EmailConfirmed == false)
             {
                 throw new NotAllowedException("Підтвердіть свою електронну пошту, щоб увійти");
             }
+
             return await _jwtTokenService.GenerateTokensAsync(user);
         }
 
         public async Task Register(RegisterUserDTO dto)
         {
             var isEmailTaken = await _userManager.FindByEmailAsync(dto.Email)
-                ?? throw new BadRequestException("Почта вже є занятою");
+                               ?? throw new BadRequestException("Почта вже є занятою");
 
             var isUsernameTaken = await _userManager.FindByNameAsync(dto.Username)
-                ?? throw new BadRequestException("Це ім'я користувача заняте");
+                                  ?? throw new BadRequestException("Це ім'я користувача заняте");
 
             var user = _userMapper.Map<UserEntity>(dto);
 
@@ -80,6 +83,7 @@ namespace Persistence.Services
                     var imageName = await _imageService.SaveImageAsync(dto.Avatar);
                     user.Avatar = imageName;
                 }
+
                 await _userManager.AddToRoleAsync(user, RoleNames.USER_ROLE);
 
                 user.LastConfirmationEmailSentAt = DateTime.UtcNow;
@@ -88,15 +92,15 @@ namespace Persistence.Services
             }
             else
             {
-                throw new Exception("Помилка при створенні користувача : " + string.Join(", ", result.Errors.Select(e => e.Description)));
+                throw new Exception("Помилка при створенні користувача : " +
+                                    string.Join(", ", result.Errors.Select(e => e.Description)));
             }
-
         }
 
         public async Task<UserMeDTO> GetCurrentUserAsync(Guid userId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId)
-                ?? throw new UnauthorizedException("Користувач не знайдений");
+                       ?? throw new UnauthorizedException("Користувач не знайдений");
             var dto = _userMapper.Map<UserMeDTO>(user);
             dto.IsOwnProfile = true;
             dto.FollowingCount = await _uow.Follows.GetFollowingCountAsync(userId);
@@ -107,21 +111,21 @@ namespace Persistence.Services
         public async Task UpdateTokenVersion(Guid userId)
         {
             var user = _userManager.Users.FirstOrDefault(u => u.Id == userId)
-                ?? throw new UnauthorizedException("Користувач не знайдений");
+                       ?? throw new UnauthorizedException("Користувач не знайдений");
 
             var currentVersion = user.RefreshTokenVersion;
             user.RefreshTokenVersion = currentVersion + 1;
 
             await _userManager.UpdateAsync(user);
-
         }
 
         public async Task ForgotPasswordAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email)
-               ?? throw new UnauthorizedException("Користувач не знайдений");
+                       ?? throw new UnauthorizedException("Користувач не знайдений");
 
-            if (!await _userManager.HasPasswordAsync(user)) throw new BadRequestException("Аккаунтам створених зовнішними сервісами не можливо сбросити пароль");
+            if (!await _userManager.HasPasswordAsync(user))
+                throw new BadRequestException("Аккаунтам створених зовнішними сервісами не можливо сбросити пароль");
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             string resetLink = $"{_configuration["Frontend:Url"]}/reset-password?token={token}&email={email}";
@@ -134,7 +138,7 @@ namespace Persistence.Services
         public async Task<TokenResponseDTO> ConfirmEmail(string email, string token)
         {
             var user = _userManager.Users.FirstOrDefault(u => u.Email == email)
-                ?? throw new UnauthorizedException("Користувач не знайдений");
+                       ?? throw new UnauthorizedException("Користувач не знайдений");
 
             if (user.EmailConfirmed == true)
             {
@@ -156,14 +160,13 @@ namespace Persistence.Services
         public async Task ResetPasswordAsync(ResetPasswordDTO dto)
         {
             var user = _userManager.Users.FirstOrDefault(u => u.Email == dto.Email)
-                ?? throw new UnauthorizedException("Користувач не знайдений");
+                       ?? throw new UnauthorizedException("Користувач не знайдений");
 
             var result = await _userManager.ResetPasswordAsync(user, dto.Token, dto.NewPassword);
 
             if (result.Succeeded)
             {
                 await UpdateTokenVersion(user.Id);
-
             }
             else
             {
@@ -174,7 +177,7 @@ namespace Persistence.Services
         public async Task ResendConfirmationEmailAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email)
-                ?? throw new NotFoundException("Почту не знайдено");
+                       ?? throw new NotFoundException("Почту не знайдено");
 
             if (user.EmailConfirmed) throw new ValidationException("Почту уже підтвердженно");
 
@@ -205,11 +208,12 @@ namespace Persistence.Services
         public async Task<UserDTO> GetByUsernameAsync(string username, Guid? currentUserId)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == username)
-                ?? throw new NotFoundException("Користувача з таким ім'ям не знайдено");
+                       ?? throw new NotFoundException("Користувача з таким ім'ям не знайдено");
 
             var dto = _userMapper.Map<UserDTO>(user);
             dto.IsOwnProfile = currentUserId == dto.Id;
-            dto.IsFollowing = currentUserId.HasValue && await _uow.Follows.IsFollowingAsync(currentUserId.Value, dto.Id);
+            dto.IsFollowing = currentUserId.HasValue &&
+                              await _uow.Follows.IsFollowingAsync(currentUserId.Value, dto.Id);
             dto.FollowersCount = await _uow.Follows.GetFollowersCountAsync(dto.Id);
             dto.FollowingCount = await _uow.Follows.GetFollowingCountAsync(dto.Id);
             return dto;
@@ -218,7 +222,7 @@ namespace Persistence.Services
         public async Task ToggleFollowAsync(Guid follower, Guid following)
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == follower)
-                  ?? throw new UnauthorizedException("Користувача не знайдено");
+                       ?? throw new UnauthorizedException("Користувача не знайдено");
             var isAlreadyFollowing = await _uow.Follows.GetFollowAsync(follower, following);
 
             if (isAlreadyFollowing is null)
@@ -229,6 +233,7 @@ namespace Persistence.Services
             {
                 user.Following.Remove(isAlreadyFollowing);
             }
+
             await _userManager.UpdateAsync(user);
         }
 
@@ -247,7 +252,9 @@ namespace Persistence.Services
             {
                 throw new UnauthorizedException("Помилка при вході через гугл. Спробуйте ще раз.");
             }
-            if (!payload.EmailVerified) throw new UnauthorizedException("Помилка при валідації почти. Спробуйте ще раз.");
+
+            if (!payload.EmailVerified)
+                throw new UnauthorizedException("Помилка при валідації почти. Спробуйте ще раз.");
 
             var existingUser = await _userManager.FindByLoginAsync("Google", payload.Subject);
             if (existingUser is not null)
@@ -256,7 +263,6 @@ namespace Persistence.Services
             var user = await _userManager.FindByEmailAsync(payload.Email);
             if (user is not null)
             {
-
                 await _userManager.AddLoginAsync(user, new UserLoginInfo(
                     "Google",
                     payload.Subject,

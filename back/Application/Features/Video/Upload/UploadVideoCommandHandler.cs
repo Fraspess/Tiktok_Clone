@@ -8,11 +8,15 @@ using MediatR;
 
 namespace Application.Features.Video.Upload
 {
-    internal class UploadVideoCommandHandler(IUnitOfWork _uow, IDescriptionParser _parser, IHashTagService _hashtag, IEventBus<VideoStartProcessingEvent> eventBus, ITempVideoStorage tempVideoStorage) : IRequestHandler<UploadVideoCommand, Unit>
+    internal class UploadVideoCommandHandler(
+        IUnitOfWork _uow,
+        IDescriptionParser _parser,
+        IHashTagService _hashtag,
+        IEventBus<VideoStartProcessingEvent> eventBus,
+        ITempVideoStorage tempVideoStorage) : IRequestHandler<UploadVideoCommand, Unit>
     {
         public async Task<Unit> Handle(UploadVideoCommand request, CancellationToken cancellationToken)
         {
-
             var parsedDescription = _parser.ParseDescription(request.Dto.Description);
             var newVideo = new VideoEntity()
             {
@@ -30,7 +34,8 @@ namespace Application.Features.Video.Upload
             await _uow.SaveChangesAsync();
 
             var tempFilePath = await tempVideoStorage.SaveVideoAsync(request.Dto.VideoFile);
-            await eventBus.PublishAsync(new VideoStartProcessingEvent { FilePath = tempFilePath, VideoId = newVideo.Id, UserId = request.OwnerId });
+            await eventBus.PublishAsync(new VideoStartProcessingEvent
+                { FilePath = tempFilePath, VideoId = newVideo.Id, UserId = request.OwnerId });
             return Unit.Value;
         }
     }

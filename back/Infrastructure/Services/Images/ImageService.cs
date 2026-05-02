@@ -45,11 +45,11 @@ public class ImageService : IImageService
             {
                 Directory.CreateDirectory(imageFolder);
             }
+
             using Image image = Image.Load(stream);
             var imageName = Guid.NewGuid().ToString() + ".webp";
             await image.SaveAsWebpAsync(Path.Combine(imageFolder, imageName));
             return imageName;
-
         }
         catch (Exception ex)
         {
@@ -62,7 +62,6 @@ public class ImageService : IImageService
     {
         var stream = imageFile.OpenReadStream();
         return await SaveImagePrivate(stream);
-
     }
 
 
@@ -76,4 +75,3 @@ public class ImageService : IImageService
         return await SaveImagePrivate(stream);
     }
 }
-

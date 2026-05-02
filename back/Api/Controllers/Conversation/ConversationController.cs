@@ -20,7 +20,8 @@ namespace Api.Controllers.Conversation
         [HttpGet]
         public async Task<IActionResult> GetConversations(int pageNumber = 1, int pageSize = 10)
         {
-            var conversations = await _mediator.Send(new GetConversationsQuery(User.GetUserId(), new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
+            var conversations = await _mediator.Send(new GetConversationsQuery(User.GetUserId(),
+                new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
             return Ok(ApiResponse<PagedResult<ConversationDTO>>.Success(conversations));
         }
 
@@ -36,9 +37,9 @@ namespace Api.Controllers.Conversation
         [Authorize]
         public async Task<IActionResult> GetMessages(Guid conversationId, int pageNumber = 1, int pageSize = 10)
         {
-            var messages = await _mediator.Send(new GetConversationMessagesQuery(conversationId, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, User.GetUserId()));
+            var messages = await _mediator.Send(new GetConversationMessagesQuery(conversationId,
+                new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, User.GetUserId()));
             return Ok(ApiResponse<PagedResult<MessageDTO>>.Success(messages));
         }
-
     }
 }

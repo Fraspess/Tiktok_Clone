@@ -12,11 +12,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Serilog;
+
 namespace Persistence.Seeder
 {
     public static class DbSeeder
     {
-
         // All json seed files should be located in Tiktok_Clone/Helpers and have Copy To Output Directory
         public static async Task SeedDataAsync(this WebApplication webApplication)
         {
@@ -71,12 +71,13 @@ namespace Persistence.Seeder
             }
         }
 
-        public static async Task SeedUsersAsync(UserManager<UserEntity> userManager, IImageService imageService, IWebHostEnvironment environment)
+        public static async Task SeedUsersAsync(UserManager<UserEntity> userManager, IImageService imageService,
+            IWebHostEnvironment environment)
         {
-
             if (!userManager.Users.Any())
             {
-                var json = await File.ReadAllTextAsync(Path.Combine(environment.ContentRootPath, "Helpers", "Users.json"));
+                var json = await File.ReadAllTextAsync(Path.Combine(environment.ContentRootPath, "Helpers",
+                    "Users.json"));
                 var users = JsonConvert.DeserializeObject<List<SeedUserDTO>>(json);
 
                 if (users == null)
@@ -127,7 +128,8 @@ namespace Persistence.Seeder
         }
 
 
-        public static async Task SeedVideosAsync(IConfiguration configuration, IMediator mediator, UserManager<UserEntity> userManager, AppDbContext context)
+        public static async Task SeedVideosAsync(IConfiguration configuration, IMediator mediator,
+            UserManager<UserEntity> userManager, AppDbContext context)
         {
             if (context.Videos.Any()) return;
 
@@ -139,7 +141,8 @@ namespace Persistence.Seeder
             foreach (var query in queries)
             {
                 var url = $"https://api.pexels.com/videos/search?query={query}&per_page=10&orientation=portrait";
-                await mediator.Send(new UploadVideoCommandDev(url, key, userIds, "Good description #salo #potuzhno #new-hashtag-test #new_hashtag_test"));
+                await mediator.Send(new UploadVideoCommandDev(url, key, userIds,
+                    "Good description #salo #potuzhno #new-hashtag-test #new_hashtag_test"));
             }
         }
     }

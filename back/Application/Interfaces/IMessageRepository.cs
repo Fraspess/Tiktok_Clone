@@ -1,7 +1,6 @@
-﻿using Application.Interfaces;
-using Domain.Entities.Message;
+﻿using Domain.Entities.Message;
 
-namespace Application.Interfaces.Message
+namespace Application.Interfaces
 {
     public interface IMessageRepository : IGenericRepository<MessageEntity, Guid>
     {

@@ -1,7 +1,6 @@
-﻿using Application.Interfaces;
-using Domain.Entities.Comment;
+﻿using Domain.Entities.Comment;
 
-namespace Application.Interfaces.Comment
+namespace Application.Interfaces
 {
     public interface ICommentRepository : IGenericRepository<CommentEntity, Guid>
     {

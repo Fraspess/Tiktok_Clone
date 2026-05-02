@@ -4,12 +4,12 @@ using MediatR;
 
 namespace Application.Features.User.ConfirmEmail
 {
-    public class ConfirmEmailCommandHandler(IUserService userService) : IRequestHandler<ConfirmEmailCommand, TokenResponseDTO>
+    public class ConfirmEmailCommandHandler(IUserService userService)
+        : IRequestHandler<ConfirmEmailCommand, TokenResponseDTO>
     {
         public async Task<TokenResponseDTO> Handle(ConfirmEmailCommand request, CancellationToken cancellationToken)
         {
             return await userService.ConfirmEmail(request.Email, request.Token);
         }
     }
-
 }

@@ -4,7 +4,8 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Infrastructure.SignalR
 {
-    internal class VideoProcessingNotifier(IHubContext<VideoProcessingHub, IVideoHubClient> _hub) : IVideoProcessingNotifier
+    internal class VideoProcessingNotifier(IHubContext<VideoProcessingHub, IVideoHubClient> _hub)
+        : IVideoProcessingNotifier
     {
         public async Task SendVideoProcessFailed(Guid videoId, Guid userId, string message)
         {

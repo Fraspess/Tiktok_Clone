@@ -1,7 +1,6 @@
-﻿using Application.Interfaces;
-using Domain.Entities.Conversation;
+﻿using Domain.Entities.Conversation;
 
-namespace Application.Interfaces.Conversation
+namespace Application.Interfaces
 {
     public interface IConversationRepository : IGenericRepository<ConversationEntity, Guid>
     {

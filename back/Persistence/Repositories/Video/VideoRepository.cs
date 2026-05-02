@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Video;
+﻿using Application.Interfaces;
 using Domain.Entities.Video;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,7 +9,6 @@ namespace Persistence.Repositories.Video
         public VideoRepository(AppDbContext context)
             : base(context)
         {
-
         }
 
         public async Task<VideoEntity?> FindVideoBySomeString(string someString)

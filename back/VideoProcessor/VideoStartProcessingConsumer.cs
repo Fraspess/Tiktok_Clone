@@ -4,9 +4,11 @@ using MassTransit;
 
 namespace VideoProcessor
 {
-    internal class VideoStartProcessingConsumer(ILogger<VideoStartProcessingConsumer> _logger, IConfiguration config, IPublishEndpoint publishEndpoint) : IConsumer<VideoStartProcessingEvent>
+    internal class VideoStartProcessingConsumer(
+        ILogger<VideoStartProcessingConsumer> _logger,
+        IConfiguration config,
+        IPublishEndpoint publishEndpoint) : IConsumer<VideoStartProcessingEvent>
     {
-
         public async Task Consume(ConsumeContext<VideoStartProcessingEvent> context)
         {
             var inputPath = context.Message.FilePath;
@@ -21,7 +23,8 @@ namespace VideoProcessor
                 await ValidateVideoAsync(inputPath);
 
                 var outputPath = Path.GetFullPath(
-                    Path.Combine(Path.GetDirectoryName(inputPath)!, "..", config["OutputVideoPath"]!, $"{Guid.NewGuid().ToString()}.mp4")
+                    Path.Combine(Path.GetDirectoryName(inputPath)!, "..", config["OutputVideoPath"]!,
+                        $"{Guid.NewGuid().ToString()}.mp4")
                 );
 
                 var outputDir = Path.GetDirectoryName(outputPath)!;
@@ -42,18 +45,21 @@ namespace VideoProcessor
                     .NotifyOnProgress(async (progress) =>
                     {
                         var progressInPercents = (int)Math.Floor((progress / duration) * 100);
-                        await publishEndpoint.Publish(new VideoProcessingProgressEvent(context.Message.VideoId, context.Message.UserId, progressInPercents));
+                        await publishEndpoint.Publish(new VideoProcessingProgressEvent(context.Message.VideoId,
+                            context.Message.UserId, progressInPercents));
                     })
                     .ProcessAsynchronously();
 
-                await publishEndpoint.Publish(new VideoProcessedEvent { FilePath = outputPath, VideoId = context.Message.VideoId, UserId = context.Message.UserId });
+                await publishEndpoint.Publish(new VideoProcessedEvent
+                    { FilePath = outputPath, VideoId = context.Message.VideoId, UserId = context.Message.UserId });
 
                 _logger.LogInformation("Successfully saved to {Output}", outputPath);
             }
             catch (Exception ex)
             {
                 _logger.LogError("Failed to convert file: {Error} ", ex.Message);
-                await publishEndpoint.Publish(new VideoProcessingFailedEvent(context.Message.VideoId, context.Message.UserId, ex.Message));
+                await publishEndpoint.Publish(new VideoProcessingFailedEvent(context.Message.VideoId,
+                    context.Message.UserId, ex.Message));
                 throw;
             }
             finally

@@ -26,17 +26,16 @@ namespace Application.Services.Message
             if (!pendingMessages.Any()) return;
 
             await _notifier.SendPendingMessagesAsync(userId, pendingMessages);
-
         }
 
         public async Task MarkAsDeliveredAsync(Guid userId, Guid messageId)
         {
             var message = await _uow.Messages
-                .GetAll()
-                .FirstOrDefaultAsync(m =>
-                    m.Id == messageId &&
-                    m.Conversation.Participants.Any(p => p.UserId == userId))
-            ?? throw new NotFoundException("Повідомлення не знайдено");
+                              .GetAll()
+                              .FirstOrDefaultAsync(m =>
+                                  m.Id == messageId &&
+                                  m.Conversation.Participants.Any(p => p.UserId == userId))
+                          ?? throw new NotFoundException("Повідомлення не знайдено");
 
             message.IsDelivered = true;
             await _uow.SaveChangesAsync();
@@ -45,11 +44,11 @@ namespace Application.Services.Message
         public async Task MarkAsReadAsync(Guid userId, Guid messageId)
         {
             var message = await _uow.Messages
-                .GetAll()
-                .FirstOrDefaultAsync(m =>
-                    m.Id == messageId &&
-                    m.Conversation.Participants.Any(p => p.UserId == userId))
-                ?? throw new NotFoundException("Повідомлення не знайдено");
+                              .GetAll()
+                              .FirstOrDefaultAsync(m =>
+                                  m.Id == messageId &&
+                                  m.Conversation.Participants.Any(p => p.UserId == userId))
+                          ?? throw new NotFoundException("Повідомлення не знайдено");
 
             message.IsRead = true;
             await _uow.SaveChangesAsync();

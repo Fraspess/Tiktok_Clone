@@ -10,6 +10,7 @@ namespace Infrastructure.Services.Email;
 internal class EmailService(IOptions<EmailSettings> settings) : IEmailService
 {
     private readonly EmailSettings _settings = settings.Value;
+
     public async Task SendEmailAsync(string to, string subject, string body)
     {
         var message = new MimeMessage();

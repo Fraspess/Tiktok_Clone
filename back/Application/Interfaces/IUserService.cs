@@ -28,6 +28,4 @@ public interface IUserService
     Task<TokenResponseDTO> GoogleAuth(string idToken);
 
     Task<bool> IsExistsById(Guid id);
-
-
 }

@@ -16,26 +16,37 @@ namespace Application.MapperProfiles.Video
                 .ForMember(
                     d => d.LikeCount,
                     o => o.MapFrom(s => s.Likes.Count))
-
                 .ForMember(
                     d => d.CommentsCount,
                     o => o.MapFrom(v => v.Comments.Count))
-
                 .ForMember(
                     d => d.FavoriteCount,
                     o => o.MapFrom(v => v.Favorites.Count))
-
                 .ForMember(dest => dest.IsLiked,
-                       opt => opt.MapFrom(src => src.Likes.Any(l => l.UserId == currentUserId)))
-
+                    opt => opt.MapFrom(src => src.Likes.Any(l => l.UserId == currentUserId)))
                 .ForMember(dest => dest.IsFavorited,
-                       opt => opt.MapFrom(src => src.Favorites.Any(f => f.UserId == currentUserId)));
-
+                    opt => opt.MapFrom(src => src.Favorites.Any(f => f.UserId == currentUserId)));
+            
+            CreateMap<VideoEntity, MyVideoDTO>()
+                .ForMember(d => d.HashTags,
+                    o => o.MapFrom(s => s.HashTags.Select(h => h.HashTag.Tag)))
+                .ForMember(
+                    d => d.LikeCount,
+                    o => o.MapFrom(s => s.Likes.Count))
+                .ForMember(
+                    d => d.CommentsCount,
+                    o => o.MapFrom(v => v.Comments.Count))
+                .ForMember(
+                    d => d.FavoriteCount,
+                    o => o.MapFrom(v => v.Favorites.Count))
+                .ForMember(dest => dest.IsLiked,
+                    opt => opt.MapFrom(src => src.Likes.Any(l => l.UserId == currentUserId)))
+                .ForMember(dest => dest.IsFavorited,
+                    opt => opt.MapFrom(src => src.Favorites.Any(f => f.UserId == currentUserId)));
 
             CreateMap<VideoEntity, SimpleVideoDTO>()
                 .ForMember(d => d.HashTags,
                     o => o.MapFrom(s => s.HashTags.Select(h => h.HashTag.Tag)));
-
         }
     }
 }

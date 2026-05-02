@@ -23,6 +23,7 @@ namespace Infrastructure.SignalR.Hubs
         {
             await messageService.MarkAsDeliveredAsync(Guid.Parse(Context.UserIdentifier!), messageId);
         }
+
         public async Task MarkAsRead(Guid messageId)
         {
             await messageService.MarkAsReadAsync(Guid.Parse(Context.UserIdentifier!), messageId);

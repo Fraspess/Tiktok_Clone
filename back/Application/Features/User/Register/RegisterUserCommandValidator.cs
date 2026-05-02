@@ -8,7 +8,8 @@ namespace Application.Features.User.Register
         {
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("Email не може бути порожнім")
-                .EmailAddress().WithMessage("Невірний формат email");
+                .EmailAddress().WithMessage("Невірний формат email")
+                .MaximumLength(256).WithMessage("Максимум 256 символів!");
 
             RuleFor(x => x.Password)
                 .NotEmpty().WithMessage("Пароль не може бути пустим")
@@ -16,7 +17,8 @@ namespace Application.Features.User.Register
 
             RuleFor(x => x.Username)
                 .NotEmpty().WithMessage("Ім'я користувача не може бути порожнім")
-                .MinimumLength(3).WithMessage("Ім'я користувача повинно містить не менше ніж 3 символів");
+                .MinimumLength(3).WithMessage("Ім'я користувача повинно містить не менше ніж 3 символів")
+                .MaximumLength(50).WithMessage("Максимум 50 символів!");
         }
     }
 }

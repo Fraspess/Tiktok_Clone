@@ -28,6 +28,7 @@ namespace Api.Controllers.Video
             {
                 return NotFound(ApiResponse<string>.Error("Відео не знайдено"));
             }
+
             var stream = System.IO.File.OpenRead(videoFile);
             return File(stream, "video/mp4", enableRangeProcessing: true, fileDownloadName: "video.mp4");
         }
@@ -36,10 +37,7 @@ namespace Api.Controllers.Video
         public async Task<IActionResult> GetVideoById(Guid id)
         {
             var video = await _mediator.Send(new GetVideoByIdQuery(id, GetUserIfExists()));
-            if (video is null)
-            {
-                return NotFound(ApiResponse<string>.Error("Відео не знайдено"));
-            }
+            
             return Ok(ApiResponse<VideoDTO>.Success(video));
         }
 
@@ -64,26 +62,27 @@ namespace Api.Controllers.Video
         }
 
 
-
         [HttpGet("fyp")]
         public async Task<IActionResult> GetForYouPage([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 5)
         {
-
-            var videos = await _mediator.Send(new GetForYouPageVideosQuery(new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, GetUserIfExists()));
+            var videos = await _mediator.Send(new GetForYouPageVideosQuery(
+                new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, GetUserIfExists()));
             return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos));
         }
 
         [HttpGet("search/{query}")]
         public async Task<IActionResult> GetVideoBySomeQuery(string query, int pageNumber = 1, int pageSize = 5)
         {
-            var videos = await _mediator.Send(new GetVideosBySomeStringQuery(query, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
+            var videos = await _mediator.Send(new GetVideosBySomeStringQuery(query,
+                new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }));
             return Ok(ApiResponse<PagedResult<SimpleVideoDTO>>.Success(videos));
         }
 
         [HttpGet("user/{id}")]
         public async Task<IActionResult> GetUserVideos(Guid id, int pageNumber = 1, int pageSize = 5)
         {
-            var videos = await _mediator.Send(new GetUserVideosQuery(id, new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, GetUserIfExists()));
+            var videos = await _mediator.Send(new GetUserVideosQuery(id,
+                new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, GetUserIfExists()));
             return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos, null));
         }
 
@@ -91,8 +90,9 @@ namespace Api.Controllers.Video
         [Authorize]
         public async Task<IActionResult> GetMyVideos(int pageNumber = 1, int pageSize = 5)
         {
-            var videos = await _mediator.Send(new GetMyVideosQuery(new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, User.GetUserId()));
-            return Ok(ApiResponse<PagedResult<VideoDTO>>.Success(videos));
+            var videos = await _mediator.Send(new GetMyVideosQuery(
+                new PaginationSettings { PageNumber = pageNumber, PageSize = pageSize }, User.GetUserId()));
+            return Ok(ApiResponse<PagedResult<MyVideoDTO>>.Success(videos));
         }
 
         private Guid? GetUserIfExists()

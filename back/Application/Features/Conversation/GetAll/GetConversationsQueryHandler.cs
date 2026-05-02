@@ -9,9 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Conversation.GetAll
 {
-    public class GetConversationsQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetConversationsQuery, PagedResult<ConversationDTO>>
+    public class GetConversationsQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetConversationsQuery, PagedResult<ConversationDTO>>
     {
-        public async Task<PagedResult<ConversationDTO>> Handle(GetConversationsQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<ConversationDTO>> Handle(GetConversationsQuery request,
+            CancellationToken cancellationToken)
         {
             var convo = await _uow.Conversations
                 .GetAll()

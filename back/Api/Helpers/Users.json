@@ -6,7 +6,9 @@
     "LastName": "string",
     "Image": "https://randomuser.me/api/portraits/men/1.jpg",
     "Password": "string",
-    "Roles": [ "Admin" ]
+    "Roles": [
+      "Admin"
+    ]
   },
   {
     "Email": "admin@example.com",
@@ -15,7 +17,9 @@
     "LastName": "Системний",
     "Image": "https://randomuser.me/api/portraits/men/1.jpg",
     "Password": "Admin123!",
-    "Roles": [ "Admin" ]
+    "Roles": [
+      "Admin"
+    ]
   },
   {
     "Email": "ivan@example.com",
@@ -24,7 +28,9 @@
     "LastName": "Борисюк",
     "Image": "https://randomuser.me/api/portraits/men/2.jpg",
     "Password": "bb123456",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "olena@example.com",
@@ -33,7 +39,9 @@
     "LastName": "Шаглінська",
     "Image": "https://randomuser.me/api/portraits/women/1.jpg",
     "Password": "password",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "maria.k@example.com",
@@ -42,7 +50,9 @@
     "LastName": "Коваль",
     "Image": "https://randomuser.me/api/portraits/women/2.jpg",
     "Password": "Maria2024!",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "andriy.l@example.com",
@@ -51,7 +61,9 @@
     "LastName": "Литвин",
     "Image": "https://randomuser.me/api/portraits/men/3.jpg",
     "Password": "Andriy$123",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "natalia.z@example.com",
@@ -60,7 +72,9 @@
     "LastName": "Заріцька",
     "Image": "https://randomuser.me/api/portraits/women/3.jpg",
     "Password": "NataPass1!",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "dmytro.p@example.com",
@@ -69,7 +83,9 @@
     "LastName": "Петренко",
     "Image": "https://randomuser.me/api/portraits/men/4.jpg",
     "Password": "Dmytro987#",
-    "Roles": [ "Admin" ]
+    "Roles": [
+      "Admin"
+    ]
   },
   {
     "Email": "oksana.m@example.com",
@@ -78,7 +94,9 @@
     "LastName": "Мельник",
     "Image": "https://randomuser.me/api/portraits/women/4.jpg",
     "Password": "Oksana321*",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "yuriy.k@example.com",
@@ -87,7 +105,9 @@
     "LastName": "Кравченко",
     "Image": "https://randomuser.me/api/portraits/men/5.jpg",
     "Password": "YuraK_2023",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "iryna.v@example.com",
@@ -96,7 +116,9 @@
     "LastName": "Василенко",
     "Image": "https://randomuser.me/api/portraits/women/5.jpg",
     "Password": "Iryna*pass9",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "taras.r@example.com",
@@ -105,7 +127,9 @@
     "LastName": "Романюк",
     "Image": "https://randomuser.me/api/portraits/men/6.jpg",
     "Password": "TarasR123",
-    "Roles": [ "Admin" ]
+    "Roles": [
+      "Admin"
+    ]
   },
   {
     "Email": "halyna.b@example.com",
@@ -114,7 +138,9 @@
     "LastName": "Білак",
     "Image": "https://randomuser.me/api/portraits/women/6.jpg",
     "Password": "Halyna#456",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "serhiy.z@example.com",
@@ -123,7 +149,9 @@
     "LastName": "Захаренко",
     "Image": "https://randomuser.me/api/portraits/men/7.jpg",
     "Password": "Serhiy!789",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "lyudmyla.h@example.com",
@@ -132,7 +160,9 @@
     "LastName": "Гордієнко",
     "Image": "https://randomuser.me/api/portraits/women/7.jpg",
     "Password": "Luda2022!",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "oleksandr.d@example.com",
@@ -141,7 +171,9 @@
     "LastName": "Данилюк",
     "Image": "https://randomuser.me/api/portraits/men/8.jpg",
     "Password": "Olek1234@",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "valentyna.s@example.com",
@@ -150,7 +182,9 @@
     "LastName": "Соловей",
     "Image": "https://randomuser.me/api/portraits/women/8.jpg",
     "Password": "Valya*pass",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "roman.k@example.com",
@@ -159,7 +193,9 @@
     "LastName": "Кучер",
     "Image": "https://randomuser.me/api/portraits/men/9.jpg",
     "Password": "Roman+321",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "yana.t@example.com",
@@ -168,7 +204,9 @@
     "LastName": "Тимошенко",
     "Image": "https://randomuser.me/api/portraits/women/9.jpg",
     "Password": "YanaTpass1",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "oleksiy.n@example.com",
@@ -177,7 +215,9 @@
     "LastName": "Нікітін",
     "Image": "https://randomuser.me/api/portraits/men/10.jpg",
     "Password": "Oleksey77!",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   },
   {
     "Email": "kateryna.p@example.com",
@@ -186,6 +226,8 @@
     "LastName": "Пархоменко",
     "Image": "https://randomuser.me/api/portraits/women/10.jpg",
     "Password": "Katya#pass123",
-    "Roles": [ "User" ]
+    "Roles": [
+      "User"
+    ]
   }
 ]

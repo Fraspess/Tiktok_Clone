@@ -23,6 +23,5 @@ namespace Domain.Entities.Comment
         public ICollection<CommentEntity> Replies { get; set; } = new List<CommentEntity>();
 
         public ICollection<CommentLikeEntity> CommentLikes { get; set; } = new List<CommentLikeEntity>();
-
     }
 }

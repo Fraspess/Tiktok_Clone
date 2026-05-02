@@ -8,7 +8,8 @@ using MediatR;
 
 namespace Application.Features.Video.GetUserVideos
 {
-    public class GetUserVideosQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetUserVideosQuery, PagedResult<VideoDTO>>
+    public class GetUserVideosQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetUserVideosQuery, PagedResult<VideoDTO>>
     {
         public async Task<PagedResult<VideoDTO>> Handle(GetUserVideosQuery request, CancellationToken cancellationToken)
         {
