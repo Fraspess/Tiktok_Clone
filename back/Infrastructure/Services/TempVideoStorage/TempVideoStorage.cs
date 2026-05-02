@@ -1,11 +1,12 @@
 ﻿using Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 
-namespace Infrastructure.Services.TempStorage
+namespace Infrastructure.Services.TempVideoStorage
 {
     internal class TempVideoStorage : ITempVideoStorage
     {
         String tempPath = Path.Combine(Directory.GetCurrentDirectory(), "videos");
+
         public async Task<string> SaveVideoAsync(IFormFile file)
         {
             Directory.CreateDirectory(tempPath);

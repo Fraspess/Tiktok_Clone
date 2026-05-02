@@ -9,7 +9,8 @@ namespace Infrastructure.RabbitMQ.Consumers
     {
         public async Task Consume(ConsumeContext<VideoProcessingProgressEvent> context)
         {
-            await _mediator.Send(new VideoProcessInfoInPercentCommand(context.Message.VideoId, context.Message.Progress));
+            await _mediator.Send(
+                new VideoProcessInfoInPercentCommand(context.Message.VideoId, context.Message.Progress));
         }
     }
 }

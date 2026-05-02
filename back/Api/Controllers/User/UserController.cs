@@ -1,6 +1,4 @@
-﻿
-
-
+﻿using System.Security.Claims;
 using Application;
 using Application.Dtos.User;
 using Application.Extensions;
@@ -20,7 +18,8 @@ using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+
+namespace Api.Controllers.User;
 
 [ApiController]
 [Route("api/users")]
@@ -40,7 +39,8 @@ public class UserController(IMediator _mediator) : ControllerBase
     {
         await _mediator.Send(command);
 
-        return Ok(ApiResponse<object>.Success(null!, "Код для підтвердження реєстрації був надісланий на вказану почту."));
+        return Ok(ApiResponse<object>.Success(null!,
+            "Код для підтвердження реєстрації був надісланий на вказану почту."));
     }
 
     [HttpPost("confirm-email")]
@@ -71,7 +71,7 @@ public class UserController(IMediator _mediator) : ControllerBase
     public async Task<IActionResult> Refresh()
     {
         var refreshToken = Request.Cookies["refreshToken"]
-            ?? throw new UnauthorizedException("Refresh token не знайдений");
+                           ?? throw new UnauthorizedException("Refresh token не знайдений");
 
         var newTokens = await _mediator.Send(new RefreshTokensCommand(refreshToken));
 
@@ -85,7 +85,7 @@ public class UserController(IMediator _mediator) : ControllerBase
     public async Task<IActionResult> Logout()
     {
         var refreshToken = Request.Cookies["refreshToken"]
-            ?? throw new UnauthorizedException("Refresh token не знайдений");
+                           ?? throw new UnauthorizedException("Refresh token не знайдений");
 
         DeleteRefreshTokenCookie();
 
@@ -139,6 +139,7 @@ public class UserController(IMediator _mediator) : ControllerBase
         await _mediator.Send(new FollowUserCommand(userId, following));
         return Ok(ApiResponse<object>.Success(null!, null));
     }
+
     private void AppendRefreshTokenCookie(string refreshToken)
     {
         Response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
@@ -149,6 +150,7 @@ public class UserController(IMediator _mediator) : ControllerBase
             Expires = DateTime.UtcNow.AddDays(7)
         });
     }
+
     private void DeleteRefreshTokenCookie()
     {
         Response.Cookies.Append("refreshToken", "", new CookieOptions

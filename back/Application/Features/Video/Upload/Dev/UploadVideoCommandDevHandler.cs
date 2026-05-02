@@ -7,7 +7,8 @@ using Newtonsoft.Json;
 
 namespace Application.Features.Video.Upload.Dev
 {
-    internal class UploadVideoCommandDevHandler(IUnitOfWork _uow, IDescriptionParser _parser, IHashTagService _hashtags) : IRequestHandler<UploadVideoCommandDev, Unit>
+    internal class UploadVideoCommandDevHandler(IUnitOfWork _uow, IDescriptionParser _parser, IHashTagService _hashtags)
+        : IRequestHandler<UploadVideoCommandDev, Unit>
     {
         public async Task<Unit> Handle(UploadVideoCommandDev request, CancellationToken cancellationToken)
         {
@@ -31,30 +32,35 @@ namespace Application.Features.Video.Upload.Dev
                             break;
                         }
                     }
+
                     if (videoUrl == null) continue;
 
                     var fileName = $"{Guid.NewGuid()}.mp4";
                     var savePath = Path.Combine(uploadFolder, fileName);
 
                     var bytes = await httpClient.GetByteArrayAsync(videoUrl);
-                    await File.WriteAllBytesAsync(savePath, bytes); ;
+                    await File.WriteAllBytesAsync(savePath, bytes);
+                    ;
 
                     var randomUserId = request.RandomUserIds[Random.Shared.Next(request.RandomUserIds.Count())];
 
                     var parsedDescription = _parser.ParseDescription(request.VideoDescription);
-                    var newVideo = new VideoEntity { Description = parsedDescription.CleanText, UserId = randomUserId, VideoFileName = fileName };
+                    var newVideo = new VideoEntity
+                        { Description = parsedDescription.CleanText, UserId = randomUserId, VideoFileName = fileName };
 
                     var hashtags = await _hashtags.GetOrCreateAsync(parsedDescription.Tags);
                     foreach (var tag in hashtags)
                     {
                         newVideo.HashTags.Add(new VideoHashTagEntity { HashTagId = tag.Id, VideoId = newVideo.Id });
                     }
+
+                    newVideo.Status = "Processed";
                     await _uow.Videos.CreateAsync(newVideo);
                 }
             }
+
             await _uow.SaveChangesAsync();
             return Unit.Value;
         }
     }
-
 }

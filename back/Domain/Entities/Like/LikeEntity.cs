@@ -12,7 +12,5 @@ namespace Domain.Entities.Like
         public UserEntity? User { get; set; }
 
         public VideoEntity? Video { get; set; }
-
-
     }
 }

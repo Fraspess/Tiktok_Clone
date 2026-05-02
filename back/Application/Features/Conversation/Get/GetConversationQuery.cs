@@ -4,5 +4,4 @@ using MediatR;
 namespace Application.Features.Conversation.Get
 {
     public record GetConversationQuery(Guid ConversationId, Guid CurrentUserId) : IRequest<ConversationDTO>;
-
 }

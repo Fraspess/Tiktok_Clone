@@ -6,6 +6,5 @@
         public Task FlushPendingAsync(Guid userId);
         public Task MarkAsReadAsync(Guid userId, Guid messageId);
         public Task MarkAsDeliveredAsync(Guid userId, Guid messageId);
-
     }
 }

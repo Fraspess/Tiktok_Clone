@@ -10,7 +10,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Message.Get
 {
-    public class GetMessagesQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetMessagesQuery, PagedResult<MessageDTO>>
+    public class GetMessagesQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetMessagesQuery, PagedResult<MessageDTO>>
     {
         public async Task<PagedResult<MessageDTO>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
         {

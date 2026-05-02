@@ -13,7 +13,7 @@ namespace Application.Features.Favorite.ToggleFavorite
             var userId = request.UserId;
 
             var video = await _uow.Videos.GetByIdAsync(videoId)
-                ?? throw new NotFoundException("Відео не знайдено");
+                        ?? throw new NotFoundException("Відео не знайдено");
 
             var favoriteEntity = _uow.Favorites.GetByVideoAndUserIds(videoId, userId);
             if (favoriteEntity is null)
@@ -29,6 +29,7 @@ namespace Application.Features.Favorite.ToggleFavorite
             {
                 await _uow.Favorites.DeleteAsync(favoriteEntity);
             }
+
             await _uow.SaveChangesAsync();
             return Unit.Value;
         }

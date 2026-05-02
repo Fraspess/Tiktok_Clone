@@ -10,6 +10,5 @@
         public string Owner { get; set; } = string.Empty;
 
         public int LikesCount { get; set; }
-
     }
 }

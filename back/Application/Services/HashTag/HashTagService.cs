@@ -11,15 +11,17 @@ namespace Application.Services.HashTag
             foreach (var tagName in tags)
             {
                 var tag = await _uow.HashTags.GetByNameAsync(tagName)
-                       ?? _uow.HashTags.GetTracked(h => h.Tag == tagName);
+                          ?? _uow.HashTags.GetTracked(h => h.Tag == tagName);
 
                 if (tag is null)
                 {
                     tag = new HashTagEntity { Tag = tagName };
                     await _uow.HashTags.CreateAsync(tag);
                 }
+
                 result.Add(tag);
             }
+
             return result;
         }
     }

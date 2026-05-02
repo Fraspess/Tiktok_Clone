@@ -8,14 +8,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Video.GetById
 {
-    public class GetVideoByIdQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetVideoByIdQuery, VideoDTO>
+    public class GetVideoByIdQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetVideoByIdQuery, VideoDTO>
     {
         public async Task<VideoDTO> Handle(GetVideoByIdQuery request, CancellationToken cancellationToken)
         {
             return await _uow.Videos
-            .GetAll()
-            .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = request.UserId })
-            .FirstOrDefaultAsync(v => v.Id == request.Id) ?? throw new NotFoundException("Відео не знайдено");
+                .GetAll()
+                .ProjectTo<VideoDTO>(_mapper.ConfigurationProvider, new { currentUserId = request.UserId })
+                .FirstOrDefaultAsync(v => v.Id == request.Id) ?? throw new NotFoundException("Відео не знайдено");
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Favorite;
+﻿using Application.Interfaces;
 using Domain.Entities.Favorite;
 
 namespace Persistence.Repositories.Favorite
@@ -13,6 +13,5 @@ namespace Persistence.Repositories.Favorite
         {
             return _context.Favorites.Where(f => f.VideoId == videoId && f.UserId == userId).FirstOrDefault()!;
         }
-
     }
 }

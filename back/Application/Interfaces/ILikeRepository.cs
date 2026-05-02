@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Like;
 
-namespace Application.Interfaces.Like
+namespace Application.Interfaces
 {
     public interface ILikeRepository : IGenericRepository<LikeEntity, Guid>
     {

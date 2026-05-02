@@ -9,5 +9,4 @@ public class UserDTO
     public bool IsOwnProfile { get; set; }
     public string Avatar { get; set; } = string.Empty;
     public bool IsFollowing { get; set; }
-
 }

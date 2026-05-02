@@ -1,12 +1,4 @@
-﻿using Application.Interfaces.Comment;
-using Application.Interfaces.Conversation;
-using Application.Interfaces.Favorite;
-using Application.Interfaces.HashTags;
-using Application.Interfaces.Like;
-using Application.Interfaces.Message;
-using Application.Interfaces.Video;
-
-namespace Application.Interfaces
+﻿namespace Application.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
@@ -18,6 +10,7 @@ namespace Application.Interfaces
         IFavoriteRepository Favorites { get; }
         IConversationRepository Conversations { get; }
         IMessageRepository Messages { get; }
+        IReportRepository Reports { get; }
 
         Task<int> SaveChangesAsync();
     }

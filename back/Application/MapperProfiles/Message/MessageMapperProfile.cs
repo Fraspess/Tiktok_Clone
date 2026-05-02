@@ -8,7 +8,6 @@ namespace Application.MapperProfiles.Message
     {
         public MessageMapperProfile()
         {
-
             CreateMap<MessageEntity, MessageDTO>();
         }
     }

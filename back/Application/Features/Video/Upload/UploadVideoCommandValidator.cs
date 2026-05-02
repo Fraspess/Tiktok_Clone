@@ -14,6 +14,5 @@ namespace Application.Features.Video.Upload
                 .NotNull().WithMessage("Відео файл не може бути порожнім")
                 .Must(file => file.Length > 0).WithMessage("Відео файл не може бути порожнім");
         }
-
     }
 }

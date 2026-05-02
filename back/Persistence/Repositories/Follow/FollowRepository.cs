@@ -7,6 +7,7 @@ namespace Persistence.Repositories.Follow
     internal class FollowRepository : IFollowRepository
     {
         private AppDbContext _context;
+
         public FollowRepository(AppDbContext context)
         {
             _context = context;
@@ -33,6 +34,5 @@ namespace Persistence.Repositories.Follow
         {
             return await _context.UserFollows.CountAsync(f => f.FollowerId == userId);
         }
-
     }
 }

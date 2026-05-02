@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Comment;
+﻿using System.ComponentModel.DataAnnotations;
+using Domain.Entities.Comment;
 using Domain.Entities.Conversation;
 using Domain.Entities.Favorite;
 using Domain.Entities.Like;
@@ -10,15 +11,14 @@ namespace Domain.Entities.Identity;
 
 public class UserEntity : IdentityUser<Guid>
 {
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; init; } = DateTime.UtcNow;
 
-    public String? LastName { get; set; }
+    [MaxLength(50)] public string? LastName { get; set; }
+    [MaxLength(50)] public string? FirstName { get; set; }
 
-    public String? FirstName { get; set; }
+    [MaxLength(160)] public string? Description { get; set; }
 
-    public String? Description { get; set; }
-
-    public String? Avatar { get; set; }
+    [MaxLength(255)] public string? Avatar { get; set; }
 
     public int RefreshTokenVersion { get; set; }
 
@@ -43,4 +43,8 @@ public class UserEntity : IdentityUser<Guid>
     public ICollection<MessageEntity> SentMessages { get; set; } = [];
 
     public ICollection<CommentLikeEntity> LikedComments { get; set; } = new List<CommentLikeEntity>();
+
+    public Guid? BannedBy { get; set; }
+    public DateTime? BannedAt { get; set; }
+    public bool IsBanned => BannedBy.HasValue;
 }

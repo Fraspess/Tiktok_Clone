@@ -9,9 +9,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Video.GetBySomeQuery
 {
-    public class GetVideosBySomeStringQueryHandler(IUnitOfWork _uow, IMapper _mapper) : IRequestHandler<GetVideosBySomeStringQuery, PagedResult<SimpleVideoDTO>>
+    public class GetVideosBySomeStringQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+        : IRequestHandler<GetVideosBySomeStringQuery, PagedResult<SimpleVideoDTO>>
     {
-        public async Task<PagedResult<SimpleVideoDTO>> Handle(GetVideosBySomeStringQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<SimpleVideoDTO>> Handle(GetVideosBySomeStringQuery request,
+            CancellationToken cancellationToken)
         {
             var someString = request.SomeString.ToLower().Trim();
             var query = _uow.Videos

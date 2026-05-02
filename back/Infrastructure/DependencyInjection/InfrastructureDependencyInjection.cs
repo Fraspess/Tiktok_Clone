@@ -4,19 +4,21 @@ using Infrastructure.RabbitMQ;
 using Infrastructure.RabbitMQ.Consumers;
 using Infrastructure.Services.Email;
 using Infrastructure.Services.Images;
-using Infrastructure.Services.TempStorage;
+using Infrastructure.Services.TempVideoStorage;
 using Infrastructure.Services.Token;
 using Infrastructure.SignalR;
 using MassTransit;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Infrastructure.DependencyInjection
 {
     public static class InfrastructureDependencyInjection
     {
         public static IServiceCollection AddInfrastructure(
-        this IServiceCollection services, IConfiguration config)
+            this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
         {
             services.AddSignalR();
             services.AddScoped<IImageService, ImageService>();
@@ -36,17 +38,24 @@ namespace Infrastructure.DependencyInjection
                 x.AddConsumer<VideoProcessedConsumer>();
                 x.AddConsumer<VideoProcessingProgressConsumer>();
                 x.AddConsumer<VideoProcessingFailedConsumer>();
-                x.UsingRabbitMq((ctx, cfg) =>
+
+                if (env.IsDevelopment())
                 {
-
-                    cfg.Host(config["RabbitMQ:HostName"], h =>
+                    x.UsingInMemory((ctx, cfg) => { cfg.ConfigureEndpoints(ctx); });
+                }
+                else
+                {
+                    x.UsingRabbitMq((ctx, cfg) =>
                     {
-                        h.Username(config["RabbitMQ:UserName"]!);
-                        h.Password(config["RabbitMQ:Password"]!);
-                    });
+                        cfg.Host(config["RabbitMQ:HostName"], h =>
+                        {
+                            h.Username(config["RabbitMQ:UserName"]!);
+                            h.Password(config["RabbitMQ:Password"]!);
+                        });
 
-                    cfg.ConfigureEndpoints(ctx);
-                });
+                        cfg.ConfigureEndpoints(ctx);
+                    });
+                }
             });
             return services;
         }

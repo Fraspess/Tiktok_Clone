@@ -1,6 +1,6 @@
 ﻿using Domain.Entities.Video;
 
-namespace Application.Interfaces.Video
+namespace Application.Interfaces
 {
     public interface IVideoRepository : IGenericRepository<VideoEntity, Guid>
     {

@@ -4,12 +4,13 @@ using MediatR;
 
 namespace Application.Features.Video.ProcessFailed
 {
-    internal class VideoProcessingFailedCommandHandler(IUnitOfWork _uow, IVideoProcessingNotifier notifier) : IRequestHandler<VideoProcessingFailedCommand, Unit>
+    internal class VideoProcessingFailedCommandHandler(IUnitOfWork _uow, IVideoProcessingNotifier notifier)
+        : IRequestHandler<VideoProcessingFailedCommand, Unit>
     {
         public async Task<Unit> Handle(VideoProcessingFailedCommand request, CancellationToken cancellationToken)
         {
             var video = await _uow.Videos.GetByIdAsyncIgnoreQueryFilters(request.VideoId)
-                ?? throw new NotFoundException("Відео не знайдено");
+                        ?? throw new NotFoundException("Відео не знайдено");
 
             video.Status = "Failed to process";
             video.ProccessedInProcents = 0;

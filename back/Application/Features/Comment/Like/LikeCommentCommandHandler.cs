@@ -7,10 +7,11 @@ namespace Application.Features.Comment.Like
 {
     public class LikeCommentCommandHandler(IUnitOfWork _uow) : IRequestHandler<LikeCommentCommand, Unit>
     {
-        async Task<Unit> IRequestHandler<LikeCommentCommand, Unit>.Handle(LikeCommentCommand request, CancellationToken cancellationToken)
+        async Task<Unit> IRequestHandler<LikeCommentCommand, Unit>.Handle(LikeCommentCommand request,
+            CancellationToken cancellationToken)
         {
             var comment = await _uow.Comments.GetByIdAsync(request.CommentId)
-                ?? throw new NotFoundException("Коментарій не знайдено");
+                          ?? throw new NotFoundException("Коментарій не знайдено");
 
             var isExists = comment.CommentLikes.FirstOrDefault(c => c.UserId == request.UserId);
             if (isExists is null)
@@ -24,6 +25,7 @@ namespace Application.Features.Comment.Like
                 comment.CommentLikes.Remove(isExists);
                 await _uow.SaveChangesAsync();
             }
+
             return Unit.Value;
         }
     }

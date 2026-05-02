@@ -22,13 +22,13 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     builder.Host.UseSerilog((context, services, configuration) => configuration
-    .ReadFrom.Configuration(context.Configuration)
-    .ReadFrom.Services(services)
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
     );
 
     builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddPersistence(builder.Configuration);
-    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
     builder.Services.AddApi(builder.Configuration, builder.Environment);
 
     var app = builder.Build();
@@ -37,12 +37,9 @@ try
     if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
-        app.UseSwaggerUI(options =>
-        {
-            options.SwaggerEndpoint("/swagger/v1/swagger.json", "Tiktok-Clone");
-        });
-
+        app.UseSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "Tiktok-Clone"); });
     }
+
     app.UseMiddleware<GlobalExceptionHandler>();
 
     app.UseSerilogRequestLogging();
@@ -59,7 +56,6 @@ try
     await app.SeedDataAsync();
 
     app.Run();
-
 }
 catch (Exception ex)
 {

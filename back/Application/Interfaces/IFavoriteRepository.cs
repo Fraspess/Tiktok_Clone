@@ -1,7 +1,6 @@
-﻿using Application.Interfaces;
-using Domain.Entities.Favorite;
+﻿using Domain.Entities.Favorite;
 
-namespace Application.Interfaces.Favorite
+namespace Application.Interfaces
 {
     public interface IFavoriteRepository : IGenericRepository<FavoriteEntity, Guid>
     {

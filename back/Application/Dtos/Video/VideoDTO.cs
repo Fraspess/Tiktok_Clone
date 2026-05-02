@@ -1,5 +1,4 @@
-﻿
-using Application.Dtos.User;
+﻿using Application.Dtos.User;
 
 namespace Application.Dtos.Video
 {
@@ -22,10 +21,5 @@ namespace Application.Dtos.Video
         public bool IsLiked { get; set; }
 
         public UserAuthorDTO? Author { get; set; }
-        public string Status { get; set; } = string.Empty;
-
-        public int ProccessedInProcents { get; set; }
-
-
     }
 }

@@ -9,6 +9,5 @@
         public UserEntity Following { get; set; } = null!;
 
         public DateTime FollowedAt { get; set; } = DateTime.UtcNow;
-
     }
 }

@@ -7,6 +7,5 @@ namespace Domain.Entities.HashTags
         public override Guid Id { get; set; } = Guid.NewGuid();
         public required String Tag { get; set; }
         public ICollection<VideoHashTagEntity> VideoHashTags { get; set; } = new List<VideoHashTagEntity>();
-
     }
 }

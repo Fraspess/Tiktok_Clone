@@ -1,7 +1,6 @@
-﻿using Application.Interfaces;
-using Domain.Entities.HashTags;
+﻿using Domain.Entities.HashTags;
 
-namespace Application.Interfaces.HashTags
+namespace Application.Interfaces
 {
     public interface IHashTagRepository : IGenericRepository<HashTagEntity, Guid>
     {

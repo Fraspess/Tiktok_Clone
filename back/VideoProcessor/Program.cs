@@ -10,17 +10,24 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<VideoStartProcessingConsumer>();
 
-    x.UsingRabbitMq((ctx, cfg) =>
+    if (builder.Environment.IsDevelopment())
     {
-        cfg.Host(builder.Configuration["RabbitMQ:HostName"], h =>
+        x.UsingInMemory((ctx, cfg) => { cfg.ConfigureEndpoints(ctx); });
+    }
+    else
+    {
+        x.UsingRabbitMq((ctx, cfg) =>
         {
-            h.Username(builder.Configuration["RabbitMQ:UserName"]!);
-            h.Password(builder.Configuration["RabbitMQ:Password"]!);
-        });
+            cfg.Host(builder.Configuration["RabbitMQ:HostName"], h =>
+            {
+                h.Username(builder.Configuration["RabbitMQ:UserName"]!);
+                h.Password(builder.Configuration["RabbitMQ:Password"]!);
+            });
 
-        cfg.UseConcurrencyLimit(1);
-        cfg.ConfigureEndpoints(ctx);
-    });
+            cfg.UseConcurrencyLimit(1);
+            cfg.ConfigureEndpoints(ctx);
+        });
+    }
 });
 
 if (builder.Environment.IsDevelopment())
@@ -32,7 +39,6 @@ if (builder.Environment.IsDevelopment())
         await FFMpegDownloader.DownloadBinaries();
     }
 }
-
 
 var host = builder.Build();
 

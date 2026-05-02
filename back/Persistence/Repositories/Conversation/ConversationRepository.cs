@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Conversation;
+﻿using Application.Interfaces;
 using Domain.Entities.Conversation;
 
 namespace Persistence.Repositories.Conversation

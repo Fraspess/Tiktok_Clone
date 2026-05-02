@@ -10,6 +10,5 @@ namespace Application.Dtos.User
         public required string Password { get; set; }
 
         public IFormFile? Avatar { get; set; }
-
     }
 }

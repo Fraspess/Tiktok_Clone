@@ -14,15 +14,22 @@ namespace Infrastructure.Services.Token
     internal class JWTTokenService(IConfiguration configuration, UserManager<UserEntity> userManager) : IJWTTokenService
     {
         private readonly string _key = configuration["Jwt:Key"]
-            ?? throw new InvalidOperationException("Не настроєний Jwt:key, осечка");
+                                       ?? throw new InvalidOperationException("Не настроєний Jwt:key, осечка");
+
         private readonly string _issuer = configuration["Jwt:Issuer"]
-            ?? throw new InvalidOperationException("Не настроєний Jwt:Issuer, осечка");
+                                          ?? throw new InvalidOperationException("Не настроєний Jwt:Issuer, осечка");
+
         private readonly string _audience = configuration["Jwt:Audience"]
-            ?? throw new InvalidOperationException("Не настроєний Jwt:Audience, осечка");
+                                            ?? throw new InvalidOperationException(
+                                                "Не настроєний Jwt:Audience, осечка");
+
         private readonly int _accessTokenExpiry = int.Parse(configuration["Jwt:AccessTokenExpiryMinutes"]
-            ?? throw new InvalidOperationException("Не настроєний Jwt:AccessTokenExpiryMinutes, осечка"));
+                                                            ?? throw new InvalidOperationException(
+                                                                "Не настроєний Jwt:AccessTokenExpiryMinutes, осечка"));
+
         private readonly int _refreshTokenExpiry = int.Parse(configuration["Jwt:RefreshTokenExpiryDays"]
-            ?? throw new InvalidOperationException("Не настроєний Jwt:RefreshTokenExpiryDays, осечка"));
+                                                             ?? throw new InvalidOperationException(
+                                                                 "Не настроєний Jwt:RefreshTokenExpiryDays, осечка"));
 
         public async Task<TokenResponseDTO> GenerateTokensAsync(UserEntity user)
         {
@@ -60,13 +67,13 @@ namespace Infrastructure.Services.Token
             }
 
             var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value
-                ?? throw new UnauthorizedException("Не валідний refresh токен");
+                         ?? throw new UnauthorizedException("Не валідний refresh токен");
 
             var tokenVersion = principal.FindFirst("Version")?.Value
-                ?? throw new UnauthorizedException("Не валідний refresh токен");
+                               ?? throw new UnauthorizedException("Не валідний refresh токен");
 
             var user = userManager.Users.FirstOrDefault(u => u.Id.ToString() == userId)
-                ?? throw new UnauthorizedException("Користувача не знайдено");
+                       ?? throw new UnauthorizedException("Користувача не знайдено");
 
             if (user.RefreshTokenVersion != int.Parse(tokenVersion))
             {
@@ -104,7 +111,6 @@ namespace Infrastructure.Services.Token
             string accessTokenString = new JwtSecurityTokenHandler().WriteToken(accessToken);
 
             return accessTokenString;
-
         }
 
 
@@ -137,8 +143,5 @@ namespace Infrastructure.Services.Token
             var signingInKey = new SymmetricSecurityKey(keyBytes);
             return new SigningCredentials(signingInKey, SecurityAlgorithms.HmacSha256);
         }
-
-
-
     }
 }

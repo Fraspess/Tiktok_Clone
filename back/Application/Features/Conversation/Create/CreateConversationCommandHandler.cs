@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Conversation.Create
 {
-    public class CreateConversationCommandHandler(IUnitOfWork _uow, IMapper _mapper, IUserService _userManager) : IRequestHandler<CreateConversationCommand, ConversationDTO>
+    public class CreateConversationCommandHandler(IUnitOfWork _uow, IMapper _mapper, IUserService _userManager)
+        : IRequestHandler<CreateConversationCommand, ConversationDTO>
     {
-        public async Task<ConversationDTO> Handle(CreateConversationCommand request, CancellationToken cancellationToken)
+        public async Task<ConversationDTO> Handle(CreateConversationCommand request,
+            CancellationToken cancellationToken)
         {
             var participants = request.UsersIds;
             var currentUserId = request.CurrentUserId;
@@ -22,9 +24,9 @@ namespace Application.Features.Conversation.Create
 
             var existingConversation = await _uow.Conversations
                 .GetAll()
-                 .Include(c => c.Participants)
+                .Include(c => c.Participants)
                 .Where(c => c.Participants.Count == participants.Count &&
-                    c.Participants.All(p => participants.Contains(p.UserId)))
+                            c.Participants.All(p => participants.Contains(p.UserId)))
                 .FirstOrDefaultAsync();
 
             if (existingConversation is not null)

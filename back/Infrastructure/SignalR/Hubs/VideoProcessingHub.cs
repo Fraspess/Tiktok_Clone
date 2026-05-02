@@ -6,6 +6,5 @@ namespace Infrastructure.SignalR.Hubs
     [Authorize]
     public class VideoProcessingHub : Hub<IVideoHubClient>
     {
-
     }
 }

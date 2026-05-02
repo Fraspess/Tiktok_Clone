@@ -13,7 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence;
 
-public class AppDbContext : IdentityDbContext<
+public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<
     UserEntity,
     RoleEntity,
     Guid,
@@ -22,10 +22,8 @@ public class AppDbContext : IdentityDbContext<
     IdentityUserLogin<Guid>,
     IdentityRoleClaim<Guid>,
     IdentityUserToken<Guid>
-    >
+>(options)
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
-
     public DbSet<VideoEntity> Videos { get; set; }
     public DbSet<CommentEntity> Comments { get; set; }
     public DbSet<MessageEntity> Messages { get; set; }
@@ -95,6 +93,9 @@ public class AppDbContext : IdentityDbContext<
             .HasForeignKey(c => c.VideoId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        builder.Entity<CommentEntity>()
+            .HasQueryFilter(v => v.Video!.Status == "Processed");
+
         // ── Messages ────────────────────────────────────────
         builder.Entity<MessageEntity>()
             .HasOne(m => m.Sender)
@@ -110,16 +111,11 @@ public class AppDbContext : IdentityDbContext<
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<ReportEntity>()
-            .HasOne(r => r.Video)
-            .WithMany()
-            .HasForeignKey(r => r.VideoId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .HasDiscriminator<string>("ReportType")
+            .HasValue<VideoReportEntity>("Video")
+            .HasValue<UserReportEntity>("User")
+            .HasValue<CommentReportEntity>("Comment");
 
-        builder.Entity<ReportEntity>()
-            .HasOne(r => r.ReportedUser)
-            .WithMany()
-            .HasForeignKey(r => r.ReportedUserId)
-            .OnDelete(DeleteBehavior.Restrict);
 
         // ── HashTags (many-to-many) ──────────────────────────
         builder.Entity<VideoHashTagEntity>()
@@ -136,6 +132,9 @@ public class AppDbContext : IdentityDbContext<
             .WithMany(h => h.VideoHashTags)
             .HasForeignKey(vh => vh.HashTagId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<VideoHashTagEntity>()
+            .HasQueryFilter(v => v.Video.Status == "Processed");
 
 
         // ── Likes (many-to-many) ─────────────────────────────
@@ -154,6 +153,9 @@ public class AppDbContext : IdentityDbContext<
         builder.Entity<LikeEntity>()
             .HasIndex(l => new { l.UserId, l.VideoId })
             .IsUnique();
+
+        builder.Entity<LikeEntity>()
+            .HasQueryFilter(l => l.Video!.Status == "Processed");
 
 
         // user to roles
@@ -186,6 +188,9 @@ public class AppDbContext : IdentityDbContext<
             .HasIndex(f => new { f.UserId, f.VideoId })
             .IsUnique();
 
+        builder.Entity<FavoriteEntity>()
+            .HasQueryFilter(f => f.Video.Status == "Processed");
+
 
         builder.Entity<ConversationEntity>()
             .HasMany(c => c.Participants)
@@ -212,8 +217,6 @@ public class AppDbContext : IdentityDbContext<
             .HasForeignKey(p => p.ConversationId);
 
 
-
-
         builder.Entity<CommentLikeEntity>()
             .HasKey(c => new { c.UserId, c.CommentId });
 
@@ -228,8 +231,21 @@ public class AppDbContext : IdentityDbContext<
             .HasForeignKey(u => u.UserId);
 
         builder.Entity<CommentLikeEntity>()
-           .HasIndex(x => new { x.UserId, x.CommentId })
-           .IsUnique();
+            .HasIndex(x => new { x.UserId, x.CommentId })
+            .IsUnique();    
 
+        builder.Entity<VideoReportEntity>()
+            .HasIndex(x => new { x.VideoId, x.SenderId })
+            .IsUnique();
+        
+        
+        builder.Entity<CommentReportEntity>()
+        .HasIndex(x => new {x.CommentId, x.SenderId})
+        .IsUnique();
+        
+
+        builder.Entity<UserReportEntity>()
+            .HasIndex(x => new { x.UserId, x.SenderId })
+            .IsUnique();
     }
 }

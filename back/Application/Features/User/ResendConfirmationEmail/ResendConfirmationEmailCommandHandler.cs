@@ -3,7 +3,8 @@ using MediatR;
 
 namespace Application.Features.User.ResendConfirmationEmail
 {
-    public class ResendConfirmationEmailCommandHandler(IUserService service) : IRequestHandler<ResendConfirmationEmailCommand, Unit>
+    public class ResendConfirmationEmailCommandHandler(IUserService service)
+        : IRequestHandler<ResendConfirmationEmailCommand, Unit>
     {
         public async Task<Unit> Handle(ResendConfirmationEmailCommand request, CancellationToken cancellationToken)
         {

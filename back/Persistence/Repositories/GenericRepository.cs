@@ -1,13 +1,13 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+
 namespace Persistence.Repositories;
 
 internal class GenericRepository<TEntity, TId> : IGenericRepository<TEntity, TId>
     where TEntity : class, IBaseEntity<TId>
     where TId : notnull
 {
-
     protected readonly AppDbContext _context;
 
     public GenericRepository(AppDbContext context)

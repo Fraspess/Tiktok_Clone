@@ -1,4 +1,4 @@
-﻿using Application.Interfaces.Comment;
+﻿using Application.Interfaces;
 using Domain.Entities.Comment;
 
 namespace Persistence.Repositories.Comment
