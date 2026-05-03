@@ -3,6 +3,8 @@ using Api.Middleware;
 using Application.DependencyInjection;
 using Infrastructure.DependencyInjection;
 using Infrastructure.SignalR.Hubs;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Extensions.FileProviders;
 using Persistence.DependencyInjection;
 using Persistence.Seeder;
 using Serilog;
@@ -45,6 +47,24 @@ try
     app.UseSerilogRequestLogging();
 
     app.UseCors();
+    
+    var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "uploads");
+    Console.WriteLine("Uploads path: " + uploadsPath);
+    Directory.CreateDirectory(uploadsPath);
+    app.UseStaticFiles(new StaticFileOptions()
+    {
+        RequestPath = "/uploads",
+        FileProvider = new PhysicalFileProvider(uploadsPath),
+        ServeUnknownFileTypes = true,
+        ContentTypeProvider = new FileExtensionContentTypeProvider
+        {
+            Mappings =
+            {
+                [".m3u8"] = "application/vnd.apple.mpegurl",
+                [".ts"] = "video/mp2t"
+            }
+        }
+    });
     app.UseAuthentication();
     app.UseAuthorization();
 

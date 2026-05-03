@@ -20,7 +20,7 @@ namespace Api.Controllers.Video
     [ApiController]
     public class VideoController(IMediator _mediator) : ControllerBase
     {
-        [HttpGet("video/{fileName}")]
+        /*[HttpGet("video/{fileName}")]
         public IActionResult GetVideoFileByFileName(string fileName)
         {
             var videoFile = Path.Combine(Directory.GetCurrentDirectory(), "videos", "output", fileName);
@@ -31,7 +31,7 @@ namespace Api.Controllers.Video
 
             var stream = System.IO.File.OpenRead(videoFile);
             return File(stream, "video/mp4", enableRangeProcessing: true, fileDownloadName: "video.mp4");
-        }
+        }*/
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVideoById(Guid id)

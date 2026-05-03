@@ -9,13 +9,7 @@ var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<VideoStartProcessingConsumer>();
-
-    if (builder.Environment.IsDevelopment())
-    {
-        x.UsingInMemory((ctx, cfg) => { cfg.ConfigureEndpoints(ctx); });
-    }
-    else
-    {
+    
         x.UsingRabbitMq((ctx, cfg) =>
         {
             cfg.Host(builder.Configuration["RabbitMQ:HostName"], h =>
@@ -27,7 +21,7 @@ builder.Services.AddMassTransit(x =>
             cfg.UseConcurrencyLimit(1);
             cfg.ConfigureEndpoints(ctx);
         });
-    }
+    
 });
 
 if (builder.Environment.IsDevelopment())
@@ -40,6 +34,8 @@ if (builder.Environment.IsDevelopment())
     }
 }
 
+builder.Services.Configure<FFmpegOptions>(
+    builder.Configuration.GetSection("FFmpeg"));
 var host = builder.Build();
 
 host.Run();

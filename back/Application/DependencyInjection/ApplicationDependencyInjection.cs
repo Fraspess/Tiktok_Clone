@@ -19,8 +19,15 @@ namespace Application.DependencyInjection
             services.AddScoped<IMessageService, MessageService>();
             services.AddScoped<IHashTagService, HashTagService>();
 
-            services.Configure<EmailSettings>(config.GetSection("SMTP"));
-
+            services.AddOptions<EmailSettings>()
+                .BindConfiguration("SMTP")
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+            
+            services.AddOptions<JwtSettings>()
+                .BindConfiguration("Jwt")
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             services.AddAutoMapper(cfg => { cfg.LicenseKey = config["AutoMapper:Key"]; },
                 AppDomain.CurrentDomain.GetAssemblies());
@@ -35,6 +42,7 @@ namespace Application.DependencyInjection
 
 
             services.AddScoped<IDescriptionParser, DescriptionParser>();
+            
 
             return services;
         }

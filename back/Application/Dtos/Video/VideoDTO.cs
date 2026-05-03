@@ -5,7 +5,7 @@ namespace Application.Dtos.Video
     public class VideoDTO
     {
         public Guid Id { get; set; }
-        public string VideoFileName { get; set; } = String.Empty;
+        public string VideoUrl { get; set; }
 
         public string Description { get; set; } = String.Empty;
 
@@ -21,5 +21,6 @@ namespace Application.Dtos.Video
         public bool IsLiked { get; set; }
 
         public UserAuthorDTO? Author { get; set; }
+        
     }
 }

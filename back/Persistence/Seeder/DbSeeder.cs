@@ -31,7 +31,7 @@ namespace Persistence.Seeder
             await context.Database.MigrateAsync();
             await SeedRolesAsync(roleManager);
             await SeedUsersAsync(userManager, imageService, environment);
-            await SeedVideosAsync(configuration, mediator, userManager, context);
+            //await SeedVideosAsync(configuration, mediator, userManager, context);
         }
 
         public static async Task SeedRolesAsync(RoleManager<RoleEntity> roleManager)

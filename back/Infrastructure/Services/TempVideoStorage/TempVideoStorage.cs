@@ -5,16 +5,15 @@ namespace Infrastructure.Services.TempVideoStorage
 {
     internal class TempVideoStorage : ITempVideoStorage
     {
-        String tempPath = Path.Combine(Directory.GetCurrentDirectory(), "videos");
+        string tempPath = Path.Combine(Directory.GetCurrentDirectory(), "temp");
 
         public async Task<string> SaveVideoAsync(IFormFile file)
         {
             Directory.CreateDirectory(tempPath);
+            
+            Directory.CreateDirectory(tempPath);
 
-            var inputPath = Path.Combine(tempPath, "Input");
-            Directory.CreateDirectory(inputPath);
-
-            var filePath = Path.Combine(inputPath, $"{Guid.NewGuid().ToString()}.mp4");
+            var filePath = Path.Combine(tempPath, $"{Guid.NewGuid().ToString()}.mp4");
             using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream);
             return stream.Name;

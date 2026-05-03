@@ -12,7 +12,7 @@ namespace Application.Features.Video.Upload.Dev
     {
         public async Task<Unit> Handle(UploadVideoCommandDev request, CancellationToken cancellationToken)
         {
-            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "videos", "output");
+            var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "uploads");
             Directory.CreateDirectory(uploadFolder);
             using (var httpClient = new HttpClient())
             {
@@ -46,7 +46,7 @@ namespace Application.Features.Video.Upload.Dev
 
                     var parsedDescription = _parser.ParseDescription(request.VideoDescription);
                     var newVideo = new VideoEntity
-                        { Description = parsedDescription.CleanText, UserId = randomUserId, VideoFileName = fileName };
+                        { Description = parsedDescription.CleanText, UserId = randomUserId};
 
                     var hashtags = await _hashtags.GetOrCreateAsync(parsedDescription.Tags);
                     foreach (var tag in hashtags)

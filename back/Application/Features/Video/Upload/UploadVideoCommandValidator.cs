@@ -8,7 +8,8 @@ namespace Application.Features.Video.Upload
         {
             RuleFor(x => x.Dto.Description)
                 .NotNull().WithMessage("Опис не може бути порожнім")
-                .NotEmpty().WithMessage("Опис відео не може бути порожнім");
+                .NotEmpty().WithMessage("Опис відео не може бути порожнім")
+                .MaximumLength(500);
 
             RuleFor(x => x.Dto.VideoFile)
                 .NotNull().WithMessage("Відео файл не може бути порожнім")

@@ -6,10 +6,11 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace Application.Features.Video.GetBySomeQuery
 {
-    public class GetVideosBySomeStringQueryHandler(IUnitOfWork _uow, IMapper _mapper)
+    public class GetVideosBySomeStringQueryHandler(IUnitOfWork _uow, IMapper _mapper, IConfiguration config)
         : IRequestHandler<GetVideosBySomeStringQuery, PagedResult<SimpleVideoDTO>>
     {
         public async Task<PagedResult<SimpleVideoDTO>> Handle(GetVideosBySomeStringQuery request,
@@ -33,7 +34,7 @@ namespace Application.Features.Video.GetBySomeQuery
 
             var videos = await query
                 .OrderByDescending(v => v.CreatedAt)
-                .ProjectTo<SimpleVideoDTO>(_mapper.ConfigurationProvider)
+                .ProjectTo<SimpleVideoDTO>(_mapper.ConfigurationProvider, new {backendUrl = config["Backend:Url"]})
                 .ToPagedResultAsync(request.Settings);
 
             return videos;
