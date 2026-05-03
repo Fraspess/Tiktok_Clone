@@ -14,7 +14,6 @@ namespace Application.Features.Video.Processed
 
             video.Status = "Processed";
             video.ProccessedInProcents = 100;
-            video.VideoFileName = Path.GetFileName(request.FilePath);
             await _uow.Videos.UpdateAsync(video);
             await _uow.SaveChangesAsync();
 

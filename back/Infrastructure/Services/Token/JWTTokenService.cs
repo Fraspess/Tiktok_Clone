@@ -8,28 +8,15 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Application.Settings;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure.Services.Token
 {
-    internal class JWTTokenService(IConfiguration configuration, UserManager<UserEntity> userManager) : IJWTTokenService
+    internal class JWTTokenService(IOptions<JwtSettings> settings, UserManager<UserEntity> userManager) : IJWTTokenService
     {
-        private readonly string _key = configuration["Jwt:Key"]
-                                       ?? throw new InvalidOperationException("Не настроєний Jwt:key, осечка");
+        private readonly JwtSettings _settings = settings.Value;
 
-        private readonly string _issuer = configuration["Jwt:Issuer"]
-                                          ?? throw new InvalidOperationException("Не настроєний Jwt:Issuer, осечка");
-
-        private readonly string _audience = configuration["Jwt:Audience"]
-                                            ?? throw new InvalidOperationException(
-                                                "Не настроєний Jwt:Audience, осечка");
-
-        private readonly int _accessTokenExpiry = int.Parse(configuration["Jwt:AccessTokenExpiryMinutes"]
-                                                            ?? throw new InvalidOperationException(
-                                                                "Не настроєний Jwt:AccessTokenExpiryMinutes, осечка"));
-
-        private readonly int _refreshTokenExpiry = int.Parse(configuration["Jwt:RefreshTokenExpiryDays"]
-                                                             ?? throw new InvalidOperationException(
-                                                                 "Не настроєний Jwt:RefreshTokenExpiryDays, осечка"));
 
         public async Task<TokenResponseDTO> GenerateTokensAsync(UserEntity user)
         {
@@ -49,10 +36,10 @@ namespace Infrastructure.Services.Token
                 ValidateAudience = true,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = _issuer,
-                ValidAudience = _audience,
+                ValidIssuer = _settings.Issuer,
+                ValidAudience = _settings.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(_key
+                    Encoding.UTF8.GetBytes(_settings.Key
                     )),
             };
 
@@ -101,10 +88,10 @@ namespace Infrastructure.Services.Token
             var signingCredentials = GetSigningCredentials();
 
             var accessToken = new JwtSecurityToken(
-                issuer: _issuer,
-                audience: _audience,
+                issuer: _settings.Issuer,
+                audience: _settings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(_accessTokenExpiry),
+                expires: DateTime.UtcNow.AddMinutes(_settings.AccessTokenExpiryMinutes),
                 signingCredentials: signingCredentials
             );
 
@@ -125,10 +112,10 @@ namespace Infrastructure.Services.Token
             var signingCredentials = GetSigningCredentials();
 
             var refreshToken = new JwtSecurityToken(
-                issuer: _issuer,
-                audience: _audience,
+                issuer: _settings.Issuer,
+                audience: _settings.Audience,
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(Convert.ToInt32(_refreshTokenExpiry)),
+                expires: DateTime.UtcNow.AddDays(Convert.ToInt32(_settings.RefreshTokenExpiryDays)),
                 signingCredentials: signingCredentials
             );
 
@@ -139,7 +126,7 @@ namespace Infrastructure.Services.Token
 
         private SigningCredentials GetSigningCredentials()
         {
-            var keyBytes = System.Text.Encoding.UTF8.GetBytes(_key);
+            var keyBytes = System.Text.Encoding.UTF8.GetBytes(_settings.Key);
             var signingInKey = new SymmetricSecurityKey(keyBytes);
             return new SigningCredentials(signingInKey, SecurityAlgorithms.HmacSha256);
         }

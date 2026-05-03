@@ -9,8 +9,7 @@ namespace Infrastructure.RabbitMQ.Consumers
     {
         public async Task Consume(ConsumeContext<VideoProcessedEvent> context)
         {
-            await _mediator.Send(new VideoProcessedCommand(context.Message.VideoId, context.Message.UserId,
-                context.Message.FilePath));
+            await _mediator.Send(new VideoProcessedCommand(context.Message.VideoId, context.Message.UserId));
         }
     }
 }

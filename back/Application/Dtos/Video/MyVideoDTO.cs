@@ -5,7 +5,7 @@ namespace Application.Dtos.Video;
 public class MyVideoDTO
 {
     public Guid Id { get; set; }
-    public string VideoFileName { get; set; } = String.Empty;
+    public string VideoUrl { get; set; }
 
     public string Description { get; set; } = String.Empty;
 

@@ -35,7 +35,7 @@
     <script>
         const videoStatusConnection = new signalR.HubConnectionBuilder()
         .withUrl("http://localhost:5189/hubs/video-process-status", {
-            accessTokenFactory: () => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMTlkYzQzOS0xZjZmLTdkZGEtYTAzNy1mOGI0ZjkzM2NiZGUiLCJlbWFpbCI6InN0cmluZ0BleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoic3RyaW5nIiwiaW1hZ2UiOiJhNGYwOGYwNS00MzM3LTQ1N2EtYTJjYS1lMjhjZDM4MTg4MjEud2VicCIsInJvbGUiOiJBZG1pbiIsImV4cCI6MTc3NzIzMDkwMSwiaXNzIjoiRnJhc3Blc3MgOikiLCJhdWQiOiJGcmFzcGVzcyA6KSJ9.plpJW3pUhvOeWqSnUsOicM746a4glhDQjycv7ylvR1s"
+            accessTokenFactory: () => "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMTlkZTgwNy1kNjhkLTc5ZmMtYWFiNi1lZTY0YTViMDNkMjYiLCJlbWFpbCI6InN0cmluZ0BleGFtcGxlLmNvbSIsInVzZXJuYW1lIjoic3RyaW5nIiwiaW1hZ2UiOiJlYjE0YzYyZS1jNWRlLTRiNTMtODhkOS01ZmM4ZGIxMjIzN2Eud2VicCIsInJvbGUiOiJBZG1pbiIsImV4cCI6MTc3NzgwMTE0MCwiaXNzIjoiRnJhc3Blc3MgOikiLCJhdWQiOiJGcmFzcGVzcyA6KSJ9.TIRwq4HQ-ujDNdBTFJblCa08FzCW4vWHxCUyMLtY4vY"
         })
         .withAutomaticReconnect()
         .build()

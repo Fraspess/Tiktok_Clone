@@ -38,13 +38,7 @@ namespace Infrastructure.DependencyInjection
                 x.AddConsumer<VideoProcessedConsumer>();
                 x.AddConsumer<VideoProcessingProgressConsumer>();
                 x.AddConsumer<VideoProcessingFailedConsumer>();
-
-                if (env.IsDevelopment())
-                {
-                    x.UsingInMemory((ctx, cfg) => { cfg.ConfigureEndpoints(ctx); });
-                }
-                else
-                {
+                
                     x.UsingRabbitMq((ctx, cfg) =>
                     {
                         cfg.Host(config["RabbitMQ:HostName"], h =>
@@ -55,7 +49,6 @@ namespace Infrastructure.DependencyInjection
 
                         cfg.ConfigureEndpoints(ctx);
                     });
-                }
             });
             return services;
         }

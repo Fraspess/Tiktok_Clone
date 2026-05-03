@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Comment;
+﻿using System.ComponentModel.DataAnnotations;
+using Domain.Entities.Comment;
 using Domain.Entities.Favorite;
 using Domain.Entities.Identity;
 using Domain.Entities.Like;
@@ -8,10 +9,9 @@ namespace Domain.Entities.Video
     public class VideoEntity : BaseEntity<Guid>
     {
         public override Guid Id { get; set; } = Guid.NewGuid();
-
-        public required String Description { get; set; }
-
-        public String VideoFileName { get; set; } = String.Empty;
+    
+        [MaxLength(500)]
+        public required string Description { get; set; }
 
         public required Guid UserId { get; set; }
 
