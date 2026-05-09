@@ -2,6 +2,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
 using System.Text;
+using Api.Filters;
 
 namespace Api.DependencyInjection
 {
@@ -10,7 +11,7 @@ namespace Api.DependencyInjection
         public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration config,
             IWebHostEnvironment env)
         {
-            services.AddControllers()
+            services.AddControllers(opt => opt.Filters.Add<NullActionFilter>())
                 .ConfigureApiBehaviorOptions(opt => { opt.SuppressModelStateInvalidFilter = true; });
             services.AddAuthentication(options =>
                 {

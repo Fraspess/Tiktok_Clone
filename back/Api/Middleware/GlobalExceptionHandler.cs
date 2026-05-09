@@ -1,5 +1,6 @@
 ﻿using Application;
 using Domain.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Middleware
 {
