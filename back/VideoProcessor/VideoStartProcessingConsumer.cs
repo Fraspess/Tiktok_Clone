@@ -115,7 +115,6 @@ namespace VideoProcessor
                     .WithConstantRateFactor(_opts.Encoding.Crf)
                     .WithCustomArgument($"-filter_complex \"{filter}\" -map [v] -map 0:a?")
                     .WithCustomArgument("-af loudnorm=I=-16:TP=-1.5:LRA=11")
-                    .WithCustomArgument($"-threads {_opts.CpuOptions.Threads}")
                     .WithFastStart())
                 .NotifyOnProgress(async void (progress) =>
                 {
