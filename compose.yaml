@@ -80,6 +80,8 @@ services:
                 condition: service_healthy
             rabbitMQ:
                 condition: service_healthy
+        cpus: "0.5"
+        mem_limit: "400m"
 
     rabbitMQ:
         image: rabbitmq:3-management

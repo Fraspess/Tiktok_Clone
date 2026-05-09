@@ -4,6 +4,7 @@ public class FFmpegOptions
 {
     public List<QualityOptions> Qualities { get; set; }
     public EncodingOptions Encoding { get; set; }
+    public CpuOptions CpuOptions { get; set; }
 }
 
 public class QualityOptions
@@ -23,4 +24,9 @@ public class EncodingOptions
     public string AudioCodec { get; set; }
     public string Preset { get; set; }
     public int Crf { get; set; }
+}
+
+public class CpuOptions
+{
+    public string Threads { get; set; }
 }
