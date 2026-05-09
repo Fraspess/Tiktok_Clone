@@ -1,0 +1,79 @@
+services:
+    db:
+        image: postgres
+        environment:
+            POSTGRES_USER: frasp
+            POSTGRES_PASSWORD: ${DBPassword}
+            POSTGRES_DB: Tiktok_Clone
+        ports:
+            - "5432:5432"
+        volumes:
+            - db:/var/lib/postgresql
+        networks:
+            - tiktok_network
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U frasp -d Tiktok_Clone"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+    api:
+        build: back/
+        container_name: api
+        environment:
+            ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=Tiktok_Clone;Username=frasp;Password=${DBPassword}"
+            RabbitMQ__HostName: "rabbitMQ"
+            RabbitMQ__UserName: ${RabbitMQUsername}
+            RabbitMQ__Password: ${RabbitMQPassword}
+        ports:
+            - "8080:8080"
+        volumes:
+            - api_uploads:/app/uploads
+            - api_images:/app/images
+            - api_logs:/app/logs
+        networks:
+            - tiktok_network
+        depends_on:
+            db:
+                condition: service_healthy
+            rabbitMQ:
+                condition: service_healthy
+    rabbitMQ:
+        image: rabbitmq:3-management
+        environment:
+            RABBITMQ_DEFAULT_USER: ${RabbitMQUsername}
+            RABBITMQ_DEFAULT_PASS: ${RabbitMQPassword}
+        ports:
+            - "5672:5672"
+            - "15672:15672"
+        networks:
+            - tiktok_network
+        volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
+        healthcheck:
+            test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+            start_period: 30s
+
+networks:
+    tiktok_network:
+        name: "tiktok_network"
+
+volumes:
+    db:
+        driver: local
+        name: "db"
+    api_uploads:
+        driver: local
+        name: "api_uploads"
+    api_images:
+        driver: local
+        name: "api_images"
+    rabbitmq_data:
+        driver: local
+        name: "rabbitmq_data"
+    api_logs:
+        driver: local
+        name: "api_logs"
+  

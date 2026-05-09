@@ -5,6 +5,7 @@ using Application.Pagination;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 namespace Application.Features.Video.MyVideos

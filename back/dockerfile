@@ -3,17 +3,27 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 
-# Copy all .csproj files and restore
-COPY ["Tiktok_Clone/Tiktok_Clone.csproj", "Tiktok_Clone/"]
-COPY ["Tiktok_Clone.DAL/Tiktok_Clone.DAL.csproj", "Tiktok_Clone.DAL/"]
-COPY ["Tiktok_Clone.BLL/Tiktok_Clone.BLL.csproj", "Tiktok_Clone.BLL/"]
+# Copy this so all projects reference the same c# version
+COPY ["Directory.Build.props", "."] 
 
-RUN dotnet restore "Tiktok_Clone/Tiktok_Clone.csproj"
+# Copy this so all projects reference the same package versions
+COPY ["Directory.Packages.props", "."]
+
+# Copy all .csproj files and restore
+COPY ["Domain/Domain.csproj", "Domain/"]
+COPY ["Application/Application.csproj", "Application/"]
+COPY ["Persistence/Persistence.csproj", "Persistence/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
+COPY ["Contracts/Contracts.csproj", "Contracts/"]
+COPY ["Api/Api.csproj", "Api/"]
+COPY ["VideoProcessor/VideoProcessor.csproj", "VideoProcessor/"]
+
+RUN dotnet restore "Api/Api.csproj"
 
 # Copy everything and publish
 COPY . .
-WORKDIR /src/Tiktok_Clone
-RUN dotnet publish "Tiktok_Clone.csproj" \
+WORKDIR /src/Api
+RUN dotnet publish "Api.csproj" \
     -c Release \
     -o /app/publish \
     --no-restore
@@ -37,4 +47,4 @@ ENV ASPNETCORE_URLS=http://+:8080
 
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "Tiktok_Clone.dll"]
+ENTRYPOINT ["dotnet", "Api.dll"]
