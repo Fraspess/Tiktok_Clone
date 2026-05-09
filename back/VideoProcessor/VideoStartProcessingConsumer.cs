@@ -113,7 +113,7 @@ namespace VideoProcessor
                     .WithAudioCodec(_opts.Encoding.AudioCodec)
                     .WithCustomArgument($"-preset {_opts.Encoding.Preset}")
                     .WithConstantRateFactor(_opts.Encoding.Crf)
-                    .WithCustomArgument($"-filter_complex \"{filter}\" -map [v]")
+                    .WithCustomArgument($"-filter_complex \"{filter}\" -map [v] -map 0:a?")
                     .WithCustomArgument("-af loudnorm=I=-16:TP=-1.5:LRA=11")
                     .WithCustomArgument($"-threads {_opts.CpuOptions.Threads}")
                     .WithFastStart())
