@@ -46,7 +46,7 @@ namespace VideoProcessor
                     context.Message.UserId);
                 await GenerateHlsAsync(normalizedPath, outputDir, duration, context.Message.VideoId,
                     context.Message.UserId);
-                await GenerateThumbnailAsync(inputPath, outputDir);
+                await GenerateThumbnailAsync(normalizedPath, outputDir);
 
                 await publishEndpoint.Publish(new VideoProcessedEvent
                     { VideoId = context.Message.VideoId, UserId = context.Message.UserId });
@@ -104,7 +104,7 @@ namespace VideoProcessor
                 "split[orig][copy];" +
                 "[copy]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20[bg];" +
                 "[orig]scale=1080:1920:force_original_aspect_ratio=decrease[fg];" +
-                "[bg][fg]overlay=(W-w)/2:(H-h)/2";
+                "[bg][fg]overlay=(W-w)/2:(H-h)/2[v]";
 
             await FFMpegArguments
                 .FromFileInput(input)
@@ -113,7 +113,8 @@ namespace VideoProcessor
                     .WithAudioCodec(_opts.Encoding.AudioCodec)
                     .WithCustomArgument($"-preset {_opts.Encoding.Preset}")
                     .WithConstantRateFactor(_opts.Encoding.Crf)
-                    .WithCustomArgument($"-vf \" {filter} \"")
+                    .WithCustomArgument($"-filter_complex \"{filter}\" -map [v]")
+                    .WithCustomArgument("-af loudnorm=I=-16:TP=-1.5:LRA=11")
                     .WithFastStart())
                 .NotifyOnProgress(async void (progress) =>
                 {

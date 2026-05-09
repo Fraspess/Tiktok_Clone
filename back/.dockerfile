@@ -16,7 +16,6 @@ COPY ["Persistence/Persistence.csproj", "Persistence/"]
 COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 COPY ["Contracts/Contracts.csproj", "Contracts/"]
 COPY ["Api/Api.csproj", "Api/"]
-COPY ["VideoProcessor/VideoProcessor.csproj", "VideoProcessor/"]
 
 RUN dotnet restore "Api/Api.csproj"
 
@@ -35,7 +34,6 @@ WORKDIR /app
 # Install FFmpeg & curl
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        ffmpeg \
         curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

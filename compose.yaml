@@ -5,6 +5,8 @@ services:
             - "80:80"
         volumes:
             - ./nginx.conf:/etc/nginx/nginx.conf:ro
+            - api_uploads:/usr/share/nginx/uploads 
+            - api_images:/usr/share/nginx/images  
         depends_on:
             api:
                 condition: service_healthy
@@ -28,7 +30,9 @@ services:
             timeout: 5s
             retries: 10
     api:
-        build: back/
+        build:
+            context: back/
+            dockerfile: .dockerfile
         container_name: api
         environment:
             ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=Tiktok_Clone;Username=frasp;Password=${DBPassword}"
@@ -42,6 +46,7 @@ services:
             - api_uploads:/app/uploads
             - api_images:/app/images
             - api_logs:/app/logs
+            - api_temp:/app/temp
         networks:
             - tiktok_network
         depends_on:
@@ -56,6 +61,26 @@ services:
             retries: 5
             start_period: 15s
         restart: unless-stopped
+    video_processor:
+        build:
+            context: back/
+            dockerfile: VideoProcessor/.dockerfile
+        container_name: video_processor
+        environment:
+            RabbitMQ__HostName: "rabbitMQ"
+            RabbitMQ__UserName: ${RabbitMQUsername}
+            RabbitMQ__Password: ${RabbitMQPassword}
+        networks:
+            - tiktok_network
+        volumes:
+            - api_temp:/app/temp
+            - api_uploads:/app/uploads
+        depends_on:
+            db: 
+                condition: service_healthy
+            rabbitMQ:
+                condition: service_healthy
+
     rabbitMQ:
         image: rabbitmq:3-management
         environment:
@@ -86,6 +111,9 @@ volumes:
     api_uploads:
         driver: local
         name: "api_uploads"
+    api_temp:
+        driver: local
+        name: "api_temp"
     api_images:
         driver: local
         name: "api_images"
