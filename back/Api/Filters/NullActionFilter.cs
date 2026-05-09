@@ -1,6 +1,7 @@
 ﻿using Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Api.Filters;
 
@@ -8,9 +9,10 @@ public class NullActionFilter : IActionFilter
 {
     public void OnActionExecuting(ActionExecutingContext context)
     {
-        var parameters = context.ActionDescriptor.Parameters;
+        var bodyParameters = context.ActionDescriptor.Parameters
+            .Where(p => p.BindingInfo?.BindingSource == BindingSource.Body);
 
-        foreach (var parameter in parameters)
+        foreach (var parameter in bodyParameters)
         {
             if (!context.ActionArguments.TryGetValue(parameter.Name, out var value) || value is null)
             {
