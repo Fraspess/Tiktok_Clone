@@ -10,12 +10,11 @@ namespace Infrastructure.Services.TempVideoStorage
         public async Task<string> SaveVideoAsync(IFormFile file)
         {
             Directory.CreateDirectory(tempPath);
-            
-            Directory.CreateDirectory(tempPath);
 
             var filePath = Path.Combine(tempPath, $"{Guid.NewGuid().ToString()}.mp4");
             using var stream = new FileStream(filePath, FileMode.Create);
             await file.CopyToAsync(stream);
+            Console.WriteLine($"Saved to: {stream.Name}, exists: {File.Exists(stream.Name)}");
             return stream.Name;
         }
     }
