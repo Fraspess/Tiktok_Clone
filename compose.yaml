@@ -80,11 +80,11 @@ services:
                 condition: service_healthy
             rabbitMQ:
                 condition: service_healthy
-        deploy:
-            resources:
-                limits:
-                    cpus: "0.5"
-                    memory: 400m
+        # deploy:
+        #     resources:
+        #         limits:
+        #             cpus: "0.5"
+        #             memory: 400m
         restart: unless-stopped
 
     rabbitMQ:
