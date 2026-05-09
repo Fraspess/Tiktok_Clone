@@ -76,6 +76,8 @@ namespace Api.DependencyInjection
                 });
             }
 
+            services.AddHealthChecks();
+
             services.AddSwaggerGen(opt =>
             {
                 opt.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
@@ -91,6 +93,8 @@ namespace Api.DependencyInjection
                     [new OpenApiSecuritySchemeReference("bearer", document)] = []
                 });
             });
+
+            
 
             return services;
         }

@@ -34,7 +34,7 @@ try
     builder.Services.AddApi(builder.Configuration, builder.Environment);
 
     var app = builder.Build();
-
+    app.MapHealthChecks("/health");
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
