@@ -35,6 +35,7 @@ services:
             RabbitMQ__HostName: "rabbitMQ"
             RabbitMQ__UserName: ${RabbitMQUsername}
             RabbitMQ__Password: ${RabbitMQPassword}
+            Jwt__Key: ${JwtKey}
         expose: 
             - "8080"
         volumes:
