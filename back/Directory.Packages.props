@@ -44,5 +44,7 @@
 
 		<PackageVersion Include="MassTransit" Version="8.3.6" />
 		<PackageVersion Include="MassTransit.RabbitMQ" Version="8.3.6" />
+		
+		<PackageVersion Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.7" />
 	</ItemGroup>
 </Project>

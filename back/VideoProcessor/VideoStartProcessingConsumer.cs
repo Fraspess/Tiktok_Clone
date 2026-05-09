@@ -100,11 +100,12 @@ namespace VideoProcessor
         private async Task NormalizeVideoAsync(string input, string output, TimeSpan duration, Guid videoid,
             Guid userId)
         {
-            const string filter =
-                "split[orig][copy];" +
-                "[copy]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20[bg];" +
-                "[orig]scale=1080:1920:force_original_aspect_ratio=decrease[fg];" +
-                "[bg][fg]overlay=(W-w)/2:(H-h)/2[v]";
+const string filter =
+    "split[orig][copy];" +
+    "[copy]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20[bg];" +
+    "[orig]scale=1080:1920:force_original_aspect_ratio=decrease[fg];" +
+    "[bg][fg]overlay=(W-w)/2:(H-h)/2[v];" +
+    "[0:a]loudnorm=I=-16:TP=-1.5:LRA=11[a]";
 
             await FFMpegArguments
                 .FromFileInput(input)
@@ -113,8 +114,7 @@ namespace VideoProcessor
                     .WithAudioCodec(_opts.Encoding.AudioCodec)
                     .WithCustomArgument($"-preset {_opts.Encoding.Preset}")
                     .WithConstantRateFactor(_opts.Encoding.Crf)
-                    .WithCustomArgument($"-filter_complex \"{filter}\" -map [v] -map 0:a?")
-                    .WithCustomArgument("-af loudnorm=I=-16:TP=-1.5:LRA=11")
+                    .WithCustomArgument($"-filter_complex \"{filter}\" -map [v] -map [a]")
                     .WithFastStart())
                 .NotifyOnProgress(async void (progress) =>
                 {

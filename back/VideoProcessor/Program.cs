@@ -34,8 +34,10 @@ if (builder.Environment.IsDevelopment())
     }
 }
 
-builder.Services.Configure<FFmpegOptions>(
-    builder.Configuration.GetSection("FFmpeg"));
+builder.Services.AddOptions<FFmpegOptions>()
+    .BindConfiguration("FFmpeg")
+    .ValidateDataAnnotations()
+    .ValidateOnStart();
 var host = builder.Build();
 
 host.Run();
