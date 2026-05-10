@@ -477,6 +477,7 @@ $RECYCLE.BIN/
 
 
 .idea/
+.vs/
 
 Api/images/
 Api/uploads/

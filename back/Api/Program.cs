@@ -34,7 +34,7 @@ try
     builder.Services.AddApi(builder.Configuration, builder.Environment);
 
     var app = builder.Build();
-
+    app.MapHealthChecks("/health");
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())
     {
@@ -49,7 +49,6 @@ try
     app.UseCors();
     
     var uploadsPath = Path.Combine(builder.Environment.ContentRootPath, "uploads");
-    Console.WriteLine("Uploads path: " + uploadsPath);
     Directory.CreateDirectory(uploadsPath);
     app.UseStaticFiles(new StaticFileOptions()
     {

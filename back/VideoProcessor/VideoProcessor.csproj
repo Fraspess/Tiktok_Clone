@@ -15,6 +15,7 @@
 
         <PackageReference Include="MassTransit"/>
         <PackageReference Include="MassTransit.RabbitMQ"/>
+        <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\Contracts\Contracts.csproj"/>
