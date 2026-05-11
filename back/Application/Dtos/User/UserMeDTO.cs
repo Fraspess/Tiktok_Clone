@@ -9,5 +9,6 @@
         public int FollowingCount { get; set; }
         public bool IsOwnProfile { get; set; }
         public string Avatar { get; set; } = string.Empty;
+        public string Description { get; set; }
     }
 }

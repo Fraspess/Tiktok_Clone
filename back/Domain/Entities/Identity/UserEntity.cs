@@ -21,6 +21,8 @@ public class UserEntity : IdentityUser<Guid>
     [MaxLength(255)] public string? Avatar { get; set; }
 
     public int RefreshTokenVersion { get; set; }
+    
+    public DateTime? LastUsernameChangedAt { get; set; }
 
     public DateTime? LastConfirmationEmailSentAt { get; set; }
 
