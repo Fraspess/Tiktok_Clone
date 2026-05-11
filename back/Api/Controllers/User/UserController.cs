@@ -2,6 +2,7 @@
 using Application;
 using Application.Dtos.User;
 using Application.Extensions;
+using Application.Features.User.ChangeUsername;
 using Application.Features.User.ConfirmEmail;
 using Application.Features.User.FollowUser;
 using Application.Features.User.ForgotPassword;
@@ -14,6 +15,7 @@ using Application.Features.User.RefreshTokens;
 using Application.Features.User.Register;
 using Application.Features.User.ResendConfirmationEmail;
 using Application.Features.User.ResetPassword;
+using Application.Features.User.Update;
 using Domain.Exceptions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -138,6 +140,22 @@ public class UserController(IMediator _mediator) : ControllerBase
         var userId = User.GetUserId();
         await _mediator.Send(new FollowUserCommand(userId, following));
         return Ok(ApiResponse<object>.Success(null!, null));
+    }
+
+    [HttpPatch]
+    [Authorize]
+    public async Task<IActionResult> Update([FromForm] UpdateUserDTO dto)
+    {
+        await _mediator.Send(new UpdateUserCommand(dto, User.GetUserId()));
+        return Ok(ApiResponse<object>.Success(null!));
+    }
+
+    [HttpPatch("change-username")]
+    [Authorize]
+    public async Task<IActionResult> ChangeUsername([FromBody] ChangeUsernameUserDTO dto)
+    {
+        await _mediator.Send(new ChangeUsernameCommand(dto.NewUsername, User.GetUserId()));
+        return Ok(ApiResponse<object>.Success(null!));
     }
 
     private void AppendRefreshTokenCookie(string refreshToken)

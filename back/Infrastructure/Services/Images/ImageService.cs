@@ -24,16 +24,16 @@ public class ImageService : IImageService
     {
         var imageFolder = Path.Combine(_environment.ContentRootPath, "images");
         var path = Path.Combine(imageFolder, imageName);
-
         try
         {
             File.Delete(path);
         }
         catch (Exception ex)
         {
-            _logger.LogError("Error while deleting image. Error : {error} ", ex.Message);
-            return;
+            _logger.LogError(ex, "Got an exception while deleting the image");
         }
+
+
     }
 
     private async Task<String> SaveImagePrivate(Stream stream)
