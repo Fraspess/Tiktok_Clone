@@ -7,8 +7,8 @@
         public string? Email { get; set; }
         public int FollowersCount { get; set; }
         public int FollowingCount { get; set; }
-        public bool IsOwnProfile { get; set; }
+        
         public string Avatar { get; set; } = string.Empty;
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
     }
 }

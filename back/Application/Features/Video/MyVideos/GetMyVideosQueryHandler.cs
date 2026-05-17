@@ -16,7 +16,8 @@ namespace Application.Features.Video.MyVideos
         public Task<PagedResult<MyVideoDTO>> Handle(GetMyVideosQuery request, CancellationToken cancellationToken)
         {
             var videos = _uow.Videos
-                .GetAllIgnoreQueryFilters()
+                //.GetAllIgnoreQueryFilters()
+                .GetAll()
                 .Where(v => v.UserId == request.UserId)
                 .OrderByDescending(v => v.CreatedAt)
                 .ProjectTo<MyVideoDTO>(_mapper.ConfigurationProvider,

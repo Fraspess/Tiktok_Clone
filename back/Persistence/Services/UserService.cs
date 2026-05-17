@@ -102,7 +102,6 @@ namespace Persistence.Services
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId)
                        ?? throw new UnauthorizedException("Користувач не знайдений");
             var dto = _userMapper.Map<UserMeDTO>(user);
-            dto.IsOwnProfile = true;
             dto.FollowingCount = await _uow.Follows.GetFollowingCountAsync(userId);
             dto.FollowersCount = await _uow.Follows.GetFollowersCountAsync(userId);
             return dto;

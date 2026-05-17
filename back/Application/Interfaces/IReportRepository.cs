@@ -3,7 +3,7 @@ using Domain.Entities.Report;
 
 namespace Application.Interfaces;
 
-public interface IReportRepository : IGenericRepository<ReportEntity, Guid>
+public interface IReportRepository : IGenericRepository<ReportEntity>
 {
     Task<bool> ExistsAsync(Guid senderId, Guid contentId, ContentTypes contentType);
 }

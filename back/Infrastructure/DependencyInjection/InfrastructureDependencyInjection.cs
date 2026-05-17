@@ -32,7 +32,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<IVideoProcessingNotifier, VideoProcessingNotifier>();
             services.AddScoped<ITempVideoStorage, TempVideoStorage>();
             services.AddScoped(typeof(IEventBus<>), typeof(EventBus<>));
-
+            services.AddScoped<ICurrentUser, CurrentUser>();
             services.AddMassTransit(x =>
             {
                 x.AddConsumer<VideoProcessedConsumer>();
@@ -50,6 +50,8 @@ namespace Infrastructure.DependencyInjection
                         cfg.ConfigureEndpoints(ctx);
                     });
             });
+            
+            services.AddHttpContextAccessor();
             return services;
         }
     }

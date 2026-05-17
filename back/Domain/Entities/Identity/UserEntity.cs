@@ -23,6 +23,7 @@ public class UserEntity : IdentityUser<Guid>
     public int RefreshTokenVersion { get; set; }
     
     public DateTime? LastUsernameChangedAt { get; set; }
+    public bool IsDeleted { get; set; }
 
     public DateTime? LastConfirmationEmailSentAt { get; set; }
 

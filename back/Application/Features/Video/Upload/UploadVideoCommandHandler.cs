@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Application.Services.HashTag;
 using Contracts;
 using Contracts.Events;
+using Domain;
 using Domain.Entities.Video;
 using MediatR;
 
@@ -22,13 +23,13 @@ namespace Application.Features.Video.Upload
             {
                 UserId = request.OwnerId,
                 Description = parsedDescription.CleanText,
-                Status = "Processing",
+                Status = VideoStatus.Processing,
                 ProccessedInProcents = 0
             };
 
             var hashtags = await _hashtag.GetOrCreateAsync(parsedDescription.Tags);
             foreach (var tag in hashtags)
-                newVideo.HashTags.Add(new VideoHashTagEntity { HashTagId = tag.Id, VideoId = newVideo.Id });
+                newVideo.HashTags.Add(new VideoHashTagEntity { HashTagId = tag.Id });
 
             await _uow.Videos.CreateAsync(newVideo);
             await _uow.SaveChangesAsync();

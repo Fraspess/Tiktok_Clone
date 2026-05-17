@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Persistence.Repositories.Report;
 
-internal class ReportRepository(AppDbContext context)
-    : GenericRepository<ReportEntity, Guid>(context), IReportRepository
+internal class ReportRepository(AppDbContext _context)
+    : GenericRepository<ReportEntity>(_context), IReportRepository
 {
     public async Task<bool> ExistsAsync(Guid senderId, Guid contentId, ContentTypes contentType)
     {

@@ -3,9 +3,8 @@ using Domain.Entities.Identity;
 
 namespace Domain.Entities.Report
 {
-    public abstract class ReportEntity : BaseEntity<Guid>
+    public abstract class ReportEntity : AuditableEntity
     {
-        public override Guid Id { get; set; } = Guid.NewGuid();
         public Guid SenderId { get; set; }
         public UserEntity Sender { get; init; } = null!;
         public ReportReasons? Reason { get; set; }

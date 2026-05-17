@@ -25,8 +25,6 @@ public class UserMapperProfile : Profile
                 o => o.Ignore())
             .ForMember(u => u.FollowingCount,
                 o => o.Ignore())
-            .ForMember(u => u.IsOwnProfile,
-                o => o.Ignore())
             .ForMember(u => u.Username,
                 o => o.MapFrom(u => $"@{u.UserName}"));
 
